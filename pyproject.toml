@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "new-repository"
+version = "0.1.0"
+description = "Dự án phân tích dữ liệu và machine learning"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # Thêm các dependencies chính tại đây
+    # Ví dụ: "pandas>=2.0.0", "numpy>=1.24.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+]
