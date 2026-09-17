@@ -2,6 +2,7 @@
 
 - **Domain**: hospitality
 - **Source**: Kaggle competition ([expedia-hotel-recommendations](https://www.kaggle.com/c/expedia-hotel-recommendations)) — required account rule-accept to pull
+- **License**: **Restricted, no open license.** Governed by the "Expedia Official Competition Rules" (sponsor: Expedia, Inc.) accepted at download time — verified live on the Kaggle rules tab 2026-09-17. Rules grant no redistribution/open-data license over the dataset itself; they cover competition submissions (code sharing publicly allowed, data must not be shared privately outside Kaggle). Competition ended 2016 — treat data as research/personal-use only, no confirmed commercial-use right.
 - **Location**: `data/raw/hospitality/expedia/`
 - **EDA notebook**: `notebooks/hospitality/expedia_eda.ipynb`
 - **Note**: `train.csv` is 4.07GB / 37.7M rows — biggest dataset pulled, exceeds available RAM (~3GB free at analysis time), analyzed via chunked streaming pass (`chunksize=2_000_000`, dtype-optimized). All stats below come from that full pass over every row, not a sample.

@@ -2,6 +2,7 @@
 
 - **Domain**: ride
 - **Source**: [UCI archive](https://archive.ics.uci.edu/dataset/339/taxi+service+trajectory+prediction+challenge+ecml+pkdd+2015), originally Kaggle ECML/PKDD 2015 challenge
+- **License**: **CC BY 4.0** (Creative Commons Attribution 4.0 International), stated on the UCI dataset page — verified live 2026-09-17. Sharing and adaptation for any purpose (including commercial) permitted with attribution. Cite: Moreira-Matias, Ferreira, Mendes-Moreira et al. (2013), DOI [10.24432/C55W25](https://doi.org/10.24432/C55W25).
 - **Location**: `data/raw/ride/porto_taxi/`
 - **EDA notebook**: `notebooks/ride/porto_taxi_eda.ipynb`
 

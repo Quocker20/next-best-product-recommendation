@@ -64,6 +64,19 @@ Rules that apply across criteria:
 | Food | user location, restaurant location, order time, delivery time/ETA, city + date (to join weather), cuisine |
 | Ride | origin coordinates, start time, day of week, trip duration, call type / stand |
 
+**Per-dataset context field inventory** (raw column → `ctx_*` mapping per CLAUDE.md §7; ✗ = not usable, synthetic counts as ✗):
+
+| Dataset | ctx_timestamp | ctx_location | ctx_price | ctx_session_id | ctx_party_size | ctx_weather |
+|---|---|---|---|---|---|---|
+| Expedia | `date_time` | `user_location_*`, `hotel_*` (region IDs, not coordinates) | ✗ (no price column) | ✗ | `srch_adults_cnt`, `srch_children_cnt`, `srch_rm_cnt` | untested |
+| Trivago 2019 | `timestamp` | `city` (text) | `prices` (pipe-separated, clickout rows only) | `session_id` | ✗ | **feasible** (geocode city → Open-Meteo archive, tested live 2026-09-17) |
+| Airbnb New User | `date_account_created`, `timestamp_first_active` | ✗ (no coordinates on user rows; `countries.csv` has destination-level lat/lng only) | ✗ | ✗ (sessions.csv has no session_id, only `user_id` + `action`) | ✗ | untested |
+| Akeed | `created_at` | ✗ synthetic — both customer AND vendor coordinates fail the real Oman bbox check (0/100 vendors inside it, one vendor lat=205 which isn't even a valid latitude); `city_id`/`country_id` are constant with no name lookup | `grand_total` | ✗ | ✗ | **infeasible** — no real coordinate or resolvable place name anywhere in the dataset (tested 2026-09-17) |
+| Porto Taxi | `TIMESTAMP` | real lat/lon from `POLYLINE` | ✗ | ✗ (no session concept; `CALL_TYPE`/`ORIGIN_STAND` stand in) | ✗ | untested (real coords present, likely feasible — same pattern as Porto's own lat/lon → Open-Meteo call, not yet run) |
+| NYC TLC | `tpep_pickup_datetime` | `PULocationID`/`DOLocationID` (zone IDs, not coordinates) | `fare_amount`, `total_amount` | ✗ | `passenger_count` | untested (zone ID → needs the TLC zone lookup table, not pulled, to get coordinates first) |
+
+**Weather-join feasibility test (2026-09-17)**: ran live against Open-Meteo (no API key required). Tested Trivago (feasible — city text needs a one-time geocode step, then archive API returns hourly temperature/precipitation for any date) and Akeed (infeasible — confirmed both customer and vendor coordinates are synthetic garbage, `city_id` is a constant with no lookup, so there is no real location to key weather on at all). This is a feasibility probe only — no weather data has been joined into any interim/processed table (that build happens in Phase 2, per CLAUDE.md §4). See per-dataset notes in `docs/data_cards/trivago_2019.md` and `docs/data_cards/akeed.md`.
+
 ## Step 3: Score, decide, then check the pair
 
 **Formula:** Score = (C1×3 + C2×2 + C3×2 + C4×2 + C5×2 + C6 + C7 + C8 + C9 + C10) / 48 × 100

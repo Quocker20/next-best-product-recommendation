@@ -2,6 +2,7 @@
 
 - **Domain**: hospitality
 - **Source**: Kaggle competition ([airbnb-recruiting-new-user-bookings](https://www.kaggle.com/c/airbnb-recruiting-new-user-bookings)) — required account rule-accept to pull
+- **License**: **Restricted, no open license.** Governed by Kaggle Competition Rules (sponsor: Airbnb, "Recruiting Competition Submission License Grant") accepted at download time — verified live on the Kaggle rules tab 2026-09-17. No redistribution/open-data license granted over the dataset; private sharing of data outside the competition is explicitly disallowed by the rules. Competition ended 2016 — treat as research/personal-use only, no confirmed commercial-use right.
 - **Location**: `data/raw/hospitality/airbnb_new_user/`
 - **EDA notebook**: `notebooks/hospitality/airbnb_eda.ipynb`
 

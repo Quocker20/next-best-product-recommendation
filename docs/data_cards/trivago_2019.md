@@ -2,6 +2,7 @@
 
 - **Domain**: hospitality
 - **Source**: Kaggle mirror ([phhasian0710/trivago-recsys](https://www.kaggle.com/datasets/phhasian0710/trivago-recsys)), original at recsys.trivago.cloud
+- **License**: **Restricted / unverified.** Official data is gated behind an account + Terms & Conditions acceptance at recsys.trivago.cloud (per [recsyschallenge.com/2019](https://recsyschallenge.com/2019/): "you can access the data once you create an account and agree with the terms and conditions"). The Kaggle mirror lists **License: Unknown** — it is an unofficial re-upload, not endorsed by trivago. Treat as research-only; no confirmed right to redistribute or use commercially. Re-download from the official site and accept trivago's ToC directly before any use beyond this project's internal EDA.
 - **Location**: `data/raw/hospitality/trivago_2019/`
 - **EDA notebook**: `notebooks/hospitality/trivago_eda.ipynb`
 - **Note**: `train.csv` is 2.1GB / 15.9M rows — exceeds available RAM (~3GB free at analysis time), analyzed via chunked streaming pass (`chunksize=1_000_000`), not a full in-memory load. All stats below come from that full pass over every row, not a sample.
@@ -27,6 +28,11 @@
 - Clickouts per user: count 717,774, mean 2.21, std 2.77, min 1, median 1, max 284. Only 2 users exceed 200 clickouts.
 - `reference` on `clickout item` rows: 0 non-numeric values (100% are item ids in that context).
 - 204 / 289,506 clicked items (0.07%) not found in item_metadata.csv.
+
+## Weather join feasibility (tested 2026-09-17)
+- `city` is a real, human-readable `"City, Country"` string (e.g. `"London, United Kingdom"`; 4,425 unique cities in a 200k-row sample) — no raw coordinates, so it needs a geocoding step first.
+- End-to-end chain tested live: Open-Meteo geocoding API (`geocoding-api.open-meteo.com/v1/search?name=London&country=GB`) → lat/lon → Open-Meteo historical archive API (`archive-api.open-meteo.com/v1/archive`) with that lat/lon + a `timestamp`-derived date → returned hourly `temperature_2m`/`precipitation`. Both calls succeeded, no API key needed.
+- **Feasible**, with one extra step: geocode the ~4,400+ distinct city strings once (cache to a lookup table), then join weather by (city, date) to `timestamp`. Not yet built into the pipeline (that's Phase 2+ work).
 
 ## Recommendation framing
 - Recommendation core (clickout only): 717,774 users, 289,506 items, 1,306,901 unique pairs, sparsity 99.9994% — largest/sparsest dataset in this project. 166,857 items (57.6%) and 405,038 users (56.4%) are single-interaction — heaviest cold-start of all datasets analyzed.

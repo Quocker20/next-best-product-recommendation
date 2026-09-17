@@ -2,6 +2,7 @@
 
 - **Domain**: ride
 - **Source**: [nyc.gov/site/tlc/about/tlc-trip-record-data.page](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) (open, no login)
+- **License**: **Open / public.** Published under NYC's Open Data Law (Local Law, NYC Administrative Code Title 23, Chapter 5 — "open by default"), free public download, no account or ToS click-through required — verified live 2026-09-17. TLC disclaims warranty of accuracy but imposes no reuse or redistribution restriction; safe for research and this project's use.
 - **Location**: `data/raw/ride/nyc_tlc/2024-01/yellow_tripdata_2024-01.parquet`
 - **EDA notebook**: `notebooks/ride/nyc_tlc_eda.ipynb`
 
