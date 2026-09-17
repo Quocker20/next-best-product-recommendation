@@ -2,7 +2,7 @@
 
 Purpose: pick one core dataset per domain (hospitality, food, ride) for the benchmark. Scores are only comparable **within a domain**. MovieLens is scored for the record but never competes for a core slot (CLAUDE.md §5).
 
-Inputs: the data cards in `docs/data_cards/` and the EDA notebooks. Every number used below is either taken from a data card or marked *provisional* (to be verified with `quick_profile()` on the cleaned interaction table).
+This file is the **method only** — gates, criteria, weights, formula, decision thresholds. For a specific dataset's scores, the Step 0 interaction-definition table, the scoring sheet, notes, and the final proposed decision, see `docs/dataset_scores.md`. For the arithmetic (weighted sum → score → decision tier) and the `quick_profile()` helper, see `scripts/dataset_scoring.py`.
 
 Score each dataset in three steps:
 
@@ -10,20 +10,7 @@ Score each dataset in three steps:
 2. **Criteria:** 0–3 points each, weighted, summed to a score out of 100.
 3. **Decision + pairwise check:** apply thresholds per domain, then check that the chosen pair of datasets can be linked by the cross-sell simulator (RQ3).
 
-## Step 0: Interaction definition per dataset
-
-`quick_profile()` assumes the standard interaction schema from CLAUDE.md §7 (`user_id`, `item_id`, `timestamp`). Raw files do not have it, so the mapping must be fixed first — otherwise C2/C4/C7 are not reproducible.
-
-| Dataset | Actor (`user_id`) | Item (`item_id`) | Rows that count as an interaction | Sequence unit |
-|---|---|---|---|---|
-| Expedia | `user_id` | `hotel_cluster` | `is_booking == 1` (clicks kept as separate, weaker event_type) | user history ordered by `date_time` |
-| Trivago 2019 | `session_id` (with `user_id` kept) | `reference` on item actions | `action_type` in {`clickout item`, `interaction item *`}; clickout is the target | session |
-| Airbnb New User | `id` | `country_destination` | `country_destination != 'NDF'` | none (one event per user) |
-| Akeed | `customer_id` | `vendor_id` | one row per order (`orders.csv`), after dropping duplicate `akeed_order_id` | customer history by `created_at` |
-| Yelp | `user_id` | `business_id` | reviews (rating-only signal) | user history |
-| Porto Taxi | `TAXI_ID` (**proxy actor** — driver, not passenger) | `ORIGIN_STAND`, or a grid cell of the trip end point | `CALL_TYPE == 'B'` for stands; all trips for grid destination | taxi history by `TIMESTAMP` |
-| NYC TLC | `PULocationID` (**proxy actor** — a zone, not a person) | `DOLocationID` | one row per trip | none |
-| MovieLens | `userId` | `movieId` | one row per rating | user history by `timestamp` |
+Inputs: the data cards in `docs/data_cards/` and the EDA notebooks. Every number used should be either taken from a data card or marked *provisional* (to be verified with `quick_profile()` on the cleaned interaction table) — the Step 0 mapping (per dataset) lives in `docs/dataset_scores.md` since it's a per-dataset decision, not part of the method.
 
 ## Step 1: Gates (pass/fail)
 
@@ -64,22 +51,9 @@ Rules that apply across criteria:
 | Food | user location, restaurant location, order time, delivery time/ETA, city + date (to join weather), cuisine |
 | Ride | origin coordinates, start time, day of week, trip duration, call type / stand |
 
-**Per-dataset context field inventory** (raw column → `ctx_*` mapping per CLAUDE.md §7; ✗ = not usable, synthetic counts as ✗):
-
-| Dataset | ctx_timestamp | ctx_location | ctx_price | ctx_session_id | ctx_party_size | ctx_weather |
-|---|---|---|---|---|---|---|
-| Expedia | `date_time` | `user_location_*`, `hotel_*` (region IDs, not coordinates) | ✗ (no price column) | ✗ | `srch_adults_cnt`, `srch_children_cnt`, `srch_rm_cnt` | untested |
-| Trivago 2019 | `timestamp` | `city` (text) | `prices` (pipe-separated, clickout rows only) | `session_id` | ✗ | **feasible** (geocode city → Open-Meteo archive, tested live 2026-09-17) |
-| Airbnb New User | `date_account_created`, `timestamp_first_active` | ✗ (no coordinates on user rows; `countries.csv` has destination-level lat/lng only) | ✗ | ✗ (sessions.csv has no session_id, only `user_id` + `action`) | ✗ | untested |
-| Akeed | `created_at` | ✗ synthetic — both customer AND vendor coordinates fail the real Oman bbox check (0/100 vendors inside it, one vendor lat=205 which isn't even a valid latitude); `city_id`/`country_id` are constant with no name lookup | `grand_total` | ✗ | ✗ | **infeasible** — no real coordinate or resolvable place name anywhere in the dataset (tested 2026-09-17) |
-| Porto Taxi | `TIMESTAMP` | real lat/lon from `POLYLINE` | ✗ | ✗ (no session concept; `CALL_TYPE`/`ORIGIN_STAND` stand in) | ✗ | untested (real coords present, likely feasible — same pattern as Porto's own lat/lon → Open-Meteo call, not yet run) |
-| NYC TLC | `tpep_pickup_datetime` | `PULocationID`/`DOLocationID` (zone IDs, not coordinates) | `fare_amount`, `total_amount` | ✗ | `passenger_count` | untested (zone ID → needs the TLC zone lookup table, not pulled, to get coordinates first) |
-
-**Weather-join feasibility test (2026-09-17)**: ran live against Open-Meteo (no API key required). Tested Trivago (feasible — city text needs a one-time geocode step, then archive API returns hourly temperature/precipitation for any date) and Akeed (infeasible — confirmed both customer and vendor coordinates are synthetic garbage, `city_id` is a constant with no lookup, so there is no real location to key weather on at all). This is a feasibility probe only — no weather data has been joined into any interim/processed table (that build happens in Phase 2, per CLAUDE.md §4). See per-dataset notes in `docs/data_cards/trivago_2019.md` and `docs/data_cards/akeed.md`.
-
 ## Step 3: Score, decide, then check the pair
 
-**Formula:** Score = (C1×3 + C2×2 + C3×2 + C4×2 + C5×2 + C6 + C7 + C8 + C9 + C10) / 48 × 100
+**Formula:** Score = (C1×3 + C2×2 + C3×2 + C4×2 + C5×2 + C6 + C7 + C8 + C9 + C10) / 48 × 100 — computed by `scripts/dataset_scoring.py::score_dataset()`, not by hand.
 
 | Score | Decision |
 |---|---|
@@ -89,72 +63,8 @@ Rules that apply across criteria:
 
 **Tie-breakers, in order:**
 
-1. The dataset that answers more RQs (see the "RQs it serves" column)
+1. The dataset that answers more RQs (see the "RQs it serves" column in `docs/dataset_scores.md`)
 2. Higher C1 (task fit)
 3. Smaller size (faster to iterate)
 
-**Pairwise linkability check (RQ3).** Cross-sell is a property of a *pair* of datasets, which a per-dataset score cannot capture. After picking the core dataset per domain, check that each pair the simulator must link (hospitality ↔ food, ride ↔ food) shares at least one of: city / region, calendar time overlap or reusable time-of-day patterns, real coordinates. Record the shared fields in the "Link fields" table below. If a pair shares nothing, pick the secondary dataset for one side or state the limitation in the report.
-
-## Numbers to compute per dataset (for C2–C4, C8)
-
-Run on the cleaned interaction table built under Step 0 (Parquet in `data/interim/`), not on the raw file.
-
-```python
-import pandas as pd
-
-def quick_profile(df, user="user_id", item="item_id", ts="timestamp"):
-    per_user = df.groupby(user).size()
-    return {
-        "rows": len(df),
-        "users": df[user].nunique(),
-        "items": df[item].nunique(),
-        "sparsity": 1 - len(df) / (df[user].nunique() * df[item].nunique()),
-        "median_inter_per_user": per_user.median(),
-        "pct_users_ge5": (per_user >= 5).mean(),
-        "time_span_days": (pd.to_datetime(df[ts]).max() - pd.to_datetime(df[ts]).min()).days if ts else None,
-        "repeat_rate": 1 - df[[user, item]].drop_duplicates().shape[0] / len(df),
-        "mem_mb": df.memory_usage(deep=True).sum() / 1e6,
-    }
-```
-
-## Scoring sheet (first pass from data cards, 2026-09-17)
-
-Values marked † are provisional: the data cards give means or single-interaction shares but not medians; confirm with `quick_profile()` once the interim tables exist. Gates: ✓ pass, ✗ fail.
-
-| Dataset | G1–G5 | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9 | C10 | Score | Decision | RQs it serves | Main gap |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Expedia | ✓ | 2 | 3 | 3 | 1† | 3 | 2 | 3 | 2 | 2 | 3 | **79** | Core | RQ1 (seasonality, context), RQ4 | hotel cluster ≠ room/package; 38.8 % of bookers have one booking; 4 GB file needs user sampling |
-| Trivago 2019 | ✓ | 3 | 2 | 1 | 2† | 3 | 3 | 2 | 2 | 2 | 3 | **77** | Core (session-model robustness) | RQ1 (session part), RQ4 | 6-day span — no seasonality; 56 % single-interaction users; clicks not bookings |
-| Airbnb New User | ✓ | 1 | 2 | 1 | 0 | 1 | 2 | 3 | 3 | 1 | 2 | **44** | Drop | — | one booking per user, 12-class target, 58 % NDF, no trip context |
-| Akeed | ✓ | 3 | 3 | 2 | 2† | 2 | 3 | 3 | 3 | 2 | 1 | **81** | Core | RQ2, RQ4, RQ3 (food side) | customer coordinates synthetic; 41 % `deliverydistance <= 0`; duplicate order/customer IDs; 100 vendors only |
-| Yelp | G5 ✗ | – | – | – | – | – | – | – | – | – | – | – | Not scored | — | not downloaded (manual form, see `scripts/download.py`); rating-only signal would cap C7 at 0 |
-| Porto Taxi | ✓ | 1 | 1 (proxy) | 3 | 3† (proxy) | 3 | 1 | 3 | 2 | 2 | 2 | **69** | Secondary | RQ3 (ride side, via coordinates + time), RQ4 | no passenger ID; destination prediction not in mentor's plan (CLAUDE.md §12); `DAY_TYPE` constant; `MISSING_DATA` unreliable |
-| NYC TLC | ✓ | 1 | 0 | 1 | 0 | 3 | 1 | 3 | 3 | 2 | 2 | **46** | Drop (reference only) | zone-level demand context | no actor at all; 1 month; zone lookup table not pulled |
-| MovieLens | ✓ | 3 | 3 | 3 | 3 | 0 | 2 | 0 | 3 | 0 | 3 | **73** | Prototype only | pipeline smoke test | no context, ratings only — never in benchmark conclusions |
-
-Score arithmetic (for checking): Expedia 38/48, Trivago 37/48, Airbnb 21/48, Akeed 39/48, Porto 33/48, NYC 22/48, MovieLens 35/48.
-
-### Notes on individual scores
-
-- **Expedia C4 = 1†**: 3.0 M bookings over 814 k booking users (mean 3.7) with 38.8 % single-booking users suggests a median of 2. C8 = 2 because the full file exceeds RAM but a user-level sample fits and no GPU is needed.
-- **Trivago C2 = 2**: sessions exist, but 56.4 % of users and 57.6 % of items appear once, and the 6-day window makes `user_id` weak across sessions. C4 = 2† counts all item actions per session (15.9 M rows over 911 k sessions, mean 17.5; median unknown). C7 = 2 because the strongest signal is a clickout, not a booking.
-- **Airbnb C3 = 1**: `date_first_booking` is date-only and every user has exactly one booking, so no sequence exists.
-- **Akeed C5 = 2**: order time, delivery timestamps, vendor category/tags count; customer coordinates do not (synthetic). C9 = 2 (vendor `city_id` + timestamps + gender/dob) rather than 3 for the same reason. C10 = 1 for synthetic coordinates, 41 % non-positive delivery distance, duplicate IDs.
-- **Porto C1 = 1**: the natural task (destination from partial trajectory) is not in the mentor's phase plan and needs grid/POI discretisation. Scored on the taxi × stand reframing; C2/C4 are on a proxy actor.
-- **NYC TLC**: kept as a zone-level demand/context reference only.
-
-### Link fields for the RQ3 simulator (pairwise check)
-
-| Pair | Shared fields | Status |
-|---|---|---|
-| Expedia (hospitality) ↔ Akeed (food) | timestamps (both full, non-overlapping years: 2013–14 vs 2019–20 — link by time-of-day / day-of-week patterns, not calendar date); user attributes (Expedia: `user_location_*`, party size; Akeed: gender, dob, language); no shared real coordinates | Linkable on time patterns + attributes; label as simulated (CLAUDE.md §2) |
-| Porto (ride) ↔ Akeed (food) | timestamps (2013–14 vs 2019–20, same caveat); Porto has real coordinates, Akeed only vendor coordinates (customer coordinates synthetic) | Linkable on time patterns; spatial link is one-sided — state as limitation |
-
-## Decision (proposed, pending mentor confirmation)
-
-- Hospitality: **Expedia** core (seasonality, trip context). **Trivago** kept as a second core for session-based models (RQ1 session part) since it also clears 70; if time is short, drop Trivago first. Airbnb dropped.
-- Food: **Akeed** core. Yelp not scored until downloaded; only revisit if Akeed's 100-vendor catalog proves too small for RQ4 coverage analysis.
-- Ride: **Porto** secondary, scoped to the RQ3 ride-side simulator input; no ride-domain model benchmark unless CLAUDE.md §12 decides destination prediction stays in scope. NYC TLC reference only.
-- Prototype: MovieLens.
-
-Update CLAUDE.md §5 ("Chosen core datasets") and §12 once confirmed.
+**Pairwise linkability check (RQ3).** Cross-sell is a property of a *pair* of datasets, which a per-dataset score cannot capture. After picking the core dataset per domain, check that each pair the simulator must link (hospitality ↔ food, ride ↔ food) shares at least one of: city / region, calendar time overlap or reusable time-of-day patterns, real coordinates. Record the shared fields in the "Link fields" table in `docs/dataset_scores.md`. If a pair shares nothing, pick the secondary dataset for one side or state the limitation in the report.

@@ -156,6 +156,36 @@ def download_airbnb() -> None:
     _kaggle_competition_download("airbnb-recruiting-new-user-bookings", dest_dir)
 
 
+def download_hotel_booking_demand() -> None:
+    dest_dir = RAW / "hospitality" / "hotel_booking_demand"
+    if (dest_dir / "hotel_bookings.csv").exists():
+        print("hotel_booking_demand already present, skip")
+        return
+    _kaggle_dataset_download("jessemostipak/hotel-booking-demand", dest_dir)
+
+
+def download_instacart() -> None:
+    dest_dir = RAW / "food" / "instacart"
+    if (dest_dir / "orders.csv").exists():
+        print("instacart already present, skip")
+        return
+    _kaggle_dataset_download("psparks/instacart-market-basket-analysis", dest_dir)
+
+
+def download_citibike(months: list[str] | None = None) -> None:
+    months = months or ["202401"]
+    dest_dir = RAW / "ride" / "citibike"
+    for month in months:
+        zip_path = dest_dir / f"{month}-citibike-tripdata.zip"
+        marker = dest_dir / month
+        if marker.exists():
+            print(f"citibike {month} already present, skip")
+            continue
+        _download_file(f"https://s3.amazonaws.com/tripdata/{month}-citibike-tripdata.zip", zip_path)
+        marker.mkdir(parents=True, exist_ok=True)
+        _extract_zip(zip_path, marker)
+
+
 def download_yelp() -> None:
     dest_dir = RAW / "food" / "yelp"
     print(
@@ -178,6 +208,9 @@ DATASETS = {
     "trivago": download_trivago,
     "expedia": download_expedia,
     "airbnb": download_airbnb,
+    "hotel_booking_demand": download_hotel_booking_demand,
+    "instacart": download_instacart,
+    "citibike": download_citibike,
     "yelp": download_yelp,  # prints instructions only, never auto-downloads
 }
 

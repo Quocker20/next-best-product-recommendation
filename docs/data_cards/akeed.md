@@ -33,7 +33,7 @@
 - `deliverydistance <= 0`: 55,613 rows (41.1% of orders) — not a minor edge case.
 - `grand_total <= 0`: 683 rows.
 - **Location coordinates: 100% (59,503/59,503) fall outside the real Oman bounding box** (lat 16–27, lon 51–60) — confirmed synthetic/jittered GPS, not real, e.g. sampled point lat≈1.68 lon≈-78.79.
-- **Vendor coordinates are also synthetic**: 0/100 vendors fall inside the real Oman bbox (lat range observed: -1.79 to 205.24 — the max is not a valid latitude at all). `vendors.csv` has a single constant `city_id=1.0`/`country_id=1.0` for all 100 rows, with no lookup file to resolve it to a real place name. **Weather join tested infeasible for Akeed**: neither coordinates nor city give a real, resolvable location (tested 2026-09-17 — see `docs/dataset_rubric.md` weather-join note).
+- **Vendor coordinates are also synthetic**: 0/100 vendors fall inside the real Oman bbox (lat range observed: -1.79 to 205.24 — the max is not a valid latitude at all). `vendors.csv` has a single constant `city_id=1.0`/`country_id=1.0` for all 100 rows, with no lookup file to resolve it to a real place name. **Weather join tested infeasible for Akeed**: neither coordinates nor city give a real, resolvable location (tested 2026-09-17 — see `docs/dataset_scores.md` weather-join note).
 - `created_at` range: 2019-05-10 20:59:58 to 2020-02-29 23:52:14.
 - 3,276 `customer_id` values in orders.csv not present in train_customers.csv (test-set customers, train/test boundary).
 - 0 `vendor_id` values in orders.csv missing from vendors.csv.
