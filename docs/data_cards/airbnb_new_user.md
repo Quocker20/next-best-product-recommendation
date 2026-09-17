@@ -37,4 +37,4 @@
 - Among 88,908 users who did book: 11 distinct destinations (all except NDF).
 
 ## Recommendation framing
-- `country_destination` prediction IS a next-best-item (destination) recommendation task — strong direct fit, closest conceptually to Akeed among all datasets pulled.
+- `country_destination` prediction is a next-best-item task in form only — under the rubric this is heavy reframing (predicting one of 12 classes, one event per user, no sequence), not a direct top-K fit like Akeed's order stream. Scored C1=1 accordingly (`docs/dataset_scores.md`).

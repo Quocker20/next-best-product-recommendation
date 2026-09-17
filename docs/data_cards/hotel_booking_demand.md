@@ -22,7 +22,7 @@
 - `reservation_status`: Check-Out 75,166 (63.0%), Canceled 43,017 (36.0%), No-Show 1,207 (1.0%). `is_canceled` rate 37.0%.
 - `adr` (price/night): mean 101.83, std 50.54, 1 negative row (-6.38), 1,959 rows (1.6%) at 0, 1 extreme outlier at 5,400.
 - 180 rows have `adults == children == babies == 0` — invalid zero-occupancy bookings.
-- `country`: 177 unique codes, 48.6% Portugal (PRT) — strong domestic skew (hotel is in Portugal).
+- `country`: 177 unique codes, 40.9% Portugal (PRT) — strong domestic skew (hotel is in Portugal).
 - `arrival_date_year`: 2015–2017. `reservation_status_date` range: 2014-10-17 to 2017-09-14 (~3 years), clear Jul/Aug seasonality.
 - `reserved_room_type`: 10 categories (A dominant at 72.0%); 12.5% of bookings have `assigned_room_type != reserved_room_type`.
 - `agent`: 333 unique values (13.7% missing). `company`: 352 unique values (94.3% missing).
