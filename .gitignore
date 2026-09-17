@@ -48,3 +48,6 @@ venv.bak/
 # OS specific
 Thumbs.db
 .DS_Store
+
+# Data directory
+data/
