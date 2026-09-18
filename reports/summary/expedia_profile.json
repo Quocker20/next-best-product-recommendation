@@ -1,0 +1,65 @@
+{
+  "source": "data/raw/hospitality/expedia/train.csv",
+  "total_rows": 37670293,
+  "bookings": 3000693,
+  "click_rows": 34669600,
+  "booking_users": 813985,
+  "users_single_booking": 315679,
+  "users_single_booking_share": 0.387819,
+  "users_ge2_bookings": 498306,
+  "bookings_per_user": {
+    "median": 2.0,
+    "mean": 3.686,
+    "p75": 4.0,
+    "p90": 8.0,
+    "share_ge3": 0.405714,
+    "share_ge5": 0.214298
+  },
+  "repeat_cluster_share": 0.213277,
+  "party_mix": {
+    "couple": 0.439844,
+    "solo": 0.289146,
+    "family": 0.18815,
+    "group": 0.081169,
+    "unknown": 0.001692
+  },
+  "is_package_share": 0.136698,
+  "hotel_clusters": 100,
+  "cluster_share_top1": 0.040315,
+  "cluster_share_top10": 0.228697,
+  "search_destinations": 36933,
+  "quality_on_bookings": {
+    "duplicate_keys_user_datetime_dest_cluster": 8,
+    "checkout_before_checkin": 3,
+    "zero_adults": 5239,
+    "srch_ci_missing": 0,
+    "srch_co_missing": 0,
+    "orig_destination_distance_missing_share": 0.338315
+  },
+  "booking_date_range": [
+    "2013-01-07 00:00:50",
+    "2014-12-31 23:59:30"
+  ],
+  "bookings_per_month_min": 68894,
+  "bookings_per_month_max": 202426,
+  "checkin_month_share": {
+    "1": 0.061758,
+    "2": 0.053634,
+    "3": 0.067792,
+    "4": 0.070462,
+    "5": 0.079889,
+    "6": 0.083593,
+    "7": 0.095103,
+    "8": 0.107464,
+    "9": 0.091979,
+    "10": 0.097971,
+    "11": 0.089093,
+    "12": 0.101262
+  },
+  "temporal_split_80_20": {
+    "cut": "2014-09-29 12:14:32.600000",
+    "train_bookings": 2400554,
+    "test_bookings": 600139,
+    "test_users_seen_in_train_share": 0.6986
+  }
+}

@@ -35,7 +35,12 @@ CRITERIA_WEIGHTS = {
 MAX_POINTS = sum(3 * w for w in CRITERIA_WEIGHTS.values())  # 48
 
 
-def quick_profile(df: pd.DataFrame, user: str = "user_id", item: str = "item_id", ts: Optional[str] = "timestamp") -> dict:
+def quick_profile(
+    df: pd.DataFrame,
+    user: str = "user_id",
+    item: str = "item_id",
+    ts: Optional[str] = "timestamp",
+) -> dict:
     """Summary stats for a cleaned interaction table (Step 0 mapping already applied).
 
     Inputs: df with at least `user`/`item` columns (and `ts` unless None).
@@ -50,18 +55,27 @@ def quick_profile(df: pd.DataFrame, user: str = "user_id", item: str = "item_id"
         "sparsity": 1 - len(df) / (df[user].nunique() * df[item].nunique()),
         "median_inter_per_user": per_user.median(),
         "pct_users_ge5": (per_user >= 5).mean(),
-        "time_span_days": (pd.to_datetime(df[ts]).max() - pd.to_datetime(df[ts]).min()).days if ts else None,
+        "time_span_days": (
+            pd.to_datetime(df[ts]).max() - pd.to_datetime(df[ts]).min()
+        ).days
+        if ts
+        else None,
         "repeat_rate": 1 - df[[user, item]].drop_duplicates().shape[0] / len(df),
         "mem_mb": df.memory_usage(deep=True).sum() / 1e6,
     }
 
 
-def score_dataset(criteria: dict[str, int]) -> dict:
+def score_dataset(criteria: dict[str, int], exclude: tuple[str, ...] = ()) -> dict:
     """Apply Step 2 weights and the Step 3 formula/decision thresholds.
 
     Input: criteria, a dict mapping "C1".."C10" to a 0-3 score (all 10 required).
+           exclude, criteria to drop from both numerator and denominator (e.g.
+           ("C9",) once cross-sell is out of scope) -- the max is rescaled so
+           the 0-100 scale and the tier thresholds still apply.
     Output: dict with weighted_points, max_points, score (0-100), decision.
     """
+    weights = {k: w for k, w in CRITERIA_WEIGHTS.items() if k not in exclude}
+    max_points = sum(3 * w for w in weights.values())
     missing = set(CRITERIA_WEIGHTS) - set(criteria)
     if missing:
         raise ValueError(f"missing criteria scores: {sorted(missing)}")
@@ -71,8 +85,8 @@ def score_dataset(criteria: dict[str, int]) -> dict:
         if not 0 <= value <= 3:
             raise ValueError(f"{name}={value} out of range 0-3")
 
-    weighted_points = sum(criteria[name] * weight for name, weight in CRITERIA_WEIGHTS.items())
-    score = round(weighted_points / MAX_POINTS * 100)
+    weighted_points = sum(criteria[name] * weight for name, weight in weights.items())
+    score = round(weighted_points / max_points * 100)
 
     if score >= 70:
         decision = "Core"
@@ -83,15 +97,25 @@ def score_dataset(criteria: dict[str, int]) -> dict:
 
     return {
         "weighted_points": weighted_points,
-        "max_points": MAX_POINTS,
+        "max_points": max_points,
         "score": score,
         "decision": decision,
     }
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--scores", nargs="+", required=True, help="criterion=value pairs, e.g. C1=3 C2=2 ...")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--scores",
+        nargs="+",
+        required=True,
+        help="criterion=value pairs, e.g. C1=3 C2=2 ...",
+    )
+    parser.add_argument(
+        "--exclude", nargs="*", default=(), help="criteria to drop, e.g. C9"
+    )
     args = parser.parse_args()
 
     criteria = {}
@@ -99,8 +123,10 @@ def main() -> None:
         name, value = pair.split("=")
         criteria[name] = int(value)
 
-    result = score_dataset(criteria)
-    print(f"{result['weighted_points']}/{result['max_points']} -> score={result['score']} decision={result['decision']}")
+    result = score_dataset(criteria, exclude=tuple(args.exclude))
+    print(
+        f"{result['weighted_points']}/{result['max_points']} -> score={result['score']} decision={result['decision']}"
+    )
 
 
 if __name__ == "__main__":
