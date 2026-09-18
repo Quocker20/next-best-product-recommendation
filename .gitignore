@@ -54,3 +54,6 @@ data/
 
 # Agent context (local only)
 CLAUDE.md
+
+# Local Vietnamese documentation
+docs_vi/
