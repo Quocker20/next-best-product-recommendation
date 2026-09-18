@@ -698,7 +698,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: reports/summary/eda_summary.md §2 • docs/dataset_scores.md</span>
-          <span>Trang 01 / 09</span>
+          <span>Trang 01 / 08</span>
         </div>
       </section>
 
@@ -773,7 +773,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: data cards expedia.md, akeed.md, porto_taxi.md • reports/summary/eda_summary.md</span>
-          <span>Trang 02 / 09</span>
+          <span>Trang 02 / 08</span>
         </div>
       </section>
 
@@ -842,7 +842,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
-          <span>Trang 03 / 09</span>
+          <span>Trang 03 / 08</span>
         </div>
       </section>
 
@@ -917,7 +917,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: CLAUDE.md §8 • docs/eval_protocol.md</span>
-          <span>Trang 04 / 09</span>
+          <span>Trang 04 / 08</span>
         </div>
       </section>
 
@@ -969,7 +969,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/travel_rubric_without_c9.txt</span>
-          <span>Trang 05 / 09</span>
+          <span>Trang 05 / 08</span>
         </div>
       </section>
 
@@ -1033,7 +1033,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
-          <span>Trang 06 / 09</span>
+          <span>Trang 06 / 08</span>
         </div>
       </section>
 
@@ -1115,7 +1115,7 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
-          <span>Trang 07 / 09</span>
+          <span>Trang 07 / 08</span>
         </div>
       </section>
 
@@ -1165,65 +1165,14 @@
 
         <div class="slide-footer">
           <span class="source-tag">Nguồn: docs/data_cards/trivago_2019.md, airbnb_new_user.md • docs/dataset_scores.md</span>
-          <span>Trang 08 / 09</span>
+          <span>Trang 08 / 08</span>
         </div>
       </section>
 
       <!-- ===================================================================
-           SLIDE 9: PHASE 2 ROADMAP & DECISIONS
+           SLIDE 9: APPENDIX A - RUBRIC (REFERENCE ONLY)
            =================================================================== -->
       <section class="slide" data-slide="9">
-        <div class="slide-header">
-          <div>
-            <div class="slide-meta">Slide 09 • Kế Hoạch & Quyết Định</div>
-            <h2 class="slide-title">Kế Hoạch Phase 2 & 5 Quyết Định Cần Thống Nhất</h2>
-            <p class="slide-subtitle">Lộ trình triển khai 2 tuần tới và các quyết định cần Mentor / Hội đồng phê duyệt.</p>
-          </div>
-          <span class="badge-pill">Action Plan</span>
-        </div>
-
-        <div class="slide-body">
-          <div class="grid-2">
-            <!-- Roadmap -->
-            <div class="card-clean accent-blue">
-              <div class="card-head">Lộ Trình 2 Tuần Tới (Phase 2 Trên Expedia)</div>
-              <ul class="bullet-list">
-                <li><strong>1. Cố định Protocol:</strong> Chốt split thời gian, candidate set, metrics, random seeds trước khi train.</li>
-                <li><strong>2. Scripted Pipeline:</strong> Dữ liệu thô → Bảng Parquet làm sạch (tiền tố chuẩn <code class="code-tag">ctx_*</code>) → Train/Val/Test.</li>
-                <li><strong>3. Huấn luyện Baselines:</strong> Chạy Popularity, Repeat-Last, ItemKNN; tiếp theo chạy MF và item2vec.</li>
-                <li><strong>4. Xuất bảng kết quả:</strong> Ghi kết quả đầu tiên vào <code class="code-tag">benchmark_results.csv</code>, phân lát theo user / mùa vụ / đoàn khách.</li>
-              </ul>
-            </div>
-
-            <!-- Decisions Needed -->
-            <div class="card-clean accent-amber">
-              <div class="card-head">5 Quyết Định Cần Mentor Phê Duyệt</div>
-              <ul class="bullet-list">
-                <li>❓ <strong>1. Phê duyệt định hướng:</strong> Chốt Expedia làm dữ liệu chính, Trivago làm dự phòng?</li>
-                <li>❓ <strong>2. Kiểm tra trùng lặp:</strong> Có nhóm nào khác cùng chọn Expedia để kích hoạt Trivago?</li>
-                <li>❓ <strong>3. Phạm vi Taxi:</strong> Xác nhận loại bỏ bài toán dự đoán điểm đến taxi?</li>
-                <li>❓ <strong>4. Framework & Ngân sách LLM:</strong> Chọn RecBole/implicit; ngân sách API vs Local LLM?</li>
-                <li>❓ <strong>5. Giấy phép:</strong> Xác nhận điều khoản Research-Only là phù hợp báo cáo đồ án?</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Target Strip -->
-          <div class="callout-strip">
-            🎯 <span><strong>Mục tiêu tuần tới:</strong> Hoàn tất baseline, xuất bảng kết quả đầu tiên của các mô hình cổ điển, sẵn sàng thử nghiệm GRU4Rec / SASRec và LLM Reranking.</span>
-          </div>
-        </div>
-
-        <div class="slide-footer">
-          <span class="source-tag">Nguồn: CLAUDE.md §4, §8, §12 • reports/summary/eda_summary.md</span>
-          <span>Trang 09 / 09</span>
-        </div>
-      </section>
-
-      <!-- ===================================================================
-           SLIDE 10: APPENDIX A - RUBRIC (REFERENCE ONLY)
-           =================================================================== -->
-      <section class="slide" data-slide="10">
         <div class="slide-header">
           <div>
             <div class="slide-meta">Phụ Lục A • Thang Đo Rubric (Tham Chiếu)</div>
@@ -1348,8 +1297,8 @@
     (function () {
       const slides = Array.from(document.querySelectorAll('.slide'));
       const totalSlides = slides.length;
-      const MAIN_SLIDES_COUNT = 9;
-      const RUBRIC_SLIDE_INDEX = 9; // 0-indexed 9th (Slide 10)
+      const MAIN_SLIDES_COUNT = 8;
+      const RUBRIC_SLIDE_INDEX = 8; // 0-indexed 8th (Slide 9 in DOM: Phụ Lục A)
       let currentIndex = 0;
       let isFade = false;
 
@@ -1372,7 +1321,7 @@
       const btnLinkToRubric = document.getElementById('btnLinkToRubric');
       const btnBackToSlide1 = document.getElementById('btnBackToSlide1');
 
-      // Initialize Dots (9 main slides only)
+      // Initialize Dots (8 main slides only)
       for (let idx = 0; idx < MAIN_SLIDES_COUNT; idx++) {
         const dot = document.createElement('div');
         dot.className = `nav-dot ${idx === 0 ? 'active' : ''}`;
