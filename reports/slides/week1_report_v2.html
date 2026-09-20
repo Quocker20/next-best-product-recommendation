@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Tuần 1: Hiểu Bài Toán & Lựa Chọn Bộ Dữ Liệu | Next-Best-Product Recommendation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       1. MODERN ACADEMIC DESIGN SYSTEM (Clean, Light, Scannable)
+       ========================================================================== */
+    :root {
+      --bg-body: #f8fafc;
+      --bg-slide: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-hover: #f1f5f9;
+      
+      --border: #e2e8f0;
+      --border-focus: #94a3b8;
+      --border-accent: #bfdbfe;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-sub: #64748b;
+      
+      --primary: #1e3a8a;       /* Academic Navy */
+      --primary-accent: #2563eb;/* Modern Blue */
+      --primary-light: #eff6ff;
+      
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --success-border: #a7f3d0;
+      
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --warning-border: #fde68a;
+      
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --danger-border: #fecaca;
+
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --purple-border: #ddd6fe;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 10px rgba(0,0,0,0.06);
+      --shadow-slide: 0 16px 36px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --transition-slide: transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.38s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-body);
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Progress Bar */
+    .top-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #e2e8f0;
+      z-index: 100;
+    }
+    .top-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-accent));
+      transition: width 0.35s ease;
+    }
+
+    /* Slide Viewport */
+    .viewport {
+      position: absolute;
+      top: 10px;
+      bottom: 56px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+    }
+
+    .slide-deck {
+      position: relative;
+      width: 100%;
+      max-width: 1320px;
+      height: 100%;
+      max-height: 840px;
+      background: var(--bg-slide);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-slide);
+      overflow: hidden;
+    }
+
+    /* Slide Item */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 32px 42px 24px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(100%);
+      transition: var(--transition-slide);
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    .slide.past {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-100%);
+      z-index: 1;
+    }
+
+    /* Fade Transition Alternative */
+    .deck-fade .slide {
+      transform: scale(0.98);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+    .deck-fade .slide.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .deck-fade .slide.past {
+      transform: scale(1.02);
+      opacity: 0;
+    }
+
+    /* ==========================================================================
+       2. SLIDE HEADER & FOOTER
+       ========================================================================== */
+    .slide-header {
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    .slide-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary-accent);
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .slide-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .badge-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .slide-footer {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-sub);
+      flex-shrink: 0;
+    }
+
+    .source-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       3. CONCISE MODERN UI COMPONENTS
+       ========================================================================== */
+    /* Grid Utilities */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+
+    /* Visual Stat Pill */
+    .stat-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-pill.highlight {
+      background: var(--primary-light);
+      border-color: var(--border-accent);
+    }
+    .stat-pill-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .stat-pill-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+    .stat-pill-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* Cards */
+    .card-clean {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-clean.accent-blue {
+      border-top: 3px solid var(--primary-accent);
+      background: #ffffff;
+    }
+    .card-clean.accent-green {
+      border-top: 3px solid var(--success);
+      background: #fafdfc;
+    }
+    .card-clean.accent-amber {
+      border-top: 3px solid var(--warning);
+      background: #fffdf9;
+    }
+    .card-clean.accent-red {
+      border-top: 3px solid var(--danger);
+      background: #fffafa;
+    }
+
+    .card-head {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Punchy Bullet Lists */
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .bullet-list li {
+      position: relative;
+      padding-left: 16px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+    .bullet-list li::before {
+      content: "•";
+      position: absolute;
+      left: 3px;
+      color: var(--primary-accent);
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .bullet-list strong {
+      color: var(--text-main);
+    }
+
+    /* Status Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tag-core { background: var(--success-light); color: var(--success); border: 1px solid var(--success-border); }
+    .tag-sec { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning-border); }
+    .tag-drop { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger-border); }
+    .tag-proto { background: var(--purple-light); color: var(--purple); border: 1px solid var(--purple-border); }
+
+    /* Compact Scannable Table */
+    .table-compact {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .table-compact th {
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .table-compact td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+    .table-compact tr.row-target {
+      background: var(--primary-light);
+      font-weight: 600;
+    }
+    .table-compact tr.row-target td {
+      color: var(--text-main);
+    }
+
+    /* Callout Strip */
+    .callout-strip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary-accent);
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .callout-strip strong {
+      color: var(--text-main);
+    }
+    .callout-strip.amber {
+      border-left-color: var(--warning);
+      background: var(--warning-light);
+      color: #78350f;
+    }
+
+    .code-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ==========================================================================
+       4. BOTTOM NAVIGATION BAR
+       ========================================================================== */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 54px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-counter {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      border: 1px solid var(--border-accent);
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-dot.active {
+      width: 18px;
+      border-radius: 4px;
+      background: var(--primary-accent);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-action:hover:not(:disabled) {
+      background: #ffffff;
+      border-color: var(--primary-accent);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-action:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 960px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 22px 24px;
+      box-shadow: var(--shadow-slide);
+    }
+    .overview-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .tile-card {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .tile-card:hover {
+      border-color: var(--primary-accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .tile-card.current {
+      border-color: var(--primary-accent);
+      background: var(--primary-light);
+    }
+
+    /* Print Optimization */
+    @media print {
+      body { background: #ffffff; overflow: visible !important; }
+      .top-progress, .nav-bar, .modal-overlay { display: none !important; }
+      .viewport { position: static !important; padding: 0 !important; display: block !important; }
+      .slide-deck { border: none !important; box-shadow: none !important; max-width: 100% !important; max-height: none !important; }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        min-height: 98vh !important;
+        padding: 30px !important;
+        border-bottom: 1px dashed #cbd5e1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Progress Line -->
+  <div class="top-progress">
+    <div class="top-progress-fill" id="progressBar"></div>
+  </div>
+
+  <!-- Viewport -->
+  <main class="viewport">
+    <div class="slide-deck" id="slideDeck">
+
+      <!-- ===================================================================
+           SLIDE 1: WHERE WE STARTED (TỔNG QUAN 11 DATASETS)
+           =================================================================== -->
+      <section class="slide active" data-slide="1">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 01 • Khảo Sát & Sàng Lọc</div>
+            <h2 class="slide-title">Điểm Khởi Đầu: 3 Lĩnh Vực & 11 Bộ Dữ Liệu</h2>
+            <p class="slide-subtitle">Đo kiểm các họ mô hình gợi ý (MF, item2vec, GRU4Rec/SASRec, LLM) trên Du lịch, Giao đồ ăn và Gọi xe.</p>
+          </div>
+          <span class="badge-pill">Tuần 1 • Screening</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- Stat Row -->
+          <div class="grid-3">
+            <div class="stat-pill highlight">
+              <span class="stat-pill-num">11 Datasets</span>
+              <span class="stat-pill-title">Sàng Lọc Toàn Diện</span>
+              <span class="stat-pill-sub">8 bộ đề xuất + 3 bộ tìm kiếm mở rộng</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">100% Scripted</span>
+              <span class="stat-pill-title">Đo Kiểm Bằng Code</span>
+              <span class="stat-pill-sub">Xử lý chunked cho file lớn hơn RAM</span>
+            </div>
+            <div class="stat-pill" id="pillJumpRubric" style="cursor: pointer; border-color: var(--border-accent); background: #fdfefe;" title="Nhấp để xem chi tiết Phụ lục A: Thang điểm Rubric">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="stat-pill-num">0 – 100</span>
+                <span style="font-size: 11px; font-weight: 700; color: var(--primary-accent);">Xem Rubric ↗</span>
+              </div>
+              <span class="stat-pill-title">Rubric Độc Lập</span>
+              <span class="stat-pill-sub">5 cổng Pass/Fail + 10 tiêu chí trọng số</span>
+            </div>
+          </div>
+
+          <!-- Concise Table -->
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table class="table-compact">
+              <thead>
+                <tr>
+                  <th style="width: 14%;">Lĩnh vực</th>
+                  <th style="width: 34%;">Bộ dữ liệu (Dataset)</th>
+                  <th style="width: 12%;">Điểm</th>
+                  <th style="width: 16%;">Phân tầng</th>
+                  <th style="width: 24%;">Giấy phép sử dụng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="row-target">
+                  <td><strong>Du lịch</strong></td>
+                  <td><strong>Expedia Hotel Recommendations</strong></td>
+                  <td><strong style="color: var(--primary);">79</strong></td>
+                  <td><span class="tag tag-core">Cốt lõi (Ưu tiên)</span></td>
+                  <td>Giới hạn (Kaggle Rules)</td>
+                </tr>
+                <tr>
+                  <td>Du lịch</td>
+                  <td>Trivago RecSys Challenge 2019</td>
+                  <td>77</td>
+                  <td><span class="tag tag-core">Cốt lõi (Dự phòng)</span></td>
+                  <td>Giới hạn (Kaggle mirror)</td>
+                </tr>
+                <tr>
+                  <td>Du lịch</td>
+                  <td>Airbnb New User (46) • Hotel Booking (46)</td>
+                  <td>46</td>
+                  <td><span class="tag tag-drop">Loại bỏ</span></td>
+                  <td>Không đủ dữ liệu chuỗi / Trùng lặp</td>
+                </tr>
+                <tr>
+                  <td>Đồ ăn</td>
+                  <td>Akeed (73) • Instacart (69) • Yelp (62)</td>
+                  <td>62 – 73</td>
+                  <td><span class="tag tag-sec">Thứ cấp</span></td>
+                  <td>Tọa độ giả lập / Không khớp mục tiêu</td>
+                </tr>
+                <tr>
+                  <td>Gọi xe</td>
+                  <td>Porto Taxi (69) • Citi Bike (52) • NYC TLC (50)</td>
+                  <td>50 – 69</td>
+                  <td><span class="tag tag-sec">Thứ cấp</span></td>
+                  <td>Không có ID hành khách để gợi ý</td>
+                </tr>
+                <tr>
+                  <td>Benchmark</td>
+                  <td>MovieLens 100k / 1M</td>
+                  <td>73</td>
+                  <td><span class="tag tag-proto">Thử nghiệm</span></td>
+                  <td>Chỉ dùng kiểm thử đường ống</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bottom takeaway with link to Rubric -->
+          <div class="callout-strip">
+            <div style="flex: 1;">
+              💡 <span><strong>Nguyên tắc cốt lõi:</strong> Rubric xếp hạng chất lượng dữ liệu trong từng lĩnh vực, <em>không tự quyết định</em> lựa chọn lĩnh vực nghiên cứu.</span>
+            </div>
+            <button class="btn-action" id="btnLinkToRubric" style="font-size: 11px; padding: 4px 10px; color: var(--primary); background: #ffffff; border-color: var(--border-accent); white-space: nowrap;">
+              Xem Phụ Lục A (Rubric) ↗
+            </button>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: reports/summary/eda_summary.md §2 • docs/dataset_scores.md</span>
+          <span>Trang 01 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 2: DECISION - FOCUS ON TRAVEL
+           =================================================================== -->
+      <section class="slide" data-slide="2">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 02 • Quyết Định Chiến Lược</div>
+            <h2 class="slide-title">Một Lĩnh Vực, Một Bộ Dữ Liệu: Du Lịch — Expedia</h2>
+            <p class="slide-subtitle">Lựa chọn dựa trên tính khả thi thực tế khi trả lời câu hỏi nghiên cứu bằng dữ liệu thật.</p>
+          </div>
+          <span class="badge-pill">Scope Decision</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- 3-Column Domain Verdict -->
+          <div class="grid-3">
+            <!-- Travel Selected -->
+            <div class="card-clean accent-green">
+              <div class="card-head">
+                <span>1. Du lịch — Expedia</span>
+                <span class="tag tag-core">ĐƯỢC CHỌN</span>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>Actor thực:</strong> 813,985 user có booking thật.</li>
+                <li><strong>Ngữ cảnh 100% thật:</strong> Đoàn khách (solo/cặp đôi/gia đình), ngày đi, gói combo, 2 năm có mùa vụ.</li>
+                <li><strong>Dữ liệu cực sạch:</strong> 0% thiếu ngày đi/về; chỉ 8 khóa trùng / 3M booking.</li>
+                <li><strong>Khớp lộ trình mentor:</strong> Đáp ứng hoàn hảo Phase 3 (Sequential) & Phase 4 (Context).</li>
+              </ul>
+            </div>
+
+            <!-- Food Deferred -->
+            <div class="card-clean accent-amber">
+              <div class="card-head">
+                <span>2. Đồ ăn — Akeed</span>
+                <span class="tag tag-sec">TẠM HOÃN</span>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>Actor:</strong> 27,445 khách hàng thật.</li>
+                <li><strong>Tọa độ giả lập 100%:</strong> Tọa độ nằm ngoài Oman; không thể ghép dữ liệu thời tiết.</li>
+                <li><strong>Chất lượng lỗi:</strong> 41.1% đơn hàng có khoảng cách giao ≤ 0; 81 đơn trùng ID.</li>
+                <li><strong>Thiếu 2/4 yếu tố của RQ2:</strong> Rủi ro học thuật quá lớn.</li>
+              </ul>
+            </div>
+
+            <!-- Taxi Dropped -->
+            <div class="card-clean accent-red">
+              <div class="card-head">
+                <span>3. Gọi xe — Porto / NYC</span>
+                <span class="tag tag-drop">KHÔNG KHẢ THI</span>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>Không có ID hành khách:</strong> Chỉ có ID tài xế (Porto), vùng đón (TLC), trạm xe (Citi Bike).</li>
+                <li><strong>Không thể cá nhân hóa:</strong> Không có lịch sử người đi để gợi ý.</li>
+                <li><strong>Lạc đề:</strong> Bài toán dự đoán điểm đến xe taxi nằm ngoài kế hoạch các phase của mentor.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Impact Card -->
+          <div class="grid-2">
+            <div class="callout-strip">
+              🎯 <span><strong>Trọng tâm triển khai ngay:</strong> Tập trung giải quyết trọn vẹn <strong>RQ1</strong> (So sánh mô hình theo ngữ cảnh) và <strong>RQ4</strong> (Đánh đổi Accuracy vs Diversity).</span>
+            </div>
+            <div class="callout-strip amber">
+              ⏸️ <span><strong>Tạm hoãn:</strong> Tạm dừng <strong>RQ2</strong> (Giao đồ ăn) và <strong>RQ3</strong> (Bán chéo giả lập) để dồn toàn lực vào lĩnh vực Du lịch (Vinpearl proxy).</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: data cards expedia.md, akeed.md, porto_taxi.md • reports/summary/eda_summary.md</span>
+          <span>Trang 02 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 3: PROBLEM DEFINITION
+           =================================================================== -->
+      <section class="slide" data-slide="3">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 03 • Định Nghĩa Bài Toán</div>
+            <h2 class="slide-title">Next-Best-Product Cho Du Lịch: Định Nghĩa & Thách Thức</h2>
+            <p class="slide-subtitle">Dự đoán điểm đến / hạng phòng / gói nghỉ dưỡng khách hàng có xác suất đặt cao nhất.</p>
+          </div>
+          <span class="badge-pill">Problem Formulation</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Problem Inputs & Output -->
+            <div class="card-clean accent-blue">
+              <div class="card-head">Không Gian Bài Toán (Expedia Proxy)</div>
+              <ul class="bullet-list">
+                <li><strong>Đầu vào du khách:</strong> <code class="code-tag">user_id</code>, lịch sử đặt, nguồn gốc khách, khoảng cách ước tính.</li>
+                <li><strong>Ngữ cảnh chuyến đi:</strong>
+                  <br>• Đoàn: Người lớn, trẻ em, số phòng
+                  <br>• Lịch trình: Ngày nhận / trả phòng (tính mùa vụ)
+                  <br>• Kênh: Tìm kiếm điểm đến (<code class="code-tag">srch_destination_id</code>), cờ gói combo (<code class="code-tag">is_package</code>).
+                </li>
+                <li><strong>Mục tiêu dự đoán (Target):</strong> 100 cụm khách sạn (<code class="code-tag">hotel_cluster</code>) — đại diện cho hạng phòng / combo nghỉ dưỡng Vinpearl.</li>
+              </ul>
+            </div>
+
+            <!-- Why Harder than E-commerce -->
+            <div class="card-clean">
+              <div class="card-head">4 Thách Thức Đặc Thù Của Du Lịch</div>
+              <div class="grid-2" style="gap: 10px; margin-top: 4px;">
+                <div class="stat-pill">
+                  <span class="stat-pill-num" style="font-size: 20px;">Median = 2</span>
+                  <span class="stat-pill-title">Tần Suất Rất Thấp</span>
+                  <span class="stat-pill-sub">38.8% user chỉ đặt 1 lần duy nhất</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-pill-num" style="font-size: 20px;">5.4% → 10.7%</span>
+                  <span class="stat-pill-title">Mùa Vụ Biến Động</span>
+                  <span class="stat-pill-sub">Đáy Tháng 2, đỉnh Tháng 8</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-pill-num" style="font-size: 20px;">44% vs 19%</span>
+                  <span class="stat-pill-title">Ngữ Cảnh Đoàn Khách</span>
+                  <span class="stat-pill-sub">Cặp đôi (44%) vs Gia đình (19%)</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-pill-num" style="font-size: 20px;">97.10%</span>
+                  <span class="stat-pill-title">Độ Thưa Cực Cao</span>
+                  <span class="stat-pill-sub">814K user × 100 cụm phòng</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Gap note -->
+          <div class="callout-strip amber">
+            ⚠️ <span><strong>Giới hạn phạm vi (Known Gap):</strong> Dịch vụ tại điểm lưu trú (in-stay: spa, ẩm thực, vui chơi) không có dataset công khai tương ứng. Do đó, benchmark tập trung 100% vào <strong>quyết định đặt phòng trước chuyến đi (pre-stay)</strong>.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
+          <span>Trang 03 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 4: BENCHMARK MODEL FAMILIES
+           =================================================================== -->
+      <section class="slide" data-slide="4">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 04 • Thiết Kế Thực Nghiệm</div>
+            <h2 class="slide-title">5 Họ Mô Hình Benchmark & Giao Thức Đánh Giá</h2>
+            <p class="slide-subtitle">So sánh công bằng, chặt chẽ giữa các kiến trúc truyền thống, học biểu diễn chuỗi và LLM.</p>
+          </div>
+          <span class="badge-pill">Benchmark Protocol</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- 5 Model Cards -->
+          <div class="grid-5">
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">1. Baselines</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Popularity (toàn cục, theo điểm đến, theo mùa), Repeat-Last, ItemKNN.</div>
+              <span class="tag tag-sec" style="font-size: 10px;">Chuẩn so sánh</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">2. Matrix Fact.</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Học vector tiềm ẩn User-Item. <strong>61.2%</strong> user có ≥ 2 booking để huấn luyện.</div>
+              <span class="tag tag-core" style="font-size: 10px;">CF cổ điển</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">3. item2vec</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Nhúng item từ sự đồng xuất hiện trong chuỗi thời gian thực của user.</div>
+              <span class="tag tag-core" style="font-size: 10px;">Skip-gram</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">4. GRU4Rec/SAS</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Học chuỗi tuần tự; tích hợp side features (đoàn khách, ngày đi).</div>
+              <span class="tag tag-core" style="font-size: 10px;">Sequential</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">5. LLM Rerank</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Tái xếp hạng top-N dựa trên prompt ngữ cảnh và 149 latent features.</div>
+              <span class="tag tag-proto" style="font-size: 10px;">GenAI</span>
+            </div>
+          </div>
+
+          <!-- Protocol 3 Columns -->
+          <div class="card-clean accent-blue">
+            <div class="card-head">Giao Thức Đánh Giá Cố Định (Fixed Evaluation Protocol)</div>
+            <div class="grid-3" style="margin-top: 4px;">
+              <div>
+                <strong style="font-size: 12px; color: var(--text-main);">1. Cắt Thời Gian 80/20:</strong>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  Mốc cắt <strong>2014-09-29</strong>: 2.4M train / 600K test. 30.1% user tập test chưa từng có ở train → Lát cắt <strong>Cold-Start</strong> độc lập.
+                </p>
+              </div>
+              <div>
+                <strong style="font-size: 12px; color: var(--text-main);">2. Full Ranking (100 Cụm):</strong>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  Xếp hạng trên toàn bộ 100 cụm, <strong>không lấy mẫu âm tính giả định</strong>. Đo lường Recall@K, NDCG@K, MRR tại K = 5, 10, 20.
+                </p>
+              </div>
+              <div>
+                <strong style="font-size: 12px; color: var(--text-main);">3. Đa Dạng & Độ Tin Cậy:</strong>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  Đo Catalog Coverage, Intra-list Diversity, Popularity Bias. Báo cáo kết quả trung bình Mean ± Std trên <strong>≥ 3 random seeds</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: CLAUDE.md §8 • docs/eval_protocol.md</span>
+          <span>Trang 04 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 5: WHY EXPEDIA & HONEST LIMITS
+           =================================================================== -->
+      <section class="slide" data-slide="5">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 05 • Minh Bạch Phương Pháp</div>
+            <h2 class="slide-title">Vì Sao Chọn Expedia & Những Giới Hạn Cần Nêu Rõ</h2>
+            <p class="slide-subtitle">Minh bạch học thuật: 5 ưu thế cốt lõi và 5 giới hạn kỹ thuật bắt buộc phải công khai.</p>
+          </div>
+          <span class="badge-pill">Methodological Rigor</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- 5 Strengths -->
+            <div class="card-clean accent-green">
+              <div class="card-head" style="color: var(--success);">5 Lý Do Expedia Là Bộ Dữ Liệu Chính</div>
+              <ul class="bullet-list">
+                <li><strong>1. Khớp bài toán (Task fit):</strong> User × Cluster booking là bài toán next-item trực tiếp (C1 = 2/3).</li>
+                <li><strong>2. Đủ mọi yếu tố của RQ1:</strong> Tần suất thấp, mùa vụ 2 năm, đoàn khách và user thật để phân lát.</li>
+                <li><strong>3. Lõi dữ liệu cực sạch:</strong> 0% thiếu ngày check-in/out, chỉ 8 key trùng / 3M booking.</li>
+                <li><strong>4. Tính khả thi & Tái lập:</strong> Script chunked pass nạp vừa RAM; không đòi hỏi GPU đắt tiền cho mô hình cổ điển.</li>
+                <li><strong>5. Điểm Rubric cao nhất:</strong> 79/100 (tăng lên <strong>80/100</strong> khi bỏ tiêu chí bán chéo).</li>
+              </ul>
+            </div>
+
+            <!-- 5 Limitations -->
+            <div class="card-clean accent-red">
+              <div class="card-head" style="color: var(--danger);">5 Giới Hạn Bắt Buộc Công Khai</div>
+              <ul class="bullet-list">
+                <li><strong>1. Target là cụm số ẩn danh:</strong> Không có text mô tả phòng → LLM rerank dựa trên ngữ cảnh + latent features.</li>
+                <li><strong>2. Không có cột giá tiền:</strong> Khoảng cách bị thiếu 33.8% trên tập booking.</li>
+                <li><strong>3. 38.8% user chỉ có 1 booking:</strong> Lát cắt Cold-Start phải báo cáo riêng, không tính cào bằng.</li>
+                <li><strong>4. Click chiếm 92%:</strong> Click là tín hiệu yếu → Không gộp làm positive ground-truth.</li>
+                <li><strong>5. Giấy phép Kaggle:</strong> Chỉ phục vụ nghiên cứu nội bộ, không phân phối lại dữ liệu gốc.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Academic Stance -->
+          <div class="callout-strip">
+            🛡️ <span><strong>Quan điểm học thuật:</strong> Nêu rõ giới hạn giúp thiết kế quy trình đánh giá trung thực, tránh rò rỉ dữ liệu hoặc kết luận quá lạc quan.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/travel_rubric_without_c9.txt</span>
+          <span>Trang 05 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 6: SCHEMA & DATA ANOMALIES (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="6">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 06 • Cấu Trúc & Bất Thường Dữ Liệu</div>
+            <h2 class="slide-title">Ý Nghĩa Trường Cốt Lõi & Bất Thường Đo Trên Data Thật</h2>
+            <p class="slide-subtitle">Khảo sát 24 trường trong train.csv, giải nghĩa các trường trọng tâm và kiểm định bất thường trên 37.7M dòng.</p>
+          </div>
+          <span class="badge-pill">Schema & Quality</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Left Column: Core Fields Meaning -->
+            <div class="card-clean accent-blue">
+              <div class="card-head">Ý Nghĩa Các Trường Cốt Lõi (Core Fields)</div>
+              <ul class="bullet-list" style="font-size: 11.5px; gap: 5px;">
+                <li><code class="code-tag">user_id</code>: Mã du khách duy nhất (1,198,786 user toàn file, 813,985 user có booking).</li>
+                <li><code class="code-tag">is_booking</code>: Cờ tương tác — <strong>1 = Đặt phòng</strong> (Signal dương), <strong>0 = Click</strong> (Tín hiệu yếu).</li>
+                <li><code class="code-tag">date_time</code>: Thời điểm tương tác (07/01/2013 → 31/12/2014, dùng chia temporal split).</li>
+                <li><code class="code-tag">srch_ci / srch_co</code>: Ngày nhận/trả phòng — Xác định mùa vụ và độ dài chuyến đi.</li>
+                <li><code class="code-tag">srch_adults/children/rm_cnt</code>: Quy mô đoàn — Phân loại Solo / Cặp đôi / Gia đình / Nhóm.</li>
+                <li><code class="code-tag">srch_destination_id</code>: Mã điểm đến du khách tìm kiếm (36,933 điểm đến).</li>
+                <li><code class="code-tag">is_package</code>: Cờ đặt kèm combo trọn gói (1 = Gói combo nghỉ dưỡng, 0 = Phòng lẻ).</li>
+                <li><code class="code-tag">orig_destination_distance</code>: Khoảng cách địa lý từ nơi ở đến điểm đến (dặm).</li>
+                <li><code class="code-tag">hotel_cluster</code>: <strong>Target cần xếp hạng</strong> — 100 cụm khách sạn / hạng phòng (0–99).</li>
+              </ul>
+            </div>
+
+            <!-- Right Column: Measured Data Anomalies -->
+            <div class="card-clean accent-red">
+              <div class="card-head" style="color: var(--danger);">Bất Thường Đo Thực Tế (Data Anomalies)</div>
+              <ul class="bullet-list" style="font-size: 11.5px; gap: 6px;">
+                <li><strong>Mất cân bằng tương tác cực lớn (92% vs 8%):</strong>
+                  <br>Click xem chiếm <strong>92.03%</strong> (34,669,600 dòng) vs Booking chỉ chiếm <strong>7.97%</strong> (3,000,693 dòng).
+                  <br><em>Xử lý:</em> Chỉ dùng Booking làm ground-truth dương; không gộp lẫn click thô.
+                </li>
+                <li><strong>Khuyết thiếu khoảng cách địa lý (33.8% – 35.9%):</strong>
+                  <br><code class="code-tag">orig_destination_distance</code> thiếu <strong>35.90%</strong> toàn file (thiếu <strong>33.83%</strong> trên booking).
+                  <br><em>Điểm sáng:</em> Ngày check-in/out thiếu 0.12% ở click nhưng <strong>sạch 100% (0 thiếu) trên booking</strong>. 21 cột còn lại 0% missing.
+                </li>
+                <li><strong>Bất thường logic cực hiếm (Đã cô lập sạch):</strong>
+                  <br>• Check-out trước Check-in: Chỉ <strong>3 dòng</strong> trên 3.0M booking (798 dòng toàn file).
+                  <br>• Không có người lớn (0 adults): <strong>0.17%</strong> (5,239 dòng trên booking).
+                  <br>• Trùng lặp khóa (user, time, dest, cluster): Chỉ <strong>8 bản ghi</strong> trên booking.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom Summary Strip -->
+          <div class="callout-strip">
+            📊 <span><strong>Kết luận kiểm định chất lượng:</strong> Dữ liệu có tỷ lệ khuyết thiếu khoảng cách cao và mất cân bằng Click/Booking lớn, nhưng <strong>lõi giao dịch Booking (3.0M dòng) cực sạch</strong>, đầy đủ 100% ngày tháng và ngữ cảnh để huấn luyện mô hình.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
+          <span>Trang 06 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 7: EXPEDIA VERIFIED PROFILE
+           =================================================================== -->
+      <section class="slide" data-slide="7">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 07 • Thẩm Định Thực Tế</div>
+            <h2 class="slide-title">Expedia Hotel: Hồ Sơ Dữ Liệu Đã Kiểm Chứng</h2>
+            <p class="slide-subtitle">Số liệu quét toàn vẹn 37,670,293 dòng từ script profile_expedia.py.</p>
+          </div>
+          <span class="badge-pill">Verified Profile</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- 4 Big Stat Cards -->
+          <div class="grid-4">
+            <div class="stat-pill highlight">
+              <span class="stat-pill-num">37.67M</span>
+              <span class="stat-pill-title">Tổng Quy Mô Dữ Liệu</span>
+              <span class="stat-pill-sub">34.67M click (92%) vs 3.00M booking (8%)</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">813,985</span>
+              <span class="stat-pill-title">Khách Hàng Đặt Phòng</span>
+              <span class="stat-pill-sub">61.2% khách hàng có ≥ 2 booking</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">100 Cụm</span>
+              <span class="stat-pill-title">Lớp Khách Sạn (Classes)</span>
+              <span class="stat-pill-sub">Độ thưa tương tác: 97.10%</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">2 Năm</span>
+              <span class="stat-pill-title">Chu Kỳ Thời Gian</span>
+              <span class="stat-pill-sub">07/01/2013 → 31/12/2014</span>
+            </div>
+          </div>
+
+          <!-- 3 Visual Panels -->
+          <div class="grid-3">
+            <div class="card-clean">
+              <div class="card-head">Chiều Sâu & Hành Vi Lặp</div>
+              <ul class="bullet-list">
+                <li><strong>Trung vị số booking/user:</strong> 2.0 (Mean = 3.69, P90 = 8.0).</li>
+                <li><strong>Chỉ 21.3% chọn lại cụm cũ:</strong> Phần lớn là tìm kiếm cái mới → Không bị lấn át bởi baseline repeat-last.</li>
+                <li><strong>Độ tập trung:</strong> Cụm Top 1 chiếm 4.0%, Top 10 chiếm 22.9% (Đuôi dài vừa phải).</li>
+              </ul>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Mùa Vụ & Gói Combo</div>
+              <ul class="bullet-list">
+                <li><strong>Tháng cao điểm:</strong> T8 (10.7%), T12 (10.1%), T10 (9.8%).</li>
+                <li><strong>Tháng thấp điểm:</strong> T2 (5.4%), T1 (6.2%).</li>
+                <li><strong>13.7% booking là gói combo</strong> (<code class="code-tag">is_package = 1</code>).</li>
+                <li><strong>36,933 điểm đến</strong> tìm kiếm khác nhau.</li>
+              </ul>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Cơ Cấu Đoàn Khách (Party)</div>
+              <ul class="bullet-list">
+                <li>👫 <strong>Cặp đôi (Couple):</strong> 44.0%</li>
+                <li>🚶 <strong>Đi một mình (Solo):</strong> 28.9%</li>
+                <li>👨‍👩‍👧 <strong>Gia đình (Family):</strong> 18.8%</li>
+                <li>👥 <strong>Nhóm người lớn (≥ 3 người):</strong> 8.1%</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Vinpearl Mapping Strip -->
+          <div class="callout-strip">
+            🏨 <span><strong>Ánh xạ tương đương Vinpearl:</strong> <code class="code-tag">hotel_cluster</code> → Hạng phòng/Combo • <code class="code-tag">srch_destination_id</code> → Điểm đến • <code class="code-tag">is_package</code> → Gói nghỉ dưỡng • Cơ cấu đoàn & Ngày → Ngữ cảnh chuyến đi.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
+          <span>Trang 07 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 8: CONTINGENCY DATASET - TRIVAGO 2019
+           =================================================================== -->
+      <section class="slide" data-slide="8">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 08 • Quản Trị Rủi Ro</div>
+            <h2 class="slide-title">Phương Án Dự Phòng: Trivago RecSys Challenge 2019</h2>
+            <p class="slide-subtitle">Kích hoạt chuyển đổi ngay nếu Expedia bị trùng lặp đề tài với nhóm nghiên cứu khác.</p>
+          </div>
+          <span class="badge-pill">Risk Management</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Strengths -->
+            <div class="card-clean accent-blue">
+              <div class="card-head">Thế Mạnh Của Trivago (Điểm: 77/100)</div>
+              <ul class="bullet-list">
+                <li><strong>Chuẩn Session-based:</strong> 15.9M dòng, 910K phiên, 1.58M clickout kèm giá hiển thị thực tế.</li>
+                <li><strong>Có text metadata:</strong> 927K khách sạn có nhãn tiện ích (<code class="code-tag">item_metadata.csv</code>) → Rất có lợi cho LLM Reranker.</li>
+                <li><strong>Tọa độ thực:</strong> Tên thành phố/quốc gia thật; đã test ghép thời tiết Open-Meteo khả thi.</li>
+                <li><strong>Dữ liệu sạch:</strong> 0% missing trên 9 cột cốt lõi.</li>
+              </ul>
+            </div>
+
+            <!-- Trade-offs -->
+            <div class="card-clean accent-amber">
+              <div class="card-head">Đánh Đổi Nếu Phải Chuyển Đổi</div>
+              <ul class="bullet-list">
+                <li><strong>Chỉ có 6 ngày dữ liệu:</strong> Mất hoàn toàn lát cắt mùa vụ trong năm của RQ1.</li>
+                <li><strong>Bản chất bài toán đổi:</strong> Thành bài toán session-based next-clickout thay vì chuỗi dài hạn.</li>
+                <li><strong>Độ thưa cực lớn (99.999%):</strong> 289K khách sạn, 56% user chỉ xuất hiện 1 lần duy nhất.</li>
+                <li><strong>Tín hiệu là Click:</strong> Không phải hành vi Booking thực tế (C7 = 2 so với 3 của Expedia).</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Other candidates dropped -->
+          <div class="callout-strip amber">
+            ❌ <span><strong>Các ứng viên du lịch khác bị loại:</strong> <strong>Airbnb (46 - Drop)</strong> chỉ có 1 booking/user và target 12 quốc gia (58% NDF); <strong>Hotel Booking Demand (46 - Drop)</strong> không có ID khách hàng và 26.8% dòng trùng lặp.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/trivago_2019.md, airbnb_new_user.md • docs/dataset_scores.md</span>
+          <span>Trang 08 / 08</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 9: APPENDIX A - RUBRIC (REFERENCE ONLY)
+           =================================================================== -->
+      <section class="slide" data-slide="9">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Phụ Lục A • Thang Đo Rubric (Tham Chiếu)</div>
+            <h2 class="slide-title">Phương Pháp Chấm Điểm 11 Bộ Dữ Liệu</h2>
+            <p class="slide-subtitle">Quy trình chấm điểm 3 bước: 5 cổng Pass/Fail, 10 tiêu chí trọng số (thang 100), và kiểm định độ nhạy.</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="btn-action" id="btnBackToSlide1" style="font-size: 11px; padding: 5px 12px; color: var(--primary); background: #ffffff; border-color: var(--primary-accent); font-weight: 700;">
+              ← Quay lại Slide 01
+            </button>
+            <span class="badge-pill">Appendix A</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-3">
+            <!-- Step 1 -->
+            <div class="card-clean">
+              <div class="card-head">Bước 1: 5 Cổng Pass / Fail</div>
+              <ul class="bullet-list" style="font-size: 11.5px;">
+                <li><strong>G1:</strong> Giấy phép cho phép nghiên cứu.</li>
+                <li><strong>G2:</strong> Sản phẩm gợi ý có ID ổn định.</li>
+                <li><strong>G3:</strong> Nạp được trên máy phát triển.</li>
+                <li><strong>G4:</strong> Ánh xạ được thành User × Item.</li>
+                <li><strong>G5:</strong> Sẵn có trong <code class="code-tag">data/raw/</code> và tải lại bằng script.</li>
+              </ul>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="card-clean">
+              <div class="card-head">Bước 2: 10 Tiêu Chí (0–3 đ)</div>
+              <ul class="bullet-list" style="font-size: 11.5px;">
+                <li><strong>C1:</strong> Khớp bài toán đề bài (<strong>×3</strong>)</li>
+                <li><strong>C2:</strong> Định danh User / Session (<strong>×2</strong>)</li>
+                <li><strong>C3:</strong> Thông tin chuỗi thời gian (<strong>×2</strong>)</li>
+                <li><strong>C4:</strong> Chiều sâu lịch sử tương tác (<strong>×2</strong>)</li>
+                <li><strong>C5:</strong> Ngữ cảnh thực tế không giả lập (<strong>×2</strong>)</li>
+                <li><strong>C6–C10:</strong> Metadata, Tín hiệu, Tính khả thi, Bán chéo, Chất lượng (mỗi mục <strong>×1</strong>)</li>
+              </ul>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="card-clean highlight">
+              <div class="card-head">Bước 3: Quy Đổi Thang 100</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5;">
+                Điểm = <strong>(Tổng điểm / 48) × 100</strong>
+                <div style="margin: 6px 0;">
+                  • <span class="tag tag-core">≥ 70 Cốt lõi (Core)</span> (Expedia 79, Trivago 77, Akeed 73)<br>
+                  • <span class="tag tag-sec">50–69 Thứ cấp (Secondary)</span> (Porto, Instacart, Yelp...)<br>
+                  • <span class="tag tag-drop">&lt; 50 Loại bỏ (Drop)</span> (Airbnb 46, Hotel Demand 46)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- C9 Sensitivity test -->
+          <div class="callout-strip">
+            🧪 <span><strong>Kiểm định độ nhạy C9 (Sensitivity Test):</strong> Khi loại bỏ tiêu chí bán chéo C9 (tối đa 45 điểm), điểm số mảng du lịch tăng lên nhưng <strong>thứ hạng hoàn toàn không đổi</strong>: Expedia (80 - Core) &gt; Trivago (78 - Core) &gt; Airbnb (47 - Drop) &gt; Hotel Demand (47 - Drop). Khẳng định tính vững chắc của quyết định.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/dataset_rubric.md • reports/summary/travel_rubric_without_c9.txt</span>
+          <span>Phụ Lục A (Tham chiếu)</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <footer class="nav-bar">
+    <div class="nav-left">
+      <span class="nav-counter" id="slideCounter">01 / 09</span>
+      <div class="nav-dots" id="navDots"></div>
+    </div>
+
+    <div class="nav-center">
+      <button class="btn-action" id="btnPrev" title="Slide trước (Phím ←)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Trước
+      </button>
+      <button class="btn-action" id="btnNext" title="Slide tiếp (Phím → / Space)">
+        Tiếp
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-action" id="btnToggleEffect" title="Đổi hiệu ứng chuyển slide (Phím T)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+        <span id="lblEffect">Hiệu ứng: Slide</span>
+      </button>
+      <button class="btn-action" id="btnOverview" title="Tổng quan slide (Phím O)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Tổng quan (O)
+      </button>
+      <button class="btn-action" id="btnFullscreen" title="Toàn màn hình (Phím F)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Toàn màn hình
+      </button>
+      <button class="btn-action" id="btnPrint" title="Xuất file PDF (Phím P)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Xuất PDF
+      </button>
+    </div>
+  </footer>
+
+  <!-- Slide Overview Modal -->
+  <div class="modal-overlay" id="overviewModal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <h3 style="font-size: 16px; font-weight: 700;">Tổng quan tất cả các Slide</h3>
+        <button class="btn-action" id="btnCloseOverview">Đóng (ESC)</button>
+      </div>
+      <div class="overview-tiles" id="overviewTiles"></div>
+    </div>
+  </div>
+
+  <!-- Script Controller -->
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const totalSlides = slides.length;
+      const MAIN_SLIDES_COUNT = 8;
+      const RUBRIC_SLIDE_INDEX = 8; // 0-indexed 8th (Slide 9 in DOM: Phụ Lục A)
+      let currentIndex = 0;
+      let isFade = false;
+
+      const progressBar = document.getElementById('progressBar');
+      const slideCounter = document.getElementById('slideCounter');
+      const navDots = document.getElementById('navDots');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+      const btnToggleEffect = document.getElementById('btnToggleEffect');
+      const lblEffect = document.getElementById('lblEffect');
+      const btnOverview = document.getElementById('btnOverview');
+      const overviewModal = document.getElementById('overviewModal');
+      const overviewTiles = document.getElementById('overviewTiles');
+      const btnCloseOverview = document.getElementById('btnCloseOverview');
+      const btnFullscreen = document.getElementById('btnFullscreen');
+      const btnPrint = document.getElementById('btnPrint');
+      const slideDeck = document.getElementById('slideDeck');
+
+      const pillJumpRubric = document.getElementById('pillJumpRubric');
+      const btnLinkToRubric = document.getElementById('btnLinkToRubric');
+      const btnBackToSlide1 = document.getElementById('btnBackToSlide1');
+
+      // Initialize Dots (8 main slides only)
+      for (let idx = 0; idx < MAIN_SLIDES_COUNT; idx++) {
+        const dot = document.createElement('div');
+        dot.className = `nav-dot ${idx === 0 ? 'active' : ''}`;
+        dot.title = `Tới slide ${idx + 1}`;
+        dot.addEventListener('click', () => goToSlide(idx));
+        navDots.appendChild(dot);
+      }
+
+      // Initialize Overview Tiles (Include Appendix with distinct indicator)
+      slides.forEach((slide, idx) => {
+        const title = slide.querySelector('.slide-title')?.innerText || `Slide ${idx + 1}`;
+        const isAppendix = idx === RUBRIC_SLIDE_INDEX;
+        const meta = isAppendix ? 'Phụ Lục A (Tham Chiếu)' : `Trang ${idx + 1}`;
+        const tile = document.createElement('div');
+        tile.className = `tile-card ${idx === 0 ? 'current' : ''}`;
+        if (isAppendix) {
+          tile.style.borderStyle = 'dashed';
+        }
+        tile.innerHTML = `
+          <div style="font-size: 10px; font-weight: 700; color: ${isAppendix ? 'var(--warning)' : 'var(--primary-accent)'};">${meta}</div>
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--text-main); margin-top: 3px;">${title}</div>
+        `;
+        tile.addEventListener('click', () => {
+          goToSlide(idx);
+          closeOverview();
+        });
+        overviewTiles.appendChild(tile);
+      });
+
+      function updateSlide() {
+        slides.forEach((s, idx) => {
+          s.classList.remove('active', 'past');
+          if (idx === currentIndex) s.classList.add('active');
+          else if (idx < currentIndex) s.classList.add('past');
+        });
+
+        // Progress bar & Counter behavior
+        if (currentIndex < MAIN_SLIDES_COUNT) {
+          const pct = ((currentIndex + 1) / MAIN_SLIDES_COUNT) * 100;
+          progressBar.style.width = `${pct}%`;
+          slideCounter.innerText = `${String(currentIndex + 1).padStart(2, '0')} / ${String(MAIN_SLIDES_COUNT).padStart(2, '0')}`;
+          btnNext.disabled = currentIndex === MAIN_SLIDES_COUNT - 1;
+        } else {
+          // Appendix Rubric
+          progressBar.style.width = '100%';
+          slideCounter.innerText = 'Phụ Lục A';
+          btnNext.disabled = true;
+        }
+
+        btnPrev.disabled = currentIndex === 0;
+
+        // Nav dots active state
+        navDots.querySelectorAll('.nav-dot').forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+
+        // Overview tiles active state
+        overviewTiles.querySelectorAll('.tile-card').forEach((tile, idx) => {
+          tile.classList.toggle('current', idx === currentIndex);
+        });
+      }
+
+      function goToSlide(idx) {
+        if (idx >= 0 && idx < totalSlides) {
+          currentIndex = idx;
+          updateSlide();
+        }
+      }
+
+      function next() {
+        if (currentIndex < MAIN_SLIDES_COUNT - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      }
+
+      function prev() {
+        if (currentIndex === RUBRIC_SLIDE_INDEX) {
+          goToSlide(0); // If on Rubric, return to Slide 1
+        } else if (currentIndex > 0) {
+          goToSlide(currentIndex - 1);
+        }
+      }
+
+      function toggleOverview() {
+        overviewModal.classList.toggle('show');
+      }
+      function closeOverview() {
+        overviewModal.classList.remove('show');
+      }
+
+      function toggleEffect() {
+        isFade = !isFade;
+        slideDeck.classList.toggle('deck-fade', isFade);
+        lblEffect.innerText = isFade ? 'Hiệu ứng: Fade' : 'Hiệu ứng: Slide';
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen?.();
+        }
+      }
+
+      // Event listeners
+      btnNext.addEventListener('click', next);
+      btnPrev.addEventListener('click', prev);
+      btnOverview.addEventListener('click', toggleOverview);
+      btnCloseOverview.addEventListener('click', closeOverview);
+      btnToggleEffect.addEventListener('click', toggleEffect);
+      btnFullscreen.addEventListener('click', toggleFullscreen);
+      btnPrint.addEventListener('click', () => window.print());
+
+      // Reference Links
+      if (pillJumpRubric) pillJumpRubric.addEventListener('click', () => goToSlide(RUBRIC_SLIDE_INDEX));
+      if (btnLinkToRubric) btnLinkToRubric.addEventListener('click', () => goToSlide(RUBRIC_SLIDE_INDEX));
+      if (btnBackToSlide1) btnBackToSlide1.addEventListener('click', () => goToSlide(0));
+
+      overviewModal.addEventListener('click', (e) => {
+        if (e.target === overviewModal) closeOverview();
+      });
+
+      // Keyboard
+      window.addEventListener('keydown', (e) => {
+        if (overviewModal.classList.contains('show')) {
+          if (e.key === 'Escape') closeOverview();
+          return;
+        }
+
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'PageDown':
+          case ' ':
+            e.preventDefault();
+            next();
+            break;
+          case 'ArrowLeft':
+          case 'PageUp':
+            e.preventDefault();
+            prev();
+            break;
+          case 'Home':
+            e.preventDefault();
+            goToSlide(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            goToSlide(MAIN_SLIDES_COUNT - 1);
+            break;
+          case 'o':
+          case 'O':
+            e.preventDefault();
+            toggleOverview();
+            break;
+          case 'f':
+          case 'F':
+            e.preventDefault();
+            toggleFullscreen();
+            break;
+          case 't':
+          case 'T':
+            e.preventDefault();
+            toggleEffect();
+            break;
+          case 'p':
+          case 'P':
+            if (!e.ctrlKey && !e.metaKey) {
+              e.preventDefault();
+              window.print();
+            }
+            break;
+        }
+      });
+
+      // Touch gestures
+      let touchStartX = 0;
+      slideDeck.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      slideDeck.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        if (touchEndX < touchStartX - 50) next();
+        else if (touchEndX > touchStartX + 50) prev();
+      }, { passive: true });
+
+      updateSlide();
+    })();
+  </script>
+</body>
+</html>
