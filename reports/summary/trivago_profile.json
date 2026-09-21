@@ -1,0 +1,57 @@
+{
+  "source": "data/raw/hospitality/trivago_2019/",
+  "generated_by": "scripts/trivago_profile.py",
+  "rows": 15932992,
+  "n_users": 730803,
+  "n_sessions": 910683,
+  "clickouts": 1586586,
+  "n_clicked_items": 289506,
+  "rows_per_user": {
+    "median": 5.0,
+    "mean": 21.802,
+    "share_eq1": 0.195667
+  },
+  "sessions_per_user": {
+    "median": 1.0,
+    "mean": 1.246,
+    "share_eq1": 0.835521,
+    "share_ge2": 0.164479
+  },
+  "clickouts_per_user": {
+    "users_with_clickout": 717774,
+    "share_users_with_no_clickout": 0.017828,
+    "median_among_clickers": 1.0,
+    "share_eq1_among_clickers": 0.564297
+  },
+  "clickouts_per_item": {
+    "share_items_eq1": 0.403197,
+    "median": 2.0,
+    "max": 822
+  },
+  "impressions_per_clickout": {
+    "sampled_rows": 1584082,
+    "median": 25.0,
+    "mean": 22.93,
+    "max": 25
+  },
+  "displayed_price": {
+    "sampled_values": 1151442,
+    "median": 82.0,
+    "p10": 29.0,
+    "p90": 233.0,
+    "max": 9999.0
+  },
+  "catalog": {
+    "n_cities": 34752,
+    "n_platforms": 55,
+    "device_share": {
+      "mobile": 0.47973,
+      "desktop": 0.439587,
+      "tablet": 0.080683
+    },
+    "item_metadata_rows": 927142,
+    "item_metadata_properties_median": 15.0,
+    "item_metadata_properties_max": 112,
+    "n_distinct_properties": 157
+  }
+}

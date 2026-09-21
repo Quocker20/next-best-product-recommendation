@@ -1,0 +1,439 @@
+{
+  "generated_by": "scripts/report_figures.py",
+  "inputs": [
+    "expedia_eda_detail.json",
+    "expedia_timeseries.json",
+    "expedia_context_signal.json",
+    "expedia_anomaly_audit.json",
+    "dataset_benchmark.json"
+  ],
+  "hour_of_day": {
+    "0": {
+      "bookings": 51498,
+      "booking_share_of_day": 0.017162,
+      "clicks": 716478,
+      "click_share_of_day": 0.020666,
+      "conversion": 0.067057
+    },
+    "1": {
+      "bookings": 36658,
+      "booking_share_of_day": 0.012217,
+      "clicks": 468003,
+      "click_share_of_day": 0.013499,
+      "conversion": 0.072639
+    },
+    "2": {
+      "bookings": 28546,
+      "booking_share_of_day": 0.009513,
+      "clicks": 345457,
+      "click_share_of_day": 0.009964,
+      "conversion": 0.076326
+    },
+    "3": {
+      "bookings": 27188,
+      "booking_share_of_day": 0.009061,
+      "clicks": 327155,
+      "click_share_of_day": 0.009436,
+      "conversion": 0.076728
+    },
+    "4": {
+      "bookings": 35147,
+      "booking_share_of_day": 0.011713,
+      "clicks": 412003,
+      "click_share_of_day": 0.011884,
+      "conversion": 0.078602
+    },
+    "5": {
+      "bookings": 55007,
+      "booking_share_of_day": 0.018331,
+      "clicks": 614583,
+      "click_share_of_day": 0.017727,
+      "conversion": 0.08215
+    },
+    "6": {
+      "bookings": 87430,
+      "booking_share_of_day": 0.029137,
+      "clicks": 941681,
+      "click_share_of_day": 0.027162,
+      "conversion": 0.084957
+    },
+    "7": {
+      "bookings": 121809,
+      "booking_share_of_day": 0.040594,
+      "clicks": 1280250,
+      "click_share_of_day": 0.036927,
+      "conversion": 0.086879
+    },
+    "8": {
+      "bookings": 148918,
+      "booking_share_of_day": 0.049628,
+      "clicks": 1548402,
+      "click_share_of_day": 0.044662,
+      "conversion": 0.087737
+    },
+    "9": {
+      "bookings": 169398,
+      "booking_share_of_day": 0.056453,
+      "clicks": 1772749,
+      "click_share_of_day": 0.051133,
+      "conversion": 0.087222
+    },
+    "10": {
+      "bookings": 185405,
+      "booking_share_of_day": 0.061787,
+      "clicks": 1957859,
+      "click_share_of_day": 0.056472,
+      "conversion": 0.086506
+    },
+    "11": {
+      "bookings": 195819,
+      "booking_share_of_day": 0.065258,
+      "clicks": 2071005,
+      "click_share_of_day": 0.059735,
+      "conversion": 0.086385
+    },
+    "12": {
+      "bookings": 191621,
+      "booking_share_of_day": 0.063859,
+      "clicks": 2053543,
+      "click_share_of_day": 0.059232,
+      "conversion": 0.085348
+    },
+    "13": {
+      "bookings": 187352,
+      "booking_share_of_day": 0.062436,
+      "clicks": 2017105,
+      "click_share_of_day": 0.058181,
+      "conversion": 0.084988
+    },
+    "14": {
+      "bookings": 183361,
+      "booking_share_of_day": 0.061106,
+      "clicks": 1967580,
+      "click_share_of_day": 0.056752,
+      "conversion": 0.085247
+    },
+    "15": {
+      "bookings": 172884,
+      "booking_share_of_day": 0.057615,
+      "clicks": 1918781,
+      "click_share_of_day": 0.055345,
+      "conversion": 0.082654
+    },
+    "16": {
+      "bookings": 169672,
+      "booking_share_of_day": 0.056544,
+      "clicks": 1971925,
+      "click_share_of_day": 0.056878,
+      "conversion": 0.079227
+    },
+    "17": {
+      "bookings": 169118,
+      "booking_share_of_day": 0.05636,
+      "clicks": 2041965,
+      "click_share_of_day": 0.058898,
+      "conversion": 0.076487
+    },
+    "18": {
+      "bookings": 166725,
+      "booking_share_of_day": 0.055562,
+      "clicks": 2083299,
+      "click_share_of_day": 0.06009,
+      "conversion": 0.074099
+    },
+    "19": {
+      "bookings": 161973,
+      "booking_share_of_day": 0.053979,
+      "clicks": 2059948,
+      "click_share_of_day": 0.059417,
+      "conversion": 0.072898
+    },
+    "20": {
+      "bookings": 147772,
+      "booking_share_of_day": 0.049246,
+      "clicks": 1925519,
+      "click_share_of_day": 0.055539,
+      "conversion": 0.071274
+    },
+    "21": {
+      "bookings": 126912,
+      "booking_share_of_day": 0.042294,
+      "clicks": 1716245,
+      "click_share_of_day": 0.049503,
+      "conversion": 0.068856
+    },
+    "22": {
+      "bookings": 103590,
+      "booking_share_of_day": 0.034522,
+      "clicks": 1410840,
+      "click_share_of_day": 0.040694,
+      "conversion": 0.068402
+    },
+    "23": {
+      "bookings": 76890,
+      "booking_share_of_day": 0.025624,
+      "clicks": 1047225,
+      "click_share_of_day": 0.030206,
+      "conversion": 0.0684
+    }
+  },
+  "hour_highlights": {
+    "peak_booking_hour": 11,
+    "peak_booking_share": 0.065258,
+    "trough_booking_hour": 3,
+    "trough_booking_share": 0.009061,
+    "peak_over_trough_bookings": 7.202,
+    "peak_click_hour": 18,
+    "best_conversion_hour": 8,
+    "best_conversion": 0.087737,
+    "worst_conversion_hour": 0,
+    "worst_conversion": 0.067057
+  },
+  "weekday_highlights": {
+    "shares": {
+      "Mon": 0.163444,
+      "Tue": 0.162819,
+      "Wed": 0.162475,
+      "Thu": 0.148332,
+      "Fri": 0.139329,
+      "Sat": 0.10364,
+      "Sun": 0.11996
+    },
+    "weekend_share": 0.2236,
+    "peak_over_trough": 1.577
+  },
+  "checkin_seasonality": {
+    "shares": {
+      "1": 0.061758,
+      "2": 0.053634,
+      "3": 0.067792,
+      "4": 0.070462,
+      "5": 0.079889,
+      "6": 0.083593,
+      "7": 0.095103,
+      "8": 0.107464,
+      "9": 0.091979,
+      "10": 0.097971,
+      "11": 0.089093,
+      "12": 0.101262
+    },
+    "peak_month": 8,
+    "peak_share": 0.107464,
+    "trough_month": 2,
+    "trough_share": 0.053634,
+    "peak_over_trough": 2.004,
+    "family_aug_share": 0.14627,
+    "family_jul_share": 0.138191,
+    "family_summer_share": 0.284461,
+    "solo_summer_share": 0.164137,
+    "couple_summer_share": 0.191288,
+    "family_vs_solo_summer_ratio": 1.733
+  },
+  "package_trend": {
+    "first_month": "2013-01",
+    "first_share": 0.207536,
+    "last_month": "2014-12",
+    "last_share": 0.094171,
+    "relative_decline": -0.546243,
+    "max_month": "2014-01",
+    "max_share": 0.217831
+  },
+  "growth": {
+    "bookings_2013": 1024389,
+    "bookings_2014": 1976304,
+    "growth": 0.929251,
+    "conversion_2013": 0.091683,
+    "conversion_2014": 0.075993,
+    "conversion_change_rel": -0.171133
+  },
+  "cold_start": {
+    "users_1_booking_share": 0.387819,
+    "users_1_2_bookings_share": 0.594286,
+    "users_ge5_share": 0.214298,
+    "top10pct_users_booking_share": 0.423688,
+    "test_users_unseen_share": 0.30137,
+    "repeat_last_available_share": 0.69863
+  },
+  "concentration": {
+    "cluster_top1": 0.040315,
+    "cluster_top10": 0.228697,
+    "cluster_top20": 0.385423,
+    "cluster_bottom50": 0.254258,
+    "cluster_top1_over_bottom1": 49.1,
+    "dest_top10": 0.115128,
+    "dest_top100": 0.353845,
+    "dest_top1000": 0.722677,
+    "dest_single_booking": 10789,
+    "dest_single_booking_share": 0.292124
+  },
+  "probe_lift": {
+    "recall_at_5": {
+      "global_popularity": 0.140606,
+      "popularity_by_srch_destination_id": 0.530692,
+      "popularity_by_hotel_market": 0.4538,
+      "popularity_by_checkin_month": 0.139926,
+      "popularity_by_party": 0.141351,
+      "repeat_last_cluster": 0.168163,
+      "popularity_by_destination_x_ci_month": 0.465502,
+      "popularity_by_destination_x_party": 0.515882,
+      "popularity_by_destination_x_is_package": 0.530827
+    },
+    "recall_at_1": {
+      "global_popularity": 0.040422,
+      "popularity_by_srch_destination_id": 0.190271,
+      "popularity_by_hotel_market": 0.146733,
+      "popularity_by_checkin_month": 0.040422,
+      "popularity_by_party": 0.040426,
+      "repeat_last_cluster": 0.060219,
+      "popularity_by_destination_x_ci_month": 0.172823,
+      "popularity_by_destination_x_party": 0.187492,
+      "popularity_by_destination_x_is_package": 0.190334
+    },
+    "lift_vs_global_at_5": {
+      "global_popularity": 1.0,
+      "popularity_by_srch_destination_id": 3.774,
+      "popularity_by_hotel_market": 3.227,
+      "popularity_by_checkin_month": 0.995,
+      "popularity_by_party": 1.005,
+      "repeat_last_cluster": 1.196,
+      "popularity_by_destination_x_ci_month": 3.311,
+      "popularity_by_destination_x_party": 3.669,
+      "popularity_by_destination_x_is_package": 3.775
+    },
+    "lift_vs_global_at_1": {
+      "global_popularity": 1.0,
+      "popularity_by_srch_destination_id": 4.707,
+      "popularity_by_hotel_market": 3.63,
+      "popularity_by_checkin_month": 1.0,
+      "popularity_by_party": 1.0,
+      "repeat_last_cluster": 1.49,
+      "popularity_by_destination_x_ci_month": 4.275,
+      "popularity_by_destination_x_party": 4.638,
+      "popularity_by_destination_x_is_package": 4.709
+    },
+    "destination_x_month_vs_destination": -0.12284
+  },
+  "context_shift": {
+    "cluster_js_by_month_mean": 0.00194,
+    "cluster_js_by_party_mean": 0.01389,
+    "cluster_js_by_package_max": 0.07278,
+    "cluster_js_by_destination_mean": 0.40763,
+    "destination_js_by_month_mean": 0.03761,
+    "destination_vs_cluster_month_ratio": 19.39
+  },
+  "quality": {
+    "click_share": 0.920343,
+    "booking_share": 0.079657,
+    "anomaly_checks_booking_vs_all": {
+      "srch_ci_missing": {
+        "all_share": 0.00124987,
+        "booking_share": 0.0,
+        "ratio_all_over_booking": null
+      },
+      "srch_co_missing": {
+        "all_share": 0.0012499,
+        "booking_share": 0.0,
+        "ratio_all_over_booking": null
+      },
+      "srch_ci_before_search_date": {
+        "all_share": 0.0002245,
+        "booking_share": 0.00020562,
+        "ratio_all_over_booking": 1.092
+      },
+      "srch_ci_after_2016": {
+        "all_share": 1.25e-06,
+        "booking_share": 0.0,
+        "ratio_all_over_booking": null
+      },
+      "srch_ci_before_2013": {
+        "all_share": 2.9e-07,
+        "booking_share": 3.3e-07,
+        "ratio_all_over_booking": 0.879
+      },
+      "lead_time_gt_365d": {
+        "all_share": 0.00119805,
+        "booking_share": 0.00060553,
+        "ratio_all_over_booking": 1.979
+      },
+      "srch_co_before_srch_ci": {
+        "all_share": 2.118e-05,
+        "booking_share": 1e-06,
+        "ratio_all_over_booking": 21.18
+      },
+      "srch_co_equals_srch_ci": {
+        "all_share": 0.00384398,
+        "booking_share": 3.3e-07,
+        "ratio_all_over_booking": 11648.424
+      },
+      "stay_gt_30_nights": {
+        "all_share": 0.00047796,
+        "booking_share": 2e-06,
+        "ratio_all_over_booking": 238.98
+      },
+      "zero_adults": {
+        "all_share": 0.00188422,
+        "booking_share": 0.00174593,
+        "ratio_all_over_booking": 1.079
+      },
+      "zero_rooms": {
+        "all_share": 2.28e-05,
+        "booking_share": 8.331e-05,
+        "ratio_all_over_booking": 0.274
+      },
+      "adults_gt_4": {
+        "all_share": 0.02037027,
+        "booking_share": 0.01608562,
+        "ratio_all_over_booking": 1.266
+      },
+      "children_gt_4": {
+        "all_share": 0.00108802,
+        "booking_share": 0.00095578,
+        "ratio_all_over_booking": 1.138
+      },
+      "guests_gt_rooms_x4": {
+        "all_share": 0.02035625,
+        "booking_share": 0.01186593,
+        "ratio_all_over_booking": 1.716
+      },
+      "cnt_gt_50": {
+        "all_share": 3.61e-06,
+        "booking_share": 0.0,
+        "ratio_all_over_booking": null
+      },
+      "distance_missing": {
+        "all_share": 0.35903626,
+        "booking_share": 0.33831485,
+        "ratio_all_over_booking": 1.061
+      },
+      "distance_lt_1mi": {
+        "all_share": 0.00474438,
+        "booking_share": 0.00713902,
+        "ratio_all_over_booking": 0.665
+      }
+    },
+    "checkin_year_outliers_all": {
+      "2017": 4,
+      "2018": 9,
+      "2019": 2,
+      "2020": 2,
+      "2021": 1,
+      "2022": 7,
+      "2023": 8,
+      "2024": 1,
+      "2025": 1,
+      "2026": 1,
+      "2027": 1,
+      "2028": 1,
+      "2030": 1,
+      "2057": 2,
+      "2557": 5,
+      "2558": 1
+    },
+    "checkin_year_outliers_booking": {}
+  },
+  "benchmark_ratios": {
+    "expedia_vs_trivago_span_days": 144.6,
+    "expedia_interactions_per_item": 30006.9,
+    "trivago_interactions_per_item": 5.48
+  }
+}

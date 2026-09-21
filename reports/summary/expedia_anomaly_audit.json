@@ -1,0 +1,151 @@
+{
+  "source": "data\\raw\\hospitality\\expedia\\train.csv",
+  "generated_by": "scripts/expedia_anomaly_audit.py",
+  "rows_all": 37670293,
+  "rows_booking": 3000693,
+  "plausible_checkin_max": "2016-12-31",
+  "checks": {
+    "srch_ci_missing": {
+      "all_count": 47083,
+      "all_share": 0.00124987,
+      "booking_count": 0,
+      "booking_share": 0.0
+    },
+    "srch_co_missing": {
+      "all_count": 47084,
+      "all_share": 0.0012499,
+      "booking_count": 0,
+      "booking_share": 0.0
+    },
+    "srch_ci_before_search_date": {
+      "all_count": 8457,
+      "all_share": 0.0002245,
+      "booking_count": 617,
+      "booking_share": 0.00020562
+    },
+    "srch_ci_after_2016": {
+      "all_count": 47,
+      "all_share": 1.25e-06,
+      "booking_count": 0,
+      "booking_share": 0.0
+    },
+    "srch_ci_before_2013": {
+      "all_count": 11,
+      "all_share": 2.9e-07,
+      "booking_count": 1,
+      "booking_share": 3.3e-07
+    },
+    "lead_time_gt_365d": {
+      "all_count": 45131,
+      "all_share": 0.00119805,
+      "booking_count": 1817,
+      "booking_share": 0.00060553
+    },
+    "srch_co_before_srch_ci": {
+      "all_count": 798,
+      "all_share": 2.118e-05,
+      "booking_count": 3,
+      "booking_share": 1e-06
+    },
+    "srch_co_equals_srch_ci": {
+      "all_count": 144804,
+      "all_share": 0.00384398,
+      "booking_count": 1,
+      "booking_share": 3.3e-07
+    },
+    "stay_gt_30_nights": {
+      "all_count": 18005,
+      "all_share": 0.00047796,
+      "booking_count": 6,
+      "booking_share": 2e-06
+    },
+    "zero_adults": {
+      "all_count": 70979,
+      "all_share": 0.00188422,
+      "booking_count": 5239,
+      "booking_share": 0.00174593
+    },
+    "zero_rooms": {
+      "all_count": 859,
+      "all_share": 2.28e-05,
+      "booking_count": 250,
+      "booking_share": 8.331e-05
+    },
+    "adults_gt_4": {
+      "all_count": 767354,
+      "all_share": 0.02037027,
+      "booking_count": 48268,
+      "booking_share": 0.01608562
+    },
+    "children_gt_4": {
+      "all_count": 40986,
+      "all_share": 0.00108802,
+      "booking_count": 2868,
+      "booking_share": 0.00095578
+    },
+    "guests_gt_rooms_x4": {
+      "all_count": 766826,
+      "all_share": 0.02035625,
+      "booking_count": 35606,
+      "booking_share": 0.01186593
+    },
+    "cnt_gt_50": {
+      "all_count": 136,
+      "all_share": 3.61e-06,
+      "booking_count": 0,
+      "booking_share": 0.0
+    },
+    "distance_missing": {
+      "all_count": 13525001,
+      "all_share": 0.35903626,
+      "booking_count": 1015179,
+      "booking_share": 0.33831485
+    },
+    "distance_lt_1mi": {
+      "all_count": 178722,
+      "all_share": 0.00474438,
+      "booking_count": 21422,
+      "booking_share": 0.00713902
+    }
+  },
+  "checkin_year_histogram": {
+    "all": {
+      "2012": 11,
+      "2013": 9853622,
+      "2014": 23427909,
+      "2015": 4338918,
+      "2016": 2703,
+      "2017": 4,
+      "2018": 9,
+      "2019": 2,
+      "2020": 2,
+      "2021": 1,
+      "2022": 7,
+      "2023": 8,
+      "2024": 1,
+      "2025": 1,
+      "2026": 1,
+      "2027": 1,
+      "2028": 1,
+      "2030": 1,
+      "2057": 2,
+      "2557": 5,
+      "2558": 1
+    },
+    "booking": {
+      "2012": 1,
+      "2013": 947598,
+      "2014": 1861675,
+      "2015": 191327,
+      "2016": 92
+    }
+  },
+  "max_lead_time_days": {
+    "all": 198409,
+    "booking": 498
+  },
+  "max_stay_nights": {
+    "all": 516,
+    "booking": 129
+  }
+}

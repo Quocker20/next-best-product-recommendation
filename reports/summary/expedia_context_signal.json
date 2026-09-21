@@ -1,0 +1,531 @@
+{
+  "source": "data\\raw\\hospitality\\expedia\\train.csv",
+  "generated_by": "scripts/expedia_context_signal.py",
+  "bookings": 3000693,
+  "global_top5_clusters": [
+    91,
+    48,
+    42,
+    59,
+    28
+  ],
+  "global_top1_share": 0.040315,
+  "distribution_shift": {
+    "checkin_month": {
+      "n_groups_measured": 12,
+      "js_mean": 0.00194,
+      "js_max": 0.00504,
+      "n_groups_with_different_top_cluster": 0,
+      "groups": [
+        {
+          "value": 1,
+          "bookings": 185317,
+          "share_of_all": 0.061758,
+          "js_divergence_bits": 0.00504,
+          "top_cluster": 91,
+          "top_cluster_share": 0.035361
+        },
+        {
+          "value": 2,
+          "bookings": 160938,
+          "share_of_all": 0.053634,
+          "js_divergence_bits": 0.00319,
+          "top_cluster": 91,
+          "top_cluster_share": 0.037704
+        },
+        {
+          "value": 12,
+          "bookings": 303857,
+          "share_of_all": 0.101262,
+          "js_divergence_bits": 0.00301,
+          "top_cluster": 91,
+          "top_cluster_share": 0.038755
+        },
+        {
+          "value": 9,
+          "bookings": 276001,
+          "share_of_all": 0.091979,
+          "js_divergence_bits": 0.00217,
+          "top_cluster": 91,
+          "top_cluster_share": 0.038561
+        },
+        {
+          "value": 3,
+          "bookings": 203423,
+          "share_of_all": 0.067792,
+          "js_divergence_bits": 0.00191,
+          "top_cluster": 91,
+          "top_cluster_share": 0.040182
+        },
+        {
+          "value": 10,
+          "bookings": 293980,
+          "share_of_all": 0.097971,
+          "js_divergence_bits": 0.00151,
+          "top_cluster": 91,
+          "top_cluster_share": 0.042591
+        },
+        {
+          "value": 8,
+          "bookings": 322465,
+          "share_of_all": 0.107464,
+          "js_divergence_bits": 0.00132,
+          "top_cluster": 91,
+          "top_cluster_share": 0.042668
+        },
+        {
+          "value": 6,
+          "bookings": 250838,
+          "share_of_all": 0.083593,
+          "js_divergence_bits": 0.00124,
+          "top_cluster": 91,
+          "top_cluster_share": 0.040034
+        },
+        {
+          "value": 11,
+          "bookings": 267342,
+          "share_of_all": 0.089093,
+          "js_divergence_bits": 0.00124,
+          "top_cluster": 91,
+          "top_cluster_share": 0.041684
+        },
+        {
+          "value": 7,
+          "bookings": 285375,
+          "share_of_all": 0.095103,
+          "js_divergence_bits": 0.00116,
+          "top_cluster": 91,
+          "top_cluster_share": 0.041367
+        },
+        {
+          "value": 4,
+          "bookings": 211435,
+          "share_of_all": 0.070462,
+          "js_divergence_bits": 0.00084,
+          "top_cluster": 91,
+          "top_cluster_share": 0.041705
+        },
+        {
+          "value": 5,
+          "bookings": 239722,
+          "share_of_all": 0.079889,
+          "js_divergence_bits": 0.00069,
+          "top_cluster": 91,
+          "top_cluster_share": 0.040334
+        }
+      ]
+    },
+    "party": {
+      "n_groups_measured": 5,
+      "js_mean": 0.01389,
+      "js_max": 0.04857,
+      "n_groups_with_different_top_cluster": 1,
+      "groups": [
+        {
+          "value": "unknown",
+          "bookings": 5076,
+          "share_of_all": 0.001692,
+          "js_divergence_bits": 0.04857,
+          "top_cluster": 65,
+          "top_cluster_share": 0.033688
+        },
+        {
+          "value": "solo",
+          "bookings": 867637,
+          "share_of_all": 0.289146,
+          "js_divergence_bits": 0.01015,
+          "top_cluster": 91,
+          "top_cluster_share": 0.042708
+        },
+        {
+          "value": "family",
+          "bookings": 564580,
+          "share_of_all": 0.18815,
+          "js_divergence_bits": 0.00643,
+          "top_cluster": 91,
+          "top_cluster_share": 0.048519
+        },
+        {
+          "value": "group",
+          "bookings": 243562,
+          "share_of_all": 0.081169,
+          "js_divergence_bits": 0.00234,
+          "top_cluster": 91,
+          "top_cluster_share": 0.039366
+        },
+        {
+          "value": "couple",
+          "bookings": 1319838,
+          "share_of_all": 0.439844,
+          "js_divergence_bits": 0.00197,
+          "top_cluster": 91,
+          "top_cluster_share": 0.035491
+        }
+      ]
+    },
+    "is_package": {
+      "n_groups_measured": 2,
+      "js_mean": 0.03855,
+      "js_max": 0.07278,
+      "n_groups_with_different_top_cluster": 1,
+      "groups": [
+        {
+          "value": 1,
+          "bookings": 410188,
+          "share_of_all": 0.136698,
+          "js_divergence_bits": 0.07278,
+          "top_cluster": 65,
+          "top_cluster_share": 0.042673
+        },
+        {
+          "value": 0,
+          "bookings": 2590505,
+          "share_of_all": 0.863302,
+          "js_divergence_bits": 0.00432,
+          "top_cluster": 91,
+          "top_cluster_share": 0.043993
+        }
+      ]
+    },
+    "hotel_market_top": {
+      "n_groups_measured": 113,
+      "js_mean": 0.3953,
+      "js_max": 0.82969,
+      "n_groups_with_different_top_cluster": 89,
+      "groups": [
+        {
+          "value": 1503,
+          "bookings": 10360,
+          "share_of_all": 0.003453,
+          "js_divergence_bits": 0.82969,
+          "top_cluster": 65,
+          "top_cluster_share": 0.421622
+        },
+        {
+          "value": 633,
+          "bookings": 8231,
+          "share_of_all": 0.002743,
+          "js_divergence_bits": 0.7402,
+          "top_cluster": 54,
+          "top_cluster_share": 0.707326
+        },
+        {
+          "value": 628,
+          "bookings": 130374,
+          "share_of_all": 0.043448,
+          "js_divergence_bits": 0.69124,
+          "top_cluster": 1,
+          "top_cluster_share": 0.292903
+        },
+        {
+          "value": 110,
+          "bookings": 22832,
+          "share_of_all": 0.007609,
+          "js_divergence_bits": 0.6869,
+          "top_cluster": 65,
+          "top_cluster_share": 0.295025
+        },
+        {
+          "value": 118,
+          "bookings": 5487,
+          "share_of_all": 0.001829,
+          "js_divergence_bits": 0.6837,
+          "top_cluster": 65,
+          "top_cluster_share": 0.298888
+        },
+        {
+          "value": 1490,
+          "bookings": 5831,
+          "share_of_all": 0.001943,
+          "js_divergence_bits": 0.65239,
+          "top_cluster": 36,
+          "top_cluster_share": 0.175099
+        },
+        {
+          "value": 213,
+          "bookings": 7026,
+          "share_of_all": 0.002341,
+          "js_divergence_bits": 0.64564,
+          "top_cluster": 26,
+          "top_cluster_share": 0.347566
+        },
+        {
+          "value": 83,
+          "bookings": 6334,
+          "share_of_all": 0.002111,
+          "js_divergence_bits": 0.63168,
+          "top_cluster": 63,
+          "top_cluster_share": 0.319861
+        },
+        {
+          "value": 126,
+          "bookings": 12443,
+          "share_of_all": 0.004147,
+          "js_divergence_bits": 0.6273,
+          "top_cluster": 65,
+          "top_cluster_share": 0.297356
+        },
+        {
+          "value": 69,
+          "bookings": 6379,
+          "share_of_all": 0.002126,
+          "js_divergence_bits": 0.5877,
+          "top_cluster": 46,
+          "top_cluster_share": 0.329048
+        },
+        {
+          "value": 1532,
+          "bookings": 5747,
+          "share_of_all": 0.001915,
+          "js_divergence_bits": 0.58568,
+          "top_cluster": 65,
+          "top_cluster_share": 0.212459
+        },
+        {
+          "value": 47,
+          "bookings": 7353,
+          "share_of_all": 0.00245,
+          "js_divergence_bits": 0.55003,
+          "top_cluster": 46,
+          "top_cluster_share": 0.157623
+        },
+        {
+          "value": 5,
+          "bookings": 5384,
+          "share_of_all": 0.001794,
+          "js_divergence_bits": 0.54886,
+          "top_cluster": 46,
+          "top_cluster_share": 0.182021
+        },
+        {
+          "value": 675,
+          "bookings": 96262,
+          "share_of_all": 0.03208,
+          "js_divergence_bits": 0.52908,
+          "top_cluster": 56,
+          "top_cluster_share": 0.201004
+        },
+        {
+          "value": 1701,
+          "bookings": 6260,
+          "share_of_all": 0.002086,
+          "js_divergence_bits": 0.52371,
+          "top_cluster": 63,
+          "top_cluster_share": 0.126677
+        }
+      ]
+    },
+    "srch_destination_top": {
+      "n_groups_measured": 78,
+      "js_mean": 0.40763,
+      "js_max": 0.84393,
+      "n_groups_with_different_top_cluster": 75,
+      "groups": [
+        {
+          "value": 11439,
+          "bookings": 9397,
+          "share_of_all": 0.003132,
+          "js_divergence_bits": 0.84393,
+          "top_cluster": 65,
+          "top_cluster_share": 0.441098
+        },
+        {
+          "value": 12206,
+          "bookings": 23258,
+          "share_of_all": 0.007751,
+          "js_divergence_bits": 0.79997,
+          "top_cluster": 1,
+          "top_cluster_share": 0.417878
+        },
+        {
+          "value": 11835,
+          "bookings": 6550,
+          "share_of_all": 0.002183,
+          "js_divergence_bits": 0.74887,
+          "top_cluster": 54,
+          "top_cluster_share": 0.721985
+        },
+        {
+          "value": 11938,
+          "bookings": 5978,
+          "share_of_all": 0.001992,
+          "js_divergence_bits": 0.73466,
+          "top_cluster": 65,
+          "top_cluster_share": 0.360154
+        },
+        {
+          "value": 8791,
+          "bookings": 18342,
+          "share_of_all": 0.006113,
+          "js_divergence_bits": 0.71425,
+          "top_cluster": 65,
+          "top_cluster_share": 0.309181
+        },
+        {
+          "value": 8250,
+          "bookings": 97678,
+          "share_of_all": 0.032552,
+          "js_divergence_bits": 0.69092,
+          "top_cluster": 1,
+          "top_cluster_share": 0.271494
+        },
+        {
+          "value": 12233,
+          "bookings": 8726,
+          "share_of_all": 0.002908,
+          "js_divergence_bits": 0.61807,
+          "top_cluster": 98,
+          "top_cluster_share": 0.256704
+        },
+        {
+          "value": 12217,
+          "bookings": 5174,
+          "share_of_all": 0.001724,
+          "js_divergence_bits": 0.57343,
+          "top_cluster": 4,
+          "top_cluster_share": 0.195593
+        },
+        {
+          "value": 23507,
+          "bookings": 6139,
+          "share_of_all": 0.002046,
+          "js_divergence_bits": 0.56356,
+          "top_cluster": 59,
+          "top_cluster_share": 0.23196
+        },
+        {
+          "value": 8803,
+          "bookings": 5197,
+          "share_of_all": 0.001732,
+          "js_divergence_bits": 0.55505,
+          "top_cluster": 46,
+          "top_cluster_share": 0.313258
+        },
+        {
+          "value": 8818,
+          "bookings": 8371,
+          "share_of_all": 0.00279,
+          "js_divergence_bits": 0.52705,
+          "top_cluster": 46,
+          "top_cluster_share": 0.116235
+        },
+        {
+          "value": 8245,
+          "bookings": 8021,
+          "share_of_all": 0.002673,
+          "js_divergence_bits": 0.51763,
+          "top_cluster": 46,
+          "top_cluster_share": 0.149233
+        },
+        {
+          "value": 7635,
+          "bookings": 16664,
+          "share_of_all": 0.005553,
+          "js_divergence_bits": 0.51514,
+          "top_cluster": 56,
+          "top_cluster_share": 0.205593
+        },
+        {
+          "value": 12257,
+          "bookings": 5393,
+          "share_of_all": 0.001797,
+          "js_divergence_bits": 0.51293,
+          "top_cluster": 0,
+          "top_cluster_share": 0.166698
+        },
+        {
+          "value": 8220,
+          "bookings": 15245,
+          "share_of_all": 0.00508,
+          "js_divergence_bits": 0.51126,
+          "top_cluster": 46,
+          "top_cluster_share": 0.128698
+        }
+      ]
+    }
+  },
+  "destination_mix_shift_by_checkin_month": [
+    {
+      "checkin_month": 1,
+      "js_divergence_bits": 0.05656
+    },
+    {
+      "checkin_month": 2,
+      "js_divergence_bits": 0.0543
+    },
+    {
+      "checkin_month": 3,
+      "js_divergence_bits": 0.04034
+    },
+    {
+      "checkin_month": 4,
+      "js_divergence_bits": 0.03468
+    },
+    {
+      "checkin_month": 5,
+      "js_divergence_bits": 0.03057
+    },
+    {
+      "checkin_month": 6,
+      "js_divergence_bits": 0.03356
+    },
+    {
+      "checkin_month": 7,
+      "js_divergence_bits": 0.03497
+    },
+    {
+      "checkin_month": 8,
+      "js_divergence_bits": 0.03394
+    },
+    {
+      "checkin_month": 9,
+      "js_divergence_bits": 0.03124
+    },
+    {
+      "checkin_month": 10,
+      "js_divergence_bits": 0.02754
+    },
+    {
+      "checkin_month": 11,
+      "js_divergence_bits": 0.03379
+    },
+    {
+      "checkin_month": 12,
+      "js_divergence_bits": 0.0398
+    }
+  ],
+  "popularity_probe": {
+    "protocol": "temporal split at the 80th percentile of booking date_time; full ranking over 100 clusters; single run, no tuning",
+    "cut": "2014-09-29 12:14:32.600000",
+    "train_bookings": 2400554,
+    "test_bookings": 600139,
+    "test_users_unseen_in_train_share": 0.30137,
+    "recall_at_1": {
+      "global_popularity": 0.040422,
+      "popularity_by_srch_destination_id": 0.190271,
+      "popularity_by_hotel_market": 0.146733,
+      "popularity_by_checkin_month": 0.040422,
+      "popularity_by_party": 0.040426,
+      "repeat_last_cluster": 0.060219,
+      "popularity_by_destination_x_ci_month": 0.172823,
+      "popularity_by_destination_x_party": 0.187492,
+      "popularity_by_destination_x_is_package": 0.190334
+    },
+    "recall_at_5": {
+      "global_popularity": 0.140606,
+      "popularity_by_srch_destination_id": 0.530692,
+      "popularity_by_hotel_market": 0.4538,
+      "popularity_by_checkin_month": 0.139926,
+      "popularity_by_party": 0.141351,
+      "repeat_last_cluster": 0.168163,
+      "popularity_by_destination_x_ci_month": 0.465502,
+      "popularity_by_destination_x_party": 0.515882,
+      "popularity_by_destination_x_is_package": 0.530827
+    },
+    "coverage_of_context_tables": {
+      "srch_destination_id": 0.99368,
+      "hotel_market": 0.999983
+    },
+    "repeat_last_available_share": 0.69863
+  }
+}
