@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Tuần 1: Hiểu Bài Toán & Lựa Chọn Bộ Dữ Liệu | Next-Best-Product Recommendation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       1. MODERN ACADEMIC DESIGN SYSTEM (Clean, Light, Scannable)
+       ========================================================================== */
+    :root {
+      --bg-body: #f8fafc;
+      --bg-slide: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-hover: #f1f5f9;
+      
+      --border: #e2e8f0;
+      --border-focus: #94a3b8;
+      --border-accent: #bfdbfe;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-sub: #64748b;
+      
+      --primary: #1e3a8a;       /* Academic Navy */
+      --primary-accent: #2563eb;/* Modern Blue */
+      --primary-light: #eff6ff;
+      
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --success-border: #a7f3d0;
+      
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --warning-border: #fde68a;
+      
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --danger-border: #fecaca;
+
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --purple-border: #ddd6fe;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 10px rgba(0,0,0,0.06);
+      --shadow-slide: 0 16px 36px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --transition-slide: transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.38s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-body);
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Progress Bar */
+    .top-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #e2e8f0;
+      z-index: 100;
+    }
+    .top-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-accent));
+      transition: width 0.35s ease;
+    }
+
+    /* Slide Viewport */
+    .viewport {
+      position: absolute;
+      top: 10px;
+      bottom: 56px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+    }
+
+    .slide-deck {
+      position: relative;
+      width: 100%;
+      max-width: 1320px;
+      height: 100%;
+      max-height: 840px;
+      background: var(--bg-slide);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-slide);
+      overflow: hidden;
+    }
+
+    /* Slide Item */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 32px 42px 24px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(100%);
+      transition: var(--transition-slide);
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    .slide.past {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-100%);
+      z-index: 1;
+    }
+
+    /* Fade Transition Alternative */
+    .deck-fade .slide {
+      transform: scale(0.98);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+    .deck-fade .slide.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .deck-fade .slide.past {
+      transform: scale(1.02);
+      opacity: 0;
+    }
+
+    /* ==========================================================================
+       2. SLIDE HEADER & FOOTER
+       ========================================================================== */
+    .slide-header {
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    .slide-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary-accent);
+      margin-bottom: 4px;
+    }
+
+    .slide-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .slide-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .badge-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .slide-footer {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-sub);
+      flex-shrink: 0;
+    }
+
+    .source-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       3. CONCISE MODERN UI COMPONENTS
+       ========================================================================== */
+    /* Grid Utilities */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+
+    /* Visual Stat Pill */
+    .stat-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-pill.highlight {
+      background: var(--primary-light);
+      border-color: var(--border-accent);
+    }
+    .stat-pill-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .stat-pill-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+    .stat-pill-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* Cards */
+    .card-clean {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-clean.accent-blue {
+      border-top: 3px solid var(--primary-accent);
+      background: #ffffff;
+    }
+    .card-clean.accent-green {
+      border-top: 3px solid var(--success);
+      background: #fafdfc;
+    }
+    .card-clean.accent-amber {
+      border-top: 3px solid var(--warning);
+      background: #fffdf9;
+    }
+    .card-clean.accent-red {
+      border-top: 3px solid var(--danger);
+      background: #fffafa;
+    }
+
+    .card-head {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Punchy Bullet Lists */
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .bullet-list li {
+      position: relative;
+      padding-left: 16px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+    .bullet-list li::before {
+      content: "•";
+      position: absolute;
+      left: 3px;
+      color: var(--primary-accent);
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .bullet-list strong {
+      color: var(--text-main);
+    }
+
+    /* Status Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tag-core { background: var(--success-light); color: var(--success); border: 1px solid var(--success-border); }
+    .tag-sec { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning-border); }
+    .tag-drop { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger-border); }
+    .tag-proto { background: var(--purple-light); color: var(--purple); border: 1px solid var(--purple-border); }
+    .tag-na { background: var(--bg-card); color: var(--text-sub); border: 1px solid var(--border); }
+
+    /* Compact Scannable Table */
+    .table-compact {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .table-compact th {
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .table-compact td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      vertical-align: middle;
+    }
+    .table-compact tr.row-target {
+      background: var(--primary-light);
+      font-weight: 600;
+    }
+    .table-compact tr.row-target td {
+      color: var(--text-main);
+    }
+
+    /* Callout Strip */
+    .callout-strip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary-accent);
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .callout-strip strong {
+      color: var(--text-main);
+    }
+    .callout-strip.amber {
+      border-left-color: var(--warning);
+      background: var(--warning-light);
+      color: #78350f;
+    }
+
+    .code-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ==========================================================================
+       4. BOTTOM NAVIGATION BAR
+       ========================================================================== */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 54px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 90;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-counter {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      border: 1px solid var(--border-accent);
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-dot.active {
+      width: 18px;
+      border-radius: 4px;
+      background: var(--primary-accent);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-action:hover:not(:disabled) {
+      background: #ffffff;
+      border-color: var(--primary-accent);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-action:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 960px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 22px 24px;
+      box-shadow: var(--shadow-slide);
+    }
+    .overview-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .tile-card {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .tile-card:hover {
+      border-color: var(--primary-accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .tile-card.current {
+      border-color: var(--primary-accent);
+      background: var(--primary-light);
+    }
+
+    /* Print Optimization */
+    @media print {
+      body { background: #ffffff; overflow: visible !important; }
+      .top-progress, .nav-bar, .modal-overlay { display: none !important; }
+      .viewport { position: static !important; padding: 0 !important; display: block !important; }
+      .slide-deck { border: none !important; box-shadow: none !important; max-width: 100% !important; max-height: none !important; }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        min-height: 98vh !important;
+        padding: 30px !important;
+        border-bottom: 1px dashed #cbd5e1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Progress Line -->
+  <div class="top-progress">
+    <div class="top-progress-fill" id="progressBar"></div>
+  </div>
+
+  <!-- Viewport -->
+  <main class="viewport">
+    <div class="slide-deck" id="slideDeck">
+
+      <!-- ===================================================================
+           SLIDE 1: WHERE WE STARTED (TỔNG QUAN 11 DATASETS)
+           =================================================================== -->
+      <section class="slide active" data-slide="1">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 01 • Khảo Sát & Sàng Lọc</div>
+            <h2 class="slide-title">Điểm Khởi Đầu: 3 Lĩnh Vực & 11 Bộ Dữ Liệu</h2>
+            <p class="slide-subtitle">Sàng lọc bằng 5 yêu cầu bắt buộc — không dùng điểm số, mỗi yêu cầu đo trực tiếp từ dữ liệu.</p>
+          </div>
+          <span class="badge-pill">Tuần 1 • Screening</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- Stat Row -->
+          <div class="grid-3">
+            <div class="stat-pill highlight">
+              <span class="stat-pill-num">11 Datasets</span>
+              <span class="stat-pill-title">Sàng Lọc Toàn Diện</span>
+              <span class="stat-pill-sub">8 bộ đề xuất + 3 bộ tìm kiếm mở rộng</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">100% Scripted</span>
+              <span class="stat-pill-title">Đo Kiểm Bằng Code</span>
+              <span class="stat-pill-sub">Xử lý chunked cho file lớn hơn RAM</span>
+            </div>
+            <div class="stat-pill" id="pillJumpCriteria" style="cursor: pointer; border-color: var(--border-accent); background: #fdfefe;" title="Nhấp để xem chi tiết Phụ lục A: Định nghĩa tiêu chí">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span class="stat-pill-num">5 + 10</span>
+                <span style="font-size: 11px; font-weight: 700; color: var(--primary-accent);">Xem Phụ Lục A ↗</span>
+              </div>
+              <span class="stat-pill-title">Yêu Cầu & Tiêu Chí</span>
+              <span class="stat-pill-sub">5 điều kiện bắt buộc + 10 tiêu chí trạng thái</span>
+            </div>
+          </div>
+
+          <!-- R1-R5 legend -->
+          <div style="font-size: 11px; color: var(--text-sub); display:flex; gap:14px; flex-wrap:wrap;">
+            <span><strong>R1</strong> Định danh actor thật</span>
+            <span><strong>R2</strong> Item ID ổn định</span>
+            <span><strong>R3</strong> Mốc thời gian tuyệt đối</span>
+            <span><strong>R4</strong> Giấy phép cho nghiên cứu</span>
+            <span><strong>R5</strong> Tải & tái lập được</span>
+          </div>
+
+          <!-- R1-R5 Requirements Table -->
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table class="table-compact">
+              <thead>
+                <tr>
+                  <th style="width: 22%;">Bộ dữ liệu</th>
+                  <th style="width: 8%;">R1</th>
+                  <th style="width: 8%;">R2</th>
+                  <th style="width: 8%;">R3</th>
+                  <th style="width: 8%;">R4</th>
+                  <th style="width: 8%;">R5</th>
+                  <th style="width: 16%;">Kết luận</th>
+                  <th style="width: 22%;">Lý do chặn (nếu có)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="row-target">
+                  <td><strong>Expedia</strong> (Du lịch)</td>
+                  <td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-core">Vào vòng so sánh</span></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Trivago 2019 (Du lịch)</td>
+                  <td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-core">Vào vòng so sánh</span></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Airbnb New User (Du lịch)</td>
+                  <td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-core">Vào vòng so sánh</span></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Hotel Booking Demand (Du lịch)</td>
+                  <td style="color:var(--danger); font-weight:700;">✗</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td>Không có ID khách dưới mọi hình thức</td>
+                </tr>
+                <tr>
+                  <td>Akeed (Đồ ăn)</td>
+                  <td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-sec">Ngoài phạm vi</span></td>
+                  <td>Miền đồ ăn — tạm hoãn (§1)</td>
+                </tr>
+                <tr>
+                  <td>Instacart (Đồ ăn)</td>
+                  <td>✓</td><td>✓</td><td style="color:var(--danger); font-weight:700;">✗</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td>Không có ngày lịch tuyệt đối</td>
+                </tr>
+                <tr>
+                  <td>Yelp (Đồ ăn)</td>
+                  <td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-sec">Ngoài phạm vi</span></td>
+                  <td>Miền đồ ăn — tạm hoãn (§1)</td>
+                </tr>
+                <tr>
+                  <td>Porto Taxi (Gọi xe)</td>
+                  <td style="color:var(--danger); font-weight:700;">✗</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td><code class="code-tag">TAXI_ID</code> là tài xế, không phải hành khách</td>
+                </tr>
+                <tr>
+                  <td>Citi Bike (Gọi xe)</td>
+                  <td style="color:var(--danger); font-weight:700;">✗</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td>Không có ID người đi</td>
+                </tr>
+                <tr>
+                  <td>NYC TLC (Gọi xe)</td>
+                  <td style="color:var(--danger); font-weight:700;">✗</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td>Chỉ có vùng đón/trả, không có actor</td>
+                </tr>
+                <tr>
+                  <td>MovieLens (Benchmark)</td>
+                  <td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td>
+                  <td><span class="tag tag-proto">Chỉ thử pipeline</span></td>
+                  <td>Không có ngữ cảnh du lịch</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bottom takeaway with link to Appendix A -->
+          <div class="callout-strip">
+            <div style="flex: 1;">
+              💡 <span><strong>Kết quả sàng lọc:</strong> 4/11 bộ trượt ngay yêu cầu <strong>định danh actor thật</strong> (R1); 1/11 trượt yêu cầu <strong>mốc thời gian tuyệt đối</strong> (R3). Không dùng điểm số — mỗi yêu cầu là câu hỏi đúng/sai đo trực tiếp từ dữ liệu.</span>
+            </div>
+            <button class="btn-action" id="btnLinkToCriteria" style="font-size: 11px; padding: 4px 10px; color: var(--primary); background: #ffffff; border-color: var(--border-accent); white-space: nowrap;">
+              Xem Phụ Lục A (Tiêu chí) ↗
+            </button>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/dataset_selection.md • reports/summary/eda_summary.md §2</span>
+          <span>Trang 01 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="2">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 02 • Quyết Định Chiến Lược</div>
+            <h2 class="slide-title">Một Lĩnh Vực, Một Bộ Dữ Liệu: Du Lịch — Expedia</h2>
+            <p class="slide-subtitle">Lựa chọn dựa trên tính khả thi thực tế khi trả lời câu hỏi nghiên cứu bằng dữ liệu thật.</p>
+          </div>
+          <span class="badge-pill">Scope Decision</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- 3-Column Domain Verdict -->
+          <div class="grid-3">
+            <!-- Travel Selected -->
+            <div class="card-clean accent-green">
+              <div class="card-head">
+                <span>1. Du lịch — Expedia</span>
+                <span class="tag tag-core">ĐƯỢC CHỌN</span>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>Actor thực:</strong> 813,985 user có booking thật.</li>
+                <li><strong>Ngữ cảnh 100% thật:</strong> Đoàn khách (solo/cặp đôi/gia đình), ngày đi, gói combo, 2 năm có mùa vụ.</li>
+                <li><strong>Dữ liệu cực sạch:</strong> 0% thiếu ngày đi/về; chỉ 8 khóa trùng / 3M booking.</li>
+                <li><strong>Khớp lộ trình mentor:</strong> Đáp ứng hoàn hảo Phase 3 (Sequential) & Phase 4 (Context).</li>
+              </ul>
+            </div>
+
+            <!-- Food Deferred -->
+            <div class="card-clean accent-amber">
+              <div class="card-head">
+                <span>2. Đồ ăn — Akeed</span>
+                <span class="tag tag-sec">TẠM HOÃN</span>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>Actor:</strong> 27,445 khách hàng thật.</li>
+                <li><strong>Tọa độ giả lập 100%:</strong> Tọa độ nằm ngoài Oman; không thể ghép dữ liệu thời tiết.</li>
+                <li><strong>Chất lượng lỗi:</strong> 41.1% đơn hàng có khoảng cách giao ≤ 0; 81 đơn trùng ID.</li>
+                <li><strong>Thiếu 2/4 yếu tố của RQ2:</strong> Rủi ro học thuật quá lớn.</li>
+              </ul>
+            </div>
+
+            <!-- Taxi Dropped -->
+            <div class="card-clean accent-red">
+              <div class="card-head">
+                <span>3. Gọi xe — Porto / NYC</span>
+                <span class="tag tag-drop">KHÔNG KHẢ THI</span>
+              </div>
+              <ul class="bullet-list">
+                <li><strong>Không có ID hành khách:</strong> Chỉ có ID tài xế (Porto), vùng đón (TLC), trạm xe (Citi Bike).</li>
+                <li><strong>Không thể cá nhân hóa:</strong> Không có lịch sử người đi để gợi ý.</li>
+                <li><strong>Lạc đề:</strong> Bài toán dự đoán điểm đến xe taxi nằm ngoài kế hoạch các phase của mentor.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Impact Card -->
+          <div class="grid-2">
+            <div class="callout-strip">
+              🎯 <span><strong>Trọng tâm triển khai ngay:</strong> Tập trung giải quyết trọn vẹn <strong>RQ1</strong> (So sánh mô hình theo ngữ cảnh) và <strong>RQ4</strong> (Đánh đổi Accuracy vs Diversity).</span>
+            </div>
+            <div class="callout-strip amber">
+              ⏸️ <span><strong>Tạm hoãn:</strong> Tạm dừng <strong>RQ2</strong> (Giao đồ ăn) và <strong>RQ3</strong> (Bán chéo giả lập) để dồn toàn lực vào lĩnh vực Du lịch (Vinpearl proxy).</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: data cards expedia.md, akeed.md, porto_taxi.md • reports/summary/eda_summary.md</span>
+          <span>Trang 02 / 15</span>
+        </div>
+      </section>
+      <!-- ===================================================================
+           SLIDE 3: CRITERIA MATRIX - 4 TRAVEL CANDIDATES (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="3">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 03 • Đánh Giá Định Tính Có Cấu Trúc</div>
+            <h2 class="slide-title">Ma Trận Tiêu Chí: 4 Ứng Viên Du Lịch</h2>
+            <p class="slide-subtitle">Mỗi ô = trạng thái (Phù hợp / Cân nhắc / Không phù hợp / Không áp dụng) + bằng chứng đo được — không cộng điểm.</p>
+          </div>
+          <span class="badge-pill">Criteria Matrix</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table class="table-compact" style="font-size: 9.6px;">
+              <thead>
+                <tr>
+                  <th style="width: 15%;">Tiêu chí</th>
+                  <th style="width: 21.25%;">Expedia</th>
+                  <th style="width: 21.25%;">Trivago 2019</th>
+                  <th style="width: 21.25%;">Airbnb</th>
+                  <th style="width: 21.25%;">Hotel Booking Demand</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. Khớp bài toán</strong></td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 100 cụm, top-K trực tiếp nhưng cụm ≠ hạng phòng (proxy)</td>
+                  <td><span class="tag tag-core">Phù hợp</span> Clickout từ impression list, đúng dạng top-K</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> 12 lớp quốc gia, 1 sự kiện/user</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> Không có khoá cá nhân hoá</td>
+                </tr>
+                <tr>
+                  <td><strong>2. Định danh người dùng</strong></td>
+                  <td><span class="tag tag-core">Phù hợp</span> 1,198,786 user; 813,985 có booking</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 730,803 user nhưng 83.55% chỉ 1 session</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Có ID nhưng đúng 1 sự kiện/user</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> Không có ID khách</td>
+                </tr>
+                <tr>
+                  <td><strong>3. Chiều sâu lịch sử</strong></td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Trung vị 2.0 booking; 61.22% user ≥2</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 56.43% user chỉ 1 clickout; chỉ dùng ở mức session</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> 0% user có ≥2 sự kiện</td>
+                  <td><span class="tag tag-na">Không áp dụng</span> Không có actor</td>
+                </tr>
+                <tr>
+                  <td><strong>4. Độ dài thời gian & mùa vụ</strong></td>
+                  <td><span class="tag tag-core">Phù hợp</span> 723 ngày, 2 chu kỳ năm</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> 5 ngày (2018-11-01→06)</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 1,641 ngày nhưng không có chuỗi/user</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 1,063 ngày, không gắn được vào user</td>
+                </tr>
+                <tr>
+                  <td><strong>5. Ngữ cảnh chuyến đi</strong></td>
+                  <td><span class="tag tag-core">Phù hợp</span> Party/ngày/combo/điểm đến, 100% coverage trên booking</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Thiết bị, thành phố, giá; không có quy mô đoàn</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> Không có ngữ cảnh chuyến đi</td>
+                  <td><span class="tag tag-core">Phù hợp</span> Party, ngày, giá, kênh, bữa ăn</td>
+                </tr>
+                <tr>
+                  <td><strong>6. Chất lượng tín hiệu</strong></td>
+                  <td><span class="tag tag-core">Phù hợp</span> 3,000,693 booking thật, tách được click</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Clickout, không phải giao dịch mua</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 58.35% user không đặt (NDF)</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Bản ghi đặt phòng, 37.04% huỷ</td>
+                </tr>
+                <tr>
+                  <td><strong>7. Metadata sản phẩm</strong></td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> Cụm ẩn danh, không có text</td>
+                  <td><span class="tag tag-core">Phù hợp</span> 927,142 item, trung vị 15 tag, 157 thuộc tính</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> 12 quốc gia</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Loại phòng, bữa ăn, kênh</td>
+                </tr>
+                <tr>
+                  <td><strong>8. Chất lượng dữ liệu</strong></td>
+                  <td><span class="tag tag-core">Phù hợp</span> 1.51% ô thiếu; 21/24 cột đầy đủ</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 22.74% ô thiếu</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 6.40%; date_first_booking thiếu 58.35%</td>
+                  <td><span class="tag tag-drop">Không phù hợp</span> 26.80% dòng trùng lặp hoàn toàn</td>
+                </tr>
+                <tr>
+                  <td><strong>9. Tính khả thi</strong></td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 4.07 GB, phải quét chunked</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> 2.10 GB, phải quét chunked</td>
+                  <td><span class="tag tag-core">Phù hợp</span> 24.9 MB</td>
+                  <td><span class="tag tag-core">Phù hợp</span> 16.9 MB</td>
+                </tr>
+                <tr>
+                  <td><strong>10. Giấy phép</strong></td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Kaggle rules, chỉ nghiên cứu</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Bản mirror, chưa xác minh</td>
+                  <td><span class="tag tag-sec">Cân nhắc</span> Kaggle rules</td>
+                  <td><span class="tag tag-core">Phù hợp</span> CC BY 4.0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout-strip">
+            🔍 <span><strong>Đọc ma trận:</strong> Expedia thắng <em>không phải</em> vì tốt nhất ở mọi tiêu chí — thua ở 4/10 (khớp bài toán, metadata, khả thi, giấy phép) — mà vì là ứng viên <strong>duy nhất không có "Không phù hợp" nào trong 6 tiêu chí chặn</strong> (Nhóm A, xem Slide 04).</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/dataset_selection.md • reports/summary/dataset_benchmark.json, trivago_profile.json</span>
+          <span>Trang 03 / 15</span>
+        </div>
+      </section>
+      <!-- ===================================================================
+           SLIDE 4: DECISION RULE & BACKUP TRIGGER (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="4">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 04 • Quy Tắc Quyết Định</div>
+            <h2 class="slide-title">Từ Ma Trận Đến Quyết Định — Không Cộng Điểm</h2>
+            <p class="slide-subtitle">4 bước tường minh, áp dụng lại được bằng mắt trên ma trận Slide 03.</p>
+          </div>
+          <span class="badge-pill">Decision Rule</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card-clean accent-blue">
+              <div class="card-head">4 Bước Quyết Định</div>
+              <ul class="bullet-list">
+                <li><strong>Bước 1 — Điều kiện bắt buộc:</strong> Bộ dữ liệu phải đạt cả 5 yêu cầu R1–R5 (Slide 01). Không đạt bất kỳ yêu cầu nào → loại, không xét tiếp.</li>
+                <li><strong>Bước 2 — Tiêu chí chặn (Nhóm A):</strong> Không được có trạng thái <em>Không phù hợp</em> ở: khớp bài toán, định danh người dùng, chiều sâu lịch sử, độ dài thời gian & mùa vụ, chất lượng tín hiệu, chất lượng dữ liệu.</li>
+                <li><strong>Bước 3 — Tiêu chí hỗ trợ (Nhóm B):</strong> Ngữ cảnh, metadata, khả thi, giấy phép — mô tả đánh đổi, <strong>không dùng để loại</strong>.</li>
+                <li><strong>Bước 4 — Kết luận:</strong> Chỉ Expedia không có <em>Không phù hợp</em> nào ở Nhóm A → <strong>Đã chọn</strong>. Trivago chỉ trượt đúng <strong>một</strong> tiêu chí chặn (độ dài thời gian) → <strong>Dự phòng</strong>.</li>
+              </ul>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Nhóm A vs Nhóm B (6 chặn + 4 hỗ trợ)</div>
+              <div class="grid-2" style="gap: 10px; margin-top: 4px;">
+                <div class="stat-pill" style="border-color: var(--danger-border);">
+                  <span class="stat-pill-title" style="color: var(--danger);">Nhóm A — Chặn</span>
+                  <span class="stat-pill-sub">1. Khớp bài toán<br>2. Định danh người dùng<br>3. Chiều sâu lịch sử<br>4. Thời gian & mùa vụ<br>6. Chất lượng tín hiệu<br>8. Chất lượng dữ liệu</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-pill-title">Nhóm B — Hỗ trợ</span>
+                  <span class="stat-pill-sub">5. Ngữ cảnh chuyến đi<br>7. Metadata sản phẩm<br>9. Tính khả thi<br>10. Giấy phép</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="callout-strip">
+              ✅ <span><strong>Expedia — Đã chọn:</strong> 0/6 tiêu chí Nhóm A ở trạng thái Không phù hợp. Thắng ở đúng những tiêu chí quyết định khả năng mô hình hoá (định danh, lịch sử, mùa vụ, tín hiệu, chất lượng), thua ở các tiêu chí hỗ trợ (metadata, giấy phép).</span>
+            </div>
+            <div class="callout-strip amber">
+              🔁 <span><strong>Trivago — Điều kiện kích hoạt dự phòng:</strong> Trượt đúng 1 tiêu chí Nhóm A (độ dài thời gian & mùa vụ, 5 ngày). Kích hoạt chuyển đổi khi: (a) Expedia trùng đề tài với nhóm khác, hoặc (b) RQ1 đổi từ bài toán mùa vụ dài hạn sang session-based ngắn hạn. Xem hồ sơ đầy đủ → Phụ Lục B.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/dataset_selection.md §4 (quy tắc quyết định)</span>
+          <span>Trang 04 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="5">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 05 • Đánh Giá Định Lượng</div>
+            <h2 class="slide-title">Vì Sao Chọn Expedia — Bằng Số Liệu</h2>
+            <p class="slide-subtitle">So sánh 6 bộ dữ liệu trên cùng bộ tiêu chí: quy mô, mật độ, khoảng thời gian, tỷ lệ thiếu dữ liệu — đo trực tiếp từ file gốc. Nối tiếp ma trận trạng thái ở Slide 03.</p>
+          </div>
+          <span class="badge-pill">Dataset Benchmark</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table class="table-compact" style="font-size: 10.8px;">
+              <thead>
+                <tr>
+                  <th style="width: 17%;">Chỉ số</th>
+                  <th style="width: 15%;">Expedia (chọn)</th>
+                  <th style="width: 14%;">Trivago (dự phòng)</th>
+                  <th style="width: 13%;">Airbnb</th>
+                  <th style="width: 14%;">Hotel Booking Demand</th>
+                  <th style="width: 13%;">Akeed (food)</th>
+                  <th style="width: 14%;">Porto Taxi (ride)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Kết luận (Slide 01, 03)</strong></td>
+                  <td><span class="tag tag-core">Đã chọn</span></td>
+                  <td><span class="tag tag-sec">Dự phòng</span></td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                  <td><span class="tag tag-sec">Ngoài phạm vi</span></td>
+                  <td><span class="tag tag-drop">Loại</span></td>
+                </tr>
+                <tr class="row-target">
+                  <td>Số dòng quét</td>
+                  <td><strong>37,670,293</strong></td>
+                  <td>15,932,992</td>
+                  <td>213,451</td>
+                  <td>119,390</td>
+                  <td>135,303</td>
+                  <td>1,710,670</td>
+                </tr>
+                <tr>
+                  <td>Số user</td>
+                  <td><strong>1,198,786</strong> (813,985 có booking)</td>
+                  <td>730,803</td>
+                  <td>213,451</td>
+                  <td>— (không có ID khách)</td>
+                  <td>27,445</td>
+                  <td>— (448 tài xế)</td>
+                </tr>
+                <tr>
+                  <td>Không gian item</td>
+                  <td><strong>100 cụm</strong></td>
+                  <td>289,506 khách sạn</td>
+                  <td>12 quốc gia</td>
+                  <td>10 loại phòng</td>
+                  <td>100 vendor</td>
+                  <td>GPS thô (chưa gán nhãn)</td>
+                </tr>
+                <tr>
+                  <td>Tương tác mục tiêu</td>
+                  <td><strong>3,000,693 booking</strong></td>
+                  <td>1,586,586 clickout</td>
+                  <td>88,908 first-booking</td>
+                  <td>119,390 dòng</td>
+                  <td>135,303 đơn</td>
+                  <td>1,710,670 chuyến</td>
+                </tr>
+                <tr class="row-target">
+                  <td>Khoảng thời gian</td>
+                  <td><strong>723 ngày</strong> (2013-01→2014-12)</td>
+                  <td>5 ngày (2018-11-01→06)</td>
+                  <td>1,641 ngày</td>
+                  <td>1,063 ngày</td>
+                  <td>295 ngày</td>
+                  <td>364 ngày</td>
+                </tr>
+                <tr>
+                  <td>Tỷ lệ thiếu dữ liệu (toàn file)</td>
+                  <td><strong>1.51%</strong></td>
+                  <td>22.74%</td>
+                  <td>6.40%</td>
+                  <td>3.39%</td>
+                  <td>27.18%</td>
+                  <td>16.44%</td>
+                </tr>
+                <tr class="row-target">
+                  <td>Tương tác / item</td>
+                  <td><strong>30,006.9</strong></td>
+                  <td>5.48</td>
+                  <td>7,409</td>
+                  <td>11,939</td>
+                  <td>1,353</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Loại tín hiệu</td>
+                  <td><strong>Booking</strong> (tách được click)</td>
+                  <td>Clickout (không mua)</td>
+                  <td>First-booking country</td>
+                  <td>Reservation record</td>
+                  <td>Delivered order</td>
+                  <td>Trajectory</td>
+                </tr>
+                <tr>
+                  <td>Lỗi chặn (blocking defect)</td>
+                  <td><strong>Không có</strong></td>
+                  <td>Chỉ 5 ngày dữ liệu</td>
+                  <td>1 sự kiện / user</td>
+                  <td>Không ID khách; 26.8% dòng trùng</td>
+                  <td>Tọa độ giả lập; 41.1% đơn lỗi khoảng cách</td>
+                  <td>Không có ID hành khách</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-2">
+            <div class="callout-strip">
+              🎯 <span><strong>Vì sao Expedia thắng:</strong> Mật độ tương tác/item cao gấp <strong>5,476×</strong> Trivago (30,006.9 vs 5.48); khoảng thời gian dài gấp <strong>144.6×</strong> (723 vs 5 ngày); tỷ lệ thiếu dữ liệu thấp nhất trong 6 bộ (1.51%).</span>
+            </div>
+            <div class="callout-strip amber">
+              🧰 <span><strong>Trivago vẫn giữ giá trị dự phòng:</strong> 927,142 item có text metadata (trung vị 15 tag/item) và giá hiển thị sẵn có — Expedia không có, hữu ích nếu cần LLM rerank hoặc mô hình giá. <em>Hồ sơ đầy đủ → Phụ Lục B.</em></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: scripts/dataset_benchmark.py • reports/summary/dataset_benchmark.{json,csv}</span>
+          <span>Trang 05 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="6">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 06 • Định Nghĩa Bài Toán</div>
+            <h2 class="slide-title">Next-Best-Product Cho Du Lịch: Định Nghĩa & Thách Thức</h2>
+            <p class="slide-subtitle">Dự đoán điểm đến / hạng phòng / gói nghỉ dưỡng khách hàng có xác suất đặt cao nhất.</p>
+          </div>
+          <span class="badge-pill">Problem Formulation</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Problem Inputs & Output -->
+            <div class="card-clean accent-blue">
+              <div class="card-head">Không Gian Bài Toán (Expedia Proxy)</div>
+              <ul class="bullet-list">
+                <li><strong>Đầu vào du khách:</strong> <code class="code-tag">user_id</code>, lịch sử đặt, nguồn gốc khách, khoảng cách ước tính.</li>
+                <li><strong>Ngữ cảnh chuyến đi:</strong>
+                  <br>• Đoàn: Người lớn, trẻ em, số phòng
+                  <br>• Lịch trình: Ngày nhận / trả phòng (tính mùa vụ)
+                  <br>• Kênh: Tìm kiếm điểm đến (<code class="code-tag">srch_destination_id</code>), cờ gói combo (<code class="code-tag">is_package</code>).
+                </li>
+                <li><strong>Mục tiêu dự đoán (Target):</strong> 100 cụm khách sạn (<code class="code-tag">hotel_cluster</code>) — đại diện cho hạng phòng / combo nghỉ dưỡng Vinpearl.</li>
+              </ul>
+            </div>
+
+            <!-- Why Harder than E-commerce -->
+            <div class="card-clean">
+              <div class="card-head">4 Thách Thức Đặc Thù Của Du Lịch</div>
+              <ul class="bullet-list">
+                <li><strong>Tần suất đặt rất thấp:</strong> phần lớn user chỉ có 1-2 lượt booking trong 2 năm — dữ liệu thưa cho mọi mô hình CF. <em>(số liệu đo → Slide 12)</em></li>
+                <li><strong>Mùa vụ theo tháng check-in:</strong> nhu cầu biến động rõ rệt trong năm, và khác nhau theo từng loại đoàn khách. <em>(số liệu đo → Slide 10)</em></li>
+                <li><strong>Ngữ cảnh đoàn khách:</strong> solo / cặp đôi / gia đình / nhóm có hành vi đặt phòng khác biệt (lead time, tỷ lệ gói combo). <em>(số liệu đo → Slide 10)</em></li>
+                <li><strong>Danh mục thưa:</strong> 100 cụm nhưng độ tập trung không đều, nhiều điểm đến chỉ xuất hiện 1 lần. <em>(số liệu đo → Slide 05, 12)</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom Gap note -->
+          <div class="callout-strip amber">
+            ⚠️ <span><strong>Giới hạn phạm vi (Known Gap):</strong> Dịch vụ tại điểm lưu trú (in-stay: spa, ẩm thực, vui chơi) không có dataset công khai tương ứng. Do đó, benchmark tập trung 100% vào <strong>quyết định đặt phòng trước chuyến đi (pre-stay)</strong>.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/expedia.md • reports/summary/expedia_profile.json</span>
+          <span>Trang 06 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="7">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 07 • Schema Chi Tiết (1/2)</div>
+            <h2 class="slide-title">Schema `train.csv`: Tương Tác, Định Danh & Ngữ Cảnh Chuyến Đi</h2>
+            <p class="slide-subtitle">12/24 trường — đo trên toàn bộ 37,670,293 dòng bằng chunked pass, không lấy mẫu.</p>
+          </div>
+          <span class="badge-pill">Schema Table 1/2</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table class="table-compact" style="font-size: 10.8px;">
+              <thead>
+                <tr>
+                  <th style="width:4%;">No.</th>
+                  <th style="width:13%;">Nhóm</th>
+                  <th style="width:14%;">Field</th>
+                  <th style="width:12%;">Coverage (all)</th>
+                  <th style="width:14%;">Coverage (booking)</th>
+                  <th style="width:10%;">Distinct</th>
+                  <th style="width:33%;">Khoảng giá trị / Mẫu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td><span class="tag tag-core">Interaction/time</span></td><td><code class="code-tag">date_time</code></td><td>100.00%</td><td>100.00%</td><td>—</td><td>2013-01-07 .. 2014-12-31</td></tr>
+                <tr><td>2</td><td><span class="tag tag-core">Interaction/time</span></td><td><code class="code-tag">is_booking</code></td><td>100.00%</td><td>100.00%</td><td>2</td><td>0 (click) / 1 (booking)</td></tr>
+                <tr><td>3</td><td><span class="tag tag-core">Interaction/time</span></td><td><code class="code-tag">cnt</code></td><td>100.00%</td><td>100.00%</td><td>104</td><td>1 .. 269</td></tr>
+                <tr><td>4</td><td><span class="tag tag-proto">User identity</span></td><td><code class="code-tag">user_id</code></td><td>100.00%</td><td>100.00%</td><td><strong>1,198,786</strong></td><td>0 .. 1,198,785</td></tr>
+                <tr class="row-target"><td>5</td><td><span class="tag tag-sec">Trip context</span></td><td><code class="code-tag">srch_ci</code></td><td>99.88%</td><td><strong>100.00%</strong></td><td>1,269</td><td>2012-02-15 .. <strong>2558-03-15</strong> ⚠️</td></tr>
+                <tr class="row-target"><td>6</td><td><span class="tag tag-sec">Trip context</span></td><td><code class="code-tag">srch_co</code></td><td>99.88%</td><td><strong>100.00%</strong></td><td>1,262</td><td>2012-09-04 .. <strong>2558-03-16</strong> ⚠️</td></tr>
+                <tr><td>7</td><td><span class="tag tag-sec">Trip context</span></td><td><code class="code-tag">srch_adults_cnt</code></td><td>100.00%</td><td>100.00%</td><td>10</td><td>0 .. 9</td></tr>
+                <tr><td>8</td><td><span class="tag tag-sec">Trip context</span></td><td><code class="code-tag">srch_children_cnt</code></td><td>100.00%</td><td>100.00%</td><td>10</td><td>0 .. 9</td></tr>
+                <tr><td>9</td><td><span class="tag tag-sec">Trip context</span></td><td><code class="code-tag">srch_rm_cnt</code></td><td>100.00%</td><td>100.00%</td><td>9</td><td>0 .. 8</td></tr>
+                <tr><td>10</td><td><span class="tag tag-sec">Trip context</span></td><td><code class="code-tag">is_package</code></td><td>100.00%</td><td>100.00%</td><td>2</td><td>0 / 1</td></tr>
+                <tr><td>11</td><td><span class="tag tag-drop">Search/destination</span></td><td><code class="code-tag">srch_destination_id</code></td><td>100.00%</td><td>100.00%</td><td>59,455</td><td>0 .. 65,107</td></tr>
+                <tr><td>12</td><td><span class="tag tag-drop">Search/destination</span></td><td><code class="code-tag">srch_destination_type_id</code></td><td>100.00%</td><td>100.00%</td><td>10</td><td>0 .. 9</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout-strip amber">
+            ⚠️ <span><strong>Bất thường phát hiện qua Coverage/Range:</strong> <code class="code-tag">srch_ci</code>/<code class="code-tag">srch_co</code> có giá trị max tới năm <strong>2558</strong> trên toàn file — nhưng trên tập <strong>booking thì coverage đạt 100.00%</strong> và không còn giá trị viễn tưởng nào (xem kiểm định đầy đủ ở Slide 11). Đây là lý do cốt lõi để chỉ huấn luyện trên <code class="code-tag">is_booking==1</code>.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: scripts/expedia_schema_table.py • reports/summary/expedia_schema_table.md</span>
+          <span>Trang 07 / 15</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 6: SCHEMA TABLE PART II (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="8">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 08 • Schema Chi Tiết (2/2)</div>
+            <h2 class="slide-title">Schema `train.csv`: Target, Địa Lý & Kênh Tiếp Cận</h2>
+            <p class="slide-subtitle">12/24 trường còn lại — nhóm Hotel/target, User geography, Channel/platform.</p>
+          </div>
+          <span class="badge-pill">Schema Table 2/2</span>
+        </div>
+
+        <div class="slide-body">
+          <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+            <table class="table-compact" style="font-size: 10.8px;">
+              <thead>
+                <tr>
+                  <th style="width:4%;">No.</th>
+                  <th style="width:13%;">Nhóm</th>
+                  <th style="width:14%;">Field</th>
+                  <th style="width:12%;">Coverage (all)</th>
+                  <th style="width:14%;">Coverage (booking)</th>
+                  <th style="width:10%;">Distinct</th>
+                  <th style="width:33%;">Khoảng giá trị / Mẫu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="row-target"><td>13</td><td><span class="tag tag-core">Hotel/target</span></td><td><code class="code-tag">hotel_cluster</code></td><td>100.00%</td><td>100.00%</td><td><strong>100</strong></td><td>0 .. 99 — TARGET</td></tr>
+                <tr><td>14</td><td><span class="tag tag-core">Hotel/target</span></td><td><code class="code-tag">hotel_continent</code></td><td>100.00%</td><td>100.00%</td><td>7</td><td>0 .. 6</td></tr>
+                <tr><td>15</td><td><span class="tag tag-core">Hotel/target</span></td><td><code class="code-tag">hotel_country</code></td><td>100.00%</td><td>100.00%</td><td>213</td><td>0 .. 212</td></tr>
+                <tr><td>16</td><td><span class="tag tag-core">Hotel/target</span></td><td><code class="code-tag">hotel_market</code></td><td>100.00%</td><td>100.00%</td><td>2,118</td><td>0 .. 2,117</td></tr>
+                <tr class="row-target"><td>17</td><td><span class="tag tag-drop">User geography</span></td><td><code class="code-tag">orig_destination_distance</code></td><td><strong>64.10%</strong></td><td><strong>66.17%</strong></td><td>8,495,289</td><td>0.01 .. 12,407.90 dặm</td></tr>
+                <tr><td>18</td><td><span class="tag tag-drop">User geography</span></td><td><code class="code-tag">user_location_city</code></td><td>100.00%</td><td>100.00%</td><td>50,447</td><td>0 .. 56,508</td></tr>
+                <tr><td>19</td><td><span class="tag tag-drop">User geography</span></td><td><code class="code-tag">user_location_country</code></td><td>100.00%</td><td>100.00%</td><td>237</td><td>0 .. 239</td></tr>
+                <tr><td>20</td><td><span class="tag tag-drop">User geography</span></td><td><code class="code-tag">user_location_region</code></td><td>100.00%</td><td>100.00%</td><td>1,008</td><td>0 .. 1,027</td></tr>
+                <tr><td>21</td><td><span class="tag tag-proto">Channel/platform</span></td><td><code class="code-tag">channel</code></td><td>100.00%</td><td>100.00%</td><td>11</td><td>0 .. 10</td></tr>
+                <tr><td>22</td><td><span class="tag tag-proto">Channel/platform</span></td><td><code class="code-tag">is_mobile</code></td><td>100.00%</td><td>100.00%</td><td>2</td><td>0 / 1</td></tr>
+                <tr><td>23</td><td><span class="tag tag-proto">Channel/platform</span></td><td><code class="code-tag">posa_continent</code></td><td>100.00%</td><td>100.00%</td><td>5</td><td>0 .. 4</td></tr>
+                <tr><td>24</td><td><span class="tag tag-proto">Channel/platform</span></td><td><code class="code-tag">site_name</code></td><td>100.00%</td><td>100.00%</td><td>45</td><td>2 .. 53</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout-strip">
+            📊 <span><strong>Tổng kết 24 trường:</strong> 21/24 trường đạt 100% coverage trên toàn file; trên tập booking dùng để huấn luyện, <strong>23/24 trường đạt 100%</strong> — duy nhất <code class="code-tag">orig_destination_distance</code> chưa đầy đủ (66.17%). Đây là trường duy nhất cần chính sách xử lý thiếu dữ liệu; toàn bộ 23 trường còn lại dùng trực tiếp không cần impute.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: scripts/expedia_schema_table.py • reports/summary/expedia_schema_table.md</span>
+          <span>Trang 08 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="9">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 09 • EDA Trực Quan (1/4)</div>
+            <h2 class="slide-title">Khối Lượng Giao Dịch & Nhịp Thời Gian</h2>
+            <p class="slide-subtitle">Nhịp tuần và nhịp giờ trong ngày — đo trên 3,000,693 booking, 34,669,600 click.</p>
+          </div>
+          <span class="badge-pill">Visual EDA</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="stat-pill highlight">
+              <span class="stat-pill-num">4,144.6 / ngày</span>
+              <span class="stat-pill-title">Trung Bình Booking/Ngày</span>
+              <span class="stat-pill-sub">Trung vị 3,479 • CV = 0.41</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">0.975</span>
+              <span class="stat-pill-title">Tự Tương Quan Lag-7</span>
+              <span class="stat-pill-sub">Nhịp tuần chi phối (lag-364 chỉ 0.556)</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">7.2×</span>
+              <span class="stat-pill-title">Đỉnh/Đáy Theo Giờ</span>
+              <span class="stat-pill-sub">Đỉnh 11h (6.53%) vs đáy 03h (0.91%)</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card-clean">
+              <div class="card-head">Tỷ Trọng Booking Theo Thứ Trong Tuần</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:170px;" preserveAspectRatio="xMidYMid meet">
+                <rect x="58.6" y="36.2" width="116.0" height="147.8" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="116.6" y="30.2" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">16.3%</text>
+                <text x="116.6" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">T2</text>
+                <rect x="219.7" y="36.7" width="116.0" height="147.3" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="277.7" y="30.7" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">16.3%</text>
+                <text x="277.7" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">T3</text>
+                <rect x="380.8" y="37.1" width="116.0" height="146.9" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="438.9" y="31.1" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">16.2%</text>
+                <text x="438.9" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">T4</text>
+                <rect x="542.0" y="49.8" width="116.0" height="134.2" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="600.0" y="43.8" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">14.8%</text>
+                <text x="600.0" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">T5</text>
+                <rect x="703.1" y="58.0" width="116.0" height="126.0" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="761.1" y="52.0" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">13.9%</text>
+                <text x="761.1" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">T6</text>
+                <rect x="864.3" y="90.3" width="116.0" height="93.7" rx="3" style="fill:var(--warning)"/>
+                <text x="922.3" y="84.3" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">10.4%</text>
+                <text x="922.3" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">T7</text>
+                <rect x="1025.4" y="75.5" width="116.0" height="108.5" rx="3" style="fill:var(--warning)"/>
+                <text x="1083.4" y="69.5" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">12.0%</text>
+                <text x="1083.4" y="202.0" font-size="11" text-anchor="middle" fill="var(--text-sub)">CN</text>
+              </svg>
+              <div class="callout-strip" style="margin-top:2px;">📈 <span><strong>Insight:</strong> Cuối tuần (T7+CN) chỉ chiếm 22.36% booking — chu kỳ mạnh nhất là <strong>tuần</strong>, không phải mùa. Mọi feature thời gian phải mã hoá ngày-trong-tuần.</span></div>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Booking Theo Giờ Trong Ngày (chấm xanh = tỷ lệ chuyển đổi)</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:170px;" preserveAspectRatio="xMidYMid meet">
+                <path d="M 36.0,145.1 L 85.0,156.3 L 134.1,162.5 L 183.1,163.5 L 232.2,157.5 L 281.2,142.5 L 330.3,118.0 L 379.3,92.0 L 428.3,71.6 L 477.4,56.1 L 526.4,44.0 L 575.5,36.2 L 624.5,39.3 L 673.6,42.6 L 722.6,45.6 L 771.7,53.5 L 820.7,55.9 L 869.7,56.3 L 918.8,58.1 L 967.8,61.7 L 1016.9,72.4 L 1065.9,88.2 L 1115.0,105.8 L 1164.0,126.0 L 1164.0,184 L 36.0,184 Z" fill="var(--primary-light)" stroke="none"/>
+                <path d="M 36.0,145.1 L 85.0,156.3 L 134.1,162.5 L 183.1,163.5 L 232.2,157.5 L 281.2,142.5 L 330.3,118.0 L 379.3,92.0 L 428.3,71.6 L 477.4,56.1 L 526.4,44.0 L 575.5,36.2 L 624.5,39.3 L 673.6,42.6 L 722.6,45.6 L 771.7,53.5 L 820.7,55.9 L 869.7,56.3 L 918.8,58.1 L 967.8,61.7 L 1016.9,72.4 L 1065.9,88.2 L 1115.0,105.8 L 1164.0,126.0" fill="none" stroke="var(--primary-accent)" stroke-width="2.5"/>
+                <circle cx="36.0" cy="135.3" r="2.2" style="fill:var(--success)"/>
+                <circle cx="85.0" cy="108.3" r="2.2" style="fill:var(--success)"/>
+                <circle cx="134.1" cy="90.5" r="2.2" style="fill:var(--success)"/>
+                <circle cx="183.1" cy="88.5" r="2.2" style="fill:var(--success)"/>
+                <circle cx="232.2" cy="79.4" r="2.2" style="fill:var(--success)"/>
+                <circle cx="281.2" cy="62.3" r="2.2" style="fill:var(--success)"/>
+                <circle cx="330.3" cy="48.7" r="2.2" style="fill:var(--success)"/>
+                <circle cx="379.3" cy="39.4" r="2.2" style="fill:var(--success)"/>
+                <circle cx="428.3" cy="35.2" r="2.2" style="fill:var(--success)"/>
+                <circle cx="477.4" cy="37.7" r="2.2" style="fill:var(--success)"/>
+                <circle cx="526.4" cy="41.2" r="2.2" style="fill:var(--success)"/>
+                <circle cx="575.5" cy="41.8" r="2.2" style="fill:var(--success)"/>
+                <circle cx="624.5" cy="46.8" r="2.2" style="fill:var(--success)"/>
+                <circle cx="673.6" cy="48.5" r="2.2" style="fill:var(--success)"/>
+                <circle cx="722.6" cy="47.3" r="2.2" style="fill:var(--success)"/>
+                <circle cx="771.7" cy="59.8" r="2.2" style="fill:var(--success)"/>
+                <circle cx="820.7" cy="76.4" r="2.2" style="fill:var(--success)"/>
+                <circle cx="869.7" cy="89.7" r="2.2" style="fill:var(--success)"/>
+                <circle cx="918.8" cy="101.2" r="2.2" style="fill:var(--success)"/>
+                <circle cx="967.8" cy="107.0" r="2.2" style="fill:var(--success)"/>
+                <circle cx="1016.9" cy="114.9" r="2.2" style="fill:var(--success)"/>
+                <circle cx="1065.9" cy="126.6" r="2.2" style="fill:var(--success)"/>
+                <circle cx="1115.0" cy="128.8" r="2.2" style="fill:var(--success)"/>
+                <circle cx="1164.0" cy="128.8" r="2.2" style="fill:var(--success)"/>
+                <text x="36.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">0h</text>
+                <text x="183.1" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">3h</text>
+                <text x="330.3" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">6h</text>
+                <text x="477.4" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">9h</text>
+                <text x="624.5" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">12h</text>
+                <text x="771.7" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">15h</text>
+                <text x="918.8" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">18h</text>
+                <text x="1065.9" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">21h</text>
+                <circle cx="575.5" cy="36.2" r="4" style="fill:var(--danger)"/>
+                <text x="575.5" y="26.2" font-size="11" font-weight="700" text-anchor="middle" fill="var(--danger)">Đỉnh 11h</text>
+              </svg>
+              <div class="callout-strip" style="margin-top:2px;">📈 <span><strong>Insight:</strong> Booking đạt đỉnh 11h nhưng chuyển đổi cao nhất là 08h (8.77%) — duyệt và mua lệch giờ nhau, giờ-trong-ngày là feature độc lập chứ không chỉ là proxy của lượng traffic.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: scripts/expedia_timeseries.py, expedia_eda_detail.py • report_figures.json</span>
+          <span>Trang 09 / 15</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 8: EDA VISUAL - GROWTH & SEASONALITY BY PARTY (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="10">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 10 • EDA Trực Quan (2/4)</div>
+            <h2 class="slide-title">Tăng Trưởng Theo Năm & Mùa Vụ Theo Đoàn Khách</h2>
+            <p class="slide-subtitle">So sánh 2013 vs 2014 theo tháng booking, và mùa vụ check-in tách theo 4 loại đoàn khách.</p>
+          </div>
+          <span class="badge-pill">Visual EDA</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="stat-pill highlight">
+              <span class="stat-pill-num">+92.9%</span>
+              <span class="stat-pill-title">Tăng Trưởng 2014 vs 2013</span>
+              <span class="stat-pill-sub">1,976,304 vs 1,024,389 booking</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">2.0×</span>
+              <span class="stat-pill-title">Đỉnh/Đáy Mùa Vụ</span>
+              <span class="stat-pill-sub">T8 10.75% vs T2 5.36%</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-num">1.73×</span>
+              <span class="stat-pill-title">Gia Đình vs Solo (Hè)</span>
+              <span class="stat-pill-sub">28.45% vs 16.41% check-in T7+T8</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card-clean">
+              <div class="card-head">Booking/Tháng: 2013 (xám) vs 2014 (xanh)</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:165px;" preserveAspectRatio="xMidYMid meet">
+                <rect x="41.6" y="132.3" width="33.8" height="51.7" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="75.5" y="108.5" width="33.8" height="75.5" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="83.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T1</text>
+                <rect x="135.6" y="126.0" width="33.8" height="58.0" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="169.5" y="110.3" width="33.8" height="73.7" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="177.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T2</text>
+                <rect x="229.6" y="117.2" width="33.8" height="66.8" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="263.5" y="81.0" width="33.8" height="103.0" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="271.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T3</text>
+                <rect x="323.6" y="119.6" width="33.8" height="64.4" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="357.5" y="75.9" width="33.8" height="108.1" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="365.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T4</text>
+                <rect x="417.6" y="115.8" width="33.8" height="68.2" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="451.5" y="68.6" width="33.8" height="115.4" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="459.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T5</text>
+                <rect x="511.6" y="116.1" width="33.8" height="67.9" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="545.5" y="60.0" width="33.8" height="124.0" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="553.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T6</text>
+                <rect x="605.6" y="112.2" width="33.8" height="71.8" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="639.5" y="38.1" width="33.8" height="145.9" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="647.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T7</text>
+                <rect x="699.6" y="113.2" width="33.8" height="70.8" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="733.5" y="37.0" width="33.8" height="147.0" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="741.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T8</text>
+                <rect x="793.6" y="117.1" width="33.8" height="66.9" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="827.5" y="35.7" width="33.8" height="148.3" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="835.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T9</text>
+                <rect x="887.6" y="115.6" width="33.8" height="68.4" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="921.5" y="32.2" width="33.8" height="151.8" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="929.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T10</text>
+                <rect x="981.6" y="126.5" width="33.8" height="57.5" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="1015.5" y="42.6" width="33.8" height="141.4" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="1023.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T11</text>
+                <rect x="1075.6" y="128.3" width="33.8" height="55.7" rx="2" style="fill:var(--border-focus)"/>
+                <rect x="1109.5" y="36.2" width="33.8" height="147.8" rx="2" style="fill:var(--primary-accent)"/>
+                <text x="1117.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T12</text>
+              </svg>
+              <div class="callout-strip" style="margin-top:2px;">📈 <span><strong>Insight:</strong> 2014 cao hơn 2013 ở <em>mọi</em> tháng, khoảng cách nới rộng dần (+46% T1 → +165% T12). Đây là tăng trưởng nền tảng, không phải mùa vụ — seasonality phải đo bằng <strong>tháng check-in</strong>, không phải tháng booking.</span></div>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Tỷ Trọng Check-in Theo Tháng, Theo Đoàn Khách</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:165px;" preserveAspectRatio="xMidYMid meet">
+                <path d="M 36.0,165.4 L 138.5,164.0 L 241.1,124.8 L 343.6,123.5 L 446.2,141.1 L 548.7,101.4 L 651.3,42.3 L 753.8,30.7 L 856.4,155.2 L 958.9,146.4 L 1061.5,157.3 L 1164.0,97.5" fill="none" stroke="var(--danger)" stroke-width="2.2"/>
+                <path d="M 36.0,146.1 L 138.5,157.7 L 241.1,139.7 L 343.6,135.4 L 446.2,123.3 L 548.7,122.0 L 651.3,126.8 L 753.8,118.5 L 856.4,93.3 L 958.9,81.0 L 1061.5,94.4 L 1164.0,111.5" fill="none" stroke="var(--primary-accent)" stroke-width="2.2"/>
+                <path d="M 36.0,150.2 L 138.5,164.9 L 241.1,150.9 L 343.6,146.3 L 446.2,123.2 L 548.7,128.1 L 651.3,115.6 L 753.8,90.7 L 856.4,98.3 L 958.9,91.1 L 1061.5,103.3 L 1164.0,87.0" fill="none" stroke="var(--success)" stroke-width="2.2"/>
+                <path d="M 36.0,148.8 L 138.5,174.1 L 241.1,155.4 L 343.6,151.4 L 446.2,112.2 L 548.7,116.9 L 651.3,101.5 L 753.8,74.9 L 856.4,109.1 L 958.9,106.3 L 1061.5,123.9 L 1164.0,75.3" fill="none" stroke="var(--purple)" stroke-width="2.2"/>
+                <text x="36.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T1</text>
+                <text x="138.5" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T2</text>
+                <text x="241.1" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T3</text>
+                <text x="343.6" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T4</text>
+                <text x="446.2" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T5</text>
+                <text x="548.7" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T6</text>
+                <text x="651.3" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T7</text>
+                <text x="753.8" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T8</text>
+                <text x="856.4" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T9</text>
+                <text x="958.9" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T10</text>
+                <text x="1061.5" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T11</text>
+                <text x="1164.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">T12</text>
+              </svg>
+              <div style="display:flex; gap:12px; flex-wrap:wrap; font-size:10.5px; color:var(--text-sub); margin-top:2px;">
+                <span>🔴 Gia đình</span><span>🔵 Solo</span><span>🟢 Cặp đôi</span><span>🟣 Nhóm</span>
+              </div>
+              <div class="callout-strip" style="margin-top:2px;">📈 <span><strong>Insight:</strong> Gia đình đạt đỉnh rõ rệt T7-T8 (nghỉ hè); Solo lại đạt đỉnh T10. Bốn đường không song song — một feature mùa vụ chung cho mọi user sẽ bỏ lỡ khác biệt này.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: expedia_timeseries.json (yoy) • expedia_eda_detail.json (checkin_month_share_by_party)</span>
+          <span>Trang 10 / 15</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 9: EDA VISUAL - ANOMALIES & DATA QUALITY (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="11">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 11 • EDA Trực Quan (3/4)</div>
+            <h2 class="slide-title">Bất Thường Theo Ngày & Chất Lượng Dữ Liệu Click vs Booking</h2>
+            <p class="slide-subtitle">Phát hiện tự động bằng robust z-score trên chuỗi ngày; đối chiếu lịch lễ Mỹ tính bằng quy tắc (không gõ tay).</p>
+          </div>
+          <span class="badge-pill">Visual EDA</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="callout-strip amber" style="margin-bottom:2px;">
+            🧪 <span><strong>Phương pháp:</strong> z = (quan sát − trung vị trượt 28 ngày × hệ số thứ-trong-tuần) / (1.4826 × MAD) → gắn cờ |z| &gt; 3.5. Kết quả: <strong>27/724 ngày bị gắn cờ (3.73%)</strong>, trong đó <strong>14 ngày trùng ngày lễ Mỹ</strong>.</span>
+          </div>
+
+          <div class="grid-2">
+            <div class="card-clean">
+              <div class="card-head">Top Ngày Bất Thường (% lệch so kỳ vọng)</div>
+              <svg viewBox="0 0 1180 320" style="width:100%; height:250px;" preserveAspectRatio="xMidYMid meet">
+                <line x1="590" y1="4" x2="590" y2="310" stroke="var(--border)" stroke-width="1"/>
+                <rect x="252.3" y="14.0" width="337.7" height="18" rx="3" style="fill:var(--danger)"/>
+                <text x="246.3" y="27.0" font-size="10.5" text-anchor="end" fill="var(--text-main)">12-24 (Christmas Eve)</text>
+                <rect x="237.7" y="44.0" width="352.3" height="18" rx="3" style="fill:var(--danger)"/>
+                <text x="231.7" y="57.0" font-size="10.5" text-anchor="end" fill="var(--text-main)">01-01 (New Year's Day)</text>
+                <rect x="221.6" y="74.0" width="368.4" height="18" rx="3" style="fill:var(--danger)"/>
+                <text x="215.6" y="87.0" font-size="10.5" text-anchor="end" fill="var(--text-main)">12-25 (Christmas Day)</text>
+                <rect x="221.6" y="104.0" width="368.4" height="18" rx="3" style="fill:var(--danger)"/>
+                <text x="215.6" y="117.0" font-size="10.5" text-anchor="end" fill="var(--text-main)">12-31 (New Year's Eve)</text>
+                <rect x="94.4" y="134.0" width="495.6" height="18" rx="3" style="fill:var(--danger)"/>
+                <text x="88.4" y="147.0" font-size="10.5" text-anchor="end" fill="var(--text-main)">12-25 (Christmas Day, -33.9%)</text>
+                <rect x="590.0" y="164.0" width="366.9" height="18" rx="3" style="fill:var(--success)"/>
+                <text x="962.9" y="177.0" font-size="10.5" text-anchor="start" fill="var(--text-main)">12-27 (+25.1%)</text>
+                <rect x="590.0" y="194.0" width="356.7" height="18" rx="3" style="fill:var(--success)"/>
+                <text x="952.7" y="207.0" font-size="10.5" text-anchor="start" fill="var(--text-main)">12-28 (+24.4%)</text>
+                <rect x="590.0" y="224.0" width="293.9" height="18" rx="3" style="fill:var(--success)"/>
+                <text x="889.9" y="237.0" font-size="10.5" text-anchor="start" fill="var(--text-main)">12-27 (+20.1%)</text>
+                <rect x="590.0" y="254.0" width="250.0" height="18" rx="3" style="fill:var(--success)"/>
+                <text x="846.0" y="267.0" font-size="10.5" text-anchor="start" fill="var(--text-main)">12-01 (Cyber Monday, +17.1%)</text>
+                <rect x="590.0" y="284.0" width="235.4" height="18" rx="3" style="fill:var(--success)"/>
+                <text x="831.4" y="297.0" font-size="10.5" text-anchor="start" fill="var(--text-main)">02-26 (+16.1%)</text>
+              </svg>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Bất Thường Trong Dữ Liệu: Toàn File (đỏ) vs Booking (xanh) — trục √%</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:170px;" preserveAspectRatio="xMidYMid meet">
+                <rect x="51.0" y="48.0" width="60.2" height="136.0" rx="2" style="fill:var(--danger-border)"/>
+                <text x="81.1" y="44.0" font-size="9" text-anchor="middle" fill="var(--text-sub)">35.9%</text>
+                <rect x="111.2" y="52.0" width="60.2" height="132.0" rx="2" style="fill:var(--success)"/>
+                <text x="141.3" y="48.0" font-size="9" text-anchor="middle" fill="var(--text-sub)">33.8%</text>
+                <text x="130.0" y="202.0" font-size="9.3" text-anchor="middle" fill="var(--text-sub)">Thiếu khoảng cách</text>
+                <rect x="239.0" y="151.6" width="60.2" height="32.4" rx="2" style="fill:var(--danger-border)"/>
+                <text x="269.1" y="147.6" font-size="9" text-anchor="middle" fill="var(--text-sub)">2.04%</text>
+                <rect x="299.2" y="155.2" width="60.2" height="28.8" rx="2" style="fill:var(--success)"/>
+                <text x="329.3" y="151.2" font-size="9" text-anchor="middle" fill="var(--text-sub)">1.61%</text>
+                <text x="318.0" y="202.0" font-size="9.3" text-anchor="middle" fill="var(--text-sub)">Người lớn > 4</text>
+                <rect x="427.0" y="151.6" width="60.2" height="32.4" rx="2" style="fill:var(--danger-border)"/>
+                <text x="457.1" y="147.6" font-size="9" text-anchor="middle" fill="var(--text-sub)">2.04%</text>
+                <rect x="487.2" y="159.3" width="60.2" height="24.7" rx="2" style="fill:var(--success)"/>
+                <text x="517.3" y="155.3" font-size="9" text-anchor="middle" fill="var(--text-sub)">1.19%</text>
+                <text x="506.0" y="202.0" font-size="9.3" text-anchor="middle" fill="var(--text-sub)">Khách > 4×phòng</text>
+                <rect x="615.0" y="176.1" width="60.2" height="7.9" rx="2" style="fill:var(--danger-border)"/>
+                <text x="645.1" y="172.1" font-size="9" text-anchor="middle" fill="var(--text-sub)">0.12%</text>
+                <rect x="675.2" y="178.4" width="60.2" height="5.6" rx="2" style="fill:var(--success)"/>
+                <text x="705.3" y="174.4" font-size="9" text-anchor="middle" fill="var(--text-sub)">0.0606%</text>
+                <text x="694.0" y="202.0" font-size="9.3" text-anchor="middle" fill="var(--text-sub)">Đặt trước > 365 ngày</text>
+                <rect x="803.0" y="169.9" width="60.2" height="14.1" rx="2" style="fill:var(--danger-border)"/>
+                <text x="833.1" y="165.9" font-size="9" text-anchor="middle" fill="var(--text-sub)">0.384%</text>
+                <rect x="863.2" y="183.9" width="60.2" height="1.5" rx="2" style="fill:var(--success)"/>
+                <text x="893.3" y="179.9" font-size="9" text-anchor="middle" fill="var(--text-sub)">1 dòng</text>
+                <text x="882.0" y="202.0" font-size="9.3" text-anchor="middle" fill="var(--text-sub)">0 đêm lưu trú</text>
+                <rect x="991.0" y="174.1" width="60.2" height="9.9" rx="2" style="fill:var(--danger-border)"/>
+                <text x="1021.1" y="170.1" font-size="9" text-anchor="middle" fill="var(--text-sub)">0.188%</text>
+                <rect x="1051.2" y="174.5" width="60.2" height="9.5" rx="2" style="fill:var(--success)"/>
+                <text x="1081.3" y="170.5" font-size="9" text-anchor="middle" fill="var(--text-sub)">0.175%</text>
+                <text x="1070.0" y="202.0" font-size="9.3" text-anchor="middle" fill="var(--text-sub)">0 người lớn</text>
+              </svg>
+              <div class="callout-strip" style="margin-top:2px;">📊 <span><strong>Insight:</strong> Mọi lỗi cực đoan nằm ở phía click. Lõi booking gần như sạch tuyệt đối: 0 ngày check-in thiếu, chỉ 3 cặp ngày đảo ngược và 1 booking 0-đêm / 3,000,693 dòng.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: scripts/expedia_timeseries.py (anomalies) • expedia_anomaly_audit.py</span>
+          <span>Trang 11 / 15</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SLIDE 10: EDA VISUAL - COLD START & CONCENTRATION (NEW)
+           =================================================================== -->
+      <section class="slide" data-slide="12">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 12 • EDA Trực Quan (4/4)</div>
+            <h2 class="slide-title">Cold-Start & Độ Tập Trung Danh Mục</h2>
+            <p class="slide-subtitle">Phân phối số booking/user và độ phổ biến của 100 cụm khách sạn.</p>
+          </div>
+          <span class="badge-pill">Visual EDA</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card-clean">
+              <div class="card-head">Phân Phối Số Booking / User</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:170px;" preserveAspectRatio="xMidYMid meet">
+                <rect x="62.3" y="36.2" width="135.4" height="147.8" rx="3" style="fill:var(--danger)"/>
+                <text x="130.0" y="30.2" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">38.8%</text>
+                <text x="130.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">1 booking</text>
+                <rect x="250.3" y="105.3" width="135.4" height="78.7" rx="3" style="fill:var(--warning)"/>
+                <text x="318.0" y="99.3" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">20.6%</text>
+                <text x="318.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">2 booking</text>
+                <rect x="438.3" y="111.0" width="135.4" height="73.0" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="506.0" y="105.0" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">19.1%</text>
+                <text x="506.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">3-4</text>
+                <rect x="626.3" y="126.1" width="135.4" height="57.9" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="694.0" y="120.1" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">15.2%</text>
+                <text x="694.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">5-10</text>
+                <rect x="814.3" y="167.1" width="135.4" height="16.9" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="882.0" y="161.1" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">4.4%</text>
+                <text x="882.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">11-20</text>
+                <rect x="1002.3" y="177.1" width="135.4" height="6.9" rx="3" style="fill:var(--primary-accent)"/>
+                <text x="1070.0" y="171.1" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text-main)">1.8%</text>
+                <text x="1070.0" y="202.0" font-size="10.5" text-anchor="middle" fill="var(--text-sub)">21+</text>
+              </svg>
+              <div class="callout-strip" style="margin-top:2px;">📈 <span><strong>Insight:</strong> 59.4% user có ≤2 booking, nhưng top 10% user nắm giữ 42.37% tổng booking. 30.14% user ở tập test chưa từng xuất hiện ở tập train — cold-start phải báo cáo tách riêng.</span></div>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Độ Phổ Biến 100 Cụm Khách Sạn (sắp giảm dần)</div>
+              <svg viewBox="0 0 1180 210" style="width:100%; height:170px;" preserveAspectRatio="xMidYMid meet">
+                <path d="M 36.0,29.5 L 83.0,102.3 L 130.0,114.5 L 177.0,121.4 L 224.0,126.1 L 271.0,128.2 L 318.0,130.5 L 365.0,133.7 L 412.0,135.3 L 459.0,138.9 L 506.0,142.8 L 553.0,144.4 L 600.0,147.8 L 647.0,148.9 L 694.0,153.5 L 741.0,156.6 L 788.0,159.2 L 835.0,160.8 L 882.0,163.4 L 929.0,164.7 L 976.0,168.1 L 1023.0,169.9 L 1070.0,172.5 L 1117.0,174.2 L 1164.0,175.9 L 1164.0,184 L 36.0,184 Z" fill="var(--purple-light)" stroke="none"/>
+                <path d="M 36.0,29.5 L 83.0,102.3 L 130.0,114.5 L 177.0,121.4 L 224.0,126.1 L 271.0,128.2 L 318.0,130.5 L 365.0,133.7 L 412.0,135.3 L 459.0,138.9 L 506.0,142.8 L 553.0,144.4 L 600.0,147.8 L 647.0,148.9 L 694.0,153.5 L 741.0,156.6 L 788.0,159.2 L 835.0,160.8 L 882.0,163.4 L 929.0,164.7 L 976.0,168.1 L 1023.0,169.9 L 1070.0,172.5 L 1117.0,174.2 L 1164.0,175.9" fill="none" stroke="var(--purple)" stroke-width="2.2"/>
+                <text x="36.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">#1</text>
+                <text x="318.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">#25</text>
+                <text x="600.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">#49</text>
+                <text x="882.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">#73</text>
+                <text x="1164.0" y="202.0" font-size="10" text-anchor="middle" fill="var(--text-sub)">#97</text>
+              </svg>
+              <div class="callout-strip" style="margin-top:2px;">📈 <span><strong>Insight:</strong> Cụm phổ biến nhất chỉ chiếm 4.03% (top-10 = 22.87%) — skew vừa phải, không cực đoan (tỷ lệ top1/cuối = 49.1×). 29.21% điểm đến (10,789/36,933) chỉ có đúng 1 booking.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: expedia_eda_detail.json (user_depth, cluster_popularity, destinations)</span>
+          <span>Trang 12 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="13">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 13 • Kiểm Định Giả Thuyết RQ1</div>
+            <h2 class="slide-title">Ngữ Cảnh Có Thực Sự Giúp Ích? — Phép Thử Trên Tập Test Khoá</h2>
+            <p class="slide-subtitle">Popularity theo từng ngữ cảnh, đo Recall@5, trên đúng giao thức temporal split đã khoá (§8).</p>
+          </div>
+          <span class="badge-pill">EDA Probe — Not Phase-2</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="callout-strip amber" style="margin-bottom:2px;">
+            🧪 <span><strong>Giao thức:</strong> Cắt tại 2014-09-29 12:14:32.6 — 2,400,554 train / 600,139 test, full ranking 100 cụm, 1 lần chạy, không tuning. <strong>Đây là phép thử EDA để định hướng mô hình, không phải kết quả benchmark Phase 2.</strong></span>
+          </div>
+
+          <div class="grid-2">
+            <div class="card-clean">
+              <div class="card-head">Recall@5 Theo Từng Quy Tắc Popularity</div>
+              <svg viewBox="0 0 1180 248" style="width:100%; height:210px;" preserveAspectRatio="xMidYMid meet">
+                <text x="200.0" y="24.0" font-size="12" text-anchor="end" fill="var(--text-main)">Popularity toàn cục</text>
+                <rect x="210" y="8.0" width="207.3" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="425.3" y="24.0" font-size="12" font-weight="700" fill="var(--text-main)">14.1%</text>
+                <text x="200.0" y="58.0" font-size="12" text-anchor="end" fill="var(--text-main)">+ Tháng check-in</text>
+                <rect x="210" y="42.0" width="206.3" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="424.3" y="58.0" font-size="12" font-weight="700" fill="var(--text-main)">14.0%</text>
+                <text x="200.0" y="92.0" font-size="12" text-anchor="end" fill="var(--text-main)">+ Loại đoàn khách</text>
+                <rect x="210" y="76.0" width="208.4" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="426.4" y="92.0" font-size="12" font-weight="700" fill="var(--text-main)">14.1%</text>
+                <text x="200.0" y="126.0" font-size="12" text-anchor="end" fill="var(--text-main)">Repeat-last-cluster</text>
+                <rect x="210" y="110.0" width="247.9" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="465.9" y="126.0" font-size="12" font-weight="700" fill="var(--text-main)">16.8%</text>
+                <text x="200.0" y="160.0" font-size="12" text-anchor="end" fill="var(--text-main)">+ Hotel market</text>
+                <rect x="210" y="144.0" width="669.0" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="887.0" y="160.0" font-size="12" font-weight="700" fill="var(--text-main)">45.4%</text>
+                <text x="200.0" y="194.0" font-size="12" text-anchor="end" fill="var(--text-main)">+ Điểm đến tìm kiếm</text>
+                <rect x="210" y="178.0" width="782.4" height="22" rx="4" style="fill:var(--primary-accent)"/>
+                <text x="1000.4" y="194.0" font-size="12" font-weight="700" fill="var(--text-main)">53.1%</text>
+                <text x="200.0" y="228.0" font-size="12" text-anchor="end" fill="var(--text-main)">+ Điểm đến × Gói combo</text>
+                <rect x="210" y="212.0" width="782.6" height="22" rx="4" style="fill:var(--success)"/>
+                <text x="1000.6" y="228.0" font-size="12" font-weight="700" fill="var(--text-main)">53.1%</text>
+              </svg>
+            </div>
+
+            <div class="card-clean">
+              <div class="card-head">Độ Lệch Phân Phối Cụm Theo Ngữ Cảnh (JS Divergence)</div>
+              <svg viewBox="0 0 1180 180" style="width:100%; height:152px;" preserveAspectRatio="xMidYMid meet">
+                <text x="200.0" y="24.0" font-size="12" text-anchor="end" fill="var(--text-main)">Tháng check-in</text>
+                <rect x="210" y="8.0" width="3.7" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="221.7" y="24.0" font-size="12" font-weight="700" fill="var(--text-main)">0.0019 bit</text>
+                <text x="200.0" y="58.0" font-size="12" text-anchor="end" fill="var(--text-main)">Loại đoàn khách</text>
+                <rect x="210" y="42.0" width="26.7" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="244.7" y="58.0" font-size="12" font-weight="700" fill="var(--text-main)">0.0139 bit</text>
+                <text x="200.0" y="92.0" font-size="12" text-anchor="end" fill="var(--text-main)">Gói combo (is_package)</text>
+                <rect x="210" y="76.0" width="74.0" height="22" rx="4" style="fill:var(--border-focus)"/>
+                <text x="292.0" y="92.0" font-size="12" font-weight="700" fill="var(--text-main)">0.0386 bit</text>
+                <text x="200.0" y="126.0" font-size="12" text-anchor="end" fill="var(--text-main)">Hotel market</text>
+                <rect x="210" y="110.0" width="758.9" height="22" rx="4" style="fill:var(--purple)"/>
+                <text x="976.9" y="126.0" font-size="12" font-weight="700" fill="var(--text-main)">0.3953 bit</text>
+                <text x="200.0" y="160.0" font-size="12" text-anchor="end" fill="var(--text-main)">Điểm đến tìm kiếm</text>
+                <rect x="210" y="144.0" width="782.6" height="22" rx="4" style="fill:var(--purple)"/>
+                <text x="1000.6" y="160.0" font-size="12" font-weight="700" fill="var(--text-main)">0.4076 bit</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="callout-strip">
+              ✅ <span><strong>Insight 1 — Địa lý là tín hiệu mạnh nhất:</strong> Điều kiện popularity theo điểm đến tìm kiếm nâng Recall@5 từ 14.06% lên <strong>53.07% (lift 3.77×)</strong>. Mọi bảng baseline chỉ báo popularity toàn cục là đang đánh giá thấp mức sàn thật.</span>
+            </div>
+            <div class="callout-strip amber">
+              ⚠️ <span><strong>Insight 2 — Kết quả âm trung thực:</strong> Tháng và loại đoàn khách <em>đơn lẻ</em> không thêm giá trị gì (lift 0.99× / 1.01×); ghép destination×month còn <strong>kém hơn</strong> destination đơn (−12.3%) do phân mảnh số đếm. → Đây chính là lý do cần mô hình học chia sẻ thống kê (MF/embedding/sequence) thay vì đếm trực tiếp — động lực đo được cho RQ1.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: scripts/expedia_context_signal.py • reports/summary/expedia_context_signal.json</span>
+          <span>Trang 13 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="14">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 14 • Thiết Kế Thực Nghiệm</div>
+            <h2 class="slide-title">5 Họ Mô Hình Benchmark & Giao Thức Đánh Giá</h2>
+            <p class="slide-subtitle">So sánh công bằng, chặt chẽ giữa các kiến trúc truyền thống, học biểu diễn chuỗi và LLM.</p>
+          </div>
+          <span class="badge-pill">Benchmark Protocol</span>
+        </div>
+
+        <div class="slide-body">
+          <!-- 5 Model Cards -->
+          <div class="grid-5">
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">1. Baselines</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Popularity (toàn cục, theo điểm đến, theo mùa), Repeat-Last, ItemKNN.</div>
+              <span class="tag tag-sec" style="font-size: 10px;">Chuẩn so sánh</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">2. Matrix Fact.</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Học vector tiềm ẩn User-Item. <strong>61.2%</strong> user có ≥ 2 booking để huấn luyện.</div>
+              <span class="tag tag-core" style="font-size: 10px;">CF cổ điển</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">3. item2vec</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Nhúng item từ sự đồng xuất hiện trong chuỗi thời gian thực của user.</div>
+              <span class="tag tag-core" style="font-size: 10px;">Skip-gram</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">4. GRU4Rec/SAS</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Học chuỗi tuần tự; tích hợp side features (đoàn khách, ngày đi).</div>
+              <span class="tag tag-core" style="font-size: 10px;">Sequential</span>
+            </div>
+            <div class="card-clean">
+              <div class="card-head" style="font-size: 12px;">5. LLM Rerank</div>
+              <div style="font-size: 11.5px; color: var(--text-sub);">Tái xếp hạng top-N dựa trên prompt ngữ cảnh và 149 latent features.</div>
+              <span class="tag tag-proto" style="font-size: 10px;">GenAI</span>
+            </div>
+          </div>
+
+          <!-- Protocol 3 Columns -->
+          <div class="card-clean accent-blue">
+            <div class="card-head">Giao Thức Đánh Giá Cố Định (Fixed Evaluation Protocol)</div>
+            <div class="grid-3" style="margin-top: 4px;">
+              <div>
+                <strong style="font-size: 12px; color: var(--text-main);">1. Cắt Thời Gian 80/20:</strong>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  Mốc cắt <strong>2014-09-29</strong>: 2.4M train / 600K test. 30.1% user tập test chưa từng có ở train → Lát cắt <strong>Cold-Start</strong> độc lập.
+                </p>
+              </div>
+              <div>
+                <strong style="font-size: 12px; color: var(--text-main);">2. Full Ranking (100 Cụm):</strong>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  Xếp hạng trên toàn bộ 100 cụm, <strong>không lấy mẫu âm tính giả định</strong>. Đo lường Recall@K, NDCG@K, MRR tại K = 5, 10, 20.
+                </p>
+              </div>
+              <div>
+                <strong style="font-size: 12px; color: var(--text-main);">3. Đa Dạng & Độ Tin Cậy:</strong>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+                  Đo Catalog Coverage, Intra-list Diversity, Popularity Bias. Báo cáo kết quả trung bình Mean ± Std trên <strong>≥ 3 random seeds</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout-strip">
+            📏 <span><strong>Ngưỡng đo được (EDA probe, Slide 13 — không phải kết quả model):</strong> Popularity toàn cục Recall@5 = 14.06%; Popularity theo điểm đến = 53.07%. Mọi mô hình Phase 2 phải vượt các ngưỡng này để chứng minh giá trị học được vượt trên đếm tần suất.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: CLAUDE.md §8 • docs/eval_protocol.md • expedia_context_signal.json</span>
+          <span>Trang 14 / 15</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="15">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Slide 15 • Minh Bạch Phương Pháp</div>
+            <h2 class="slide-title">Giới Hạn Cần Nêu Rõ Khi Dùng Expedia Làm Proxy</h2>
+            <p class="slide-subtitle">5 giới hạn kỹ thuật bắt buộc công khai trong báo cáo cuối kỳ (ma trận & bằng chứng định lượng → xem Slide 03, 05).</p>
+          </div>
+          <span class="badge-pill">Methodological Rigor</span>
+        </div>
+
+        <div class="slide-body">
+          <div class="card-clean accent-red">
+            <div class="card-head" style="color: var(--danger);">5 Giới Hạn Bắt Buộc Công Khai</div>
+            <ul class="bullet-list">
+              <li><strong>1. Target là cụm số ẩn danh:</strong> Không có text mô tả phòng → LLM rerank dựa trên ngữ cảnh + latent features (149 chiều từ <code class="code-tag">destinations.csv</code>).</li>
+              <li><strong>2. Không có cột giá tiền:</strong> <code class="code-tag">orig_destination_distance</code> thiếu 33.83% trên tập booking; trong số còn lại, 0.71% booking có khoảng cách &lt; 1 dặm (không phải giá trị min=0 tuyệt đối).</li>
+              <li><strong>3. 38.8% user chỉ có 1 booking:</strong> Lát cắt Cold-Start phải báo cáo riêng; 30.14% user ở tập test chưa từng xuất hiện ở tập train (đo trên giao thức đã khoá, Slide 13).</li>
+              <li><strong>4. Click chiếm 92%:</strong> Click là tín hiệu yếu và chứa toàn bộ giá trị bất thường của dữ liệu (Slide 11) → không gộp làm positive ground-truth.</li>
+              <li><strong>5. Giấy phép Kaggle:</strong> Chỉ phục vụ nghiên cứu nội bộ, không phân phối lại dữ liệu gốc.</li>
+            </ul>
+          </div>
+
+          <div class="callout-strip">
+            🛡️ <span><strong>Quan điểm học thuật:</strong> Nêu rõ giới hạn giúp thiết kế quy trình đánh giá trung thực, tránh rò rỉ dữ liệu hoặc kết luận quá lạc quan. Toàn bộ số liệu trên trang này đo bằng script, có thể tái lập.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/expedia.md • expedia_anomaly_audit.json • expedia_context_signal.json</span>
+          <span>Trang 15 / 15</span>
+        </div>
+      </section>
+      <!-- ===================================================================
+           APPENDIX A: CRITERIA DEFINITIONS & STATUS ENUM (REFERENCE ONLY)
+           =================================================================== -->
+      <section class="slide" data-slide="A">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Phụ Lục A • Định Nghĩa Tiêu Chí (Tham Chiếu)</div>
+            <h2 class="slide-title">Phương Pháp Đánh Giá: Yêu Cầu, Tiêu Chí, Trạng Thái</h2>
+            <p class="slide-subtitle">Không dùng điểm số cộng dồn — mỗi tiêu chí là một trạng thái + bằng chứng đo được, có thể kiểm tra độc lập từng ô.</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="btn-action" id="btnBackToSlide1" style="font-size: 11px; padding: 5px 12px; color: var(--primary); background: #ffffff; border-color: var(--primary-accent); font-weight: 700;">
+              ← Quay lại Slide 01
+            </button>
+            <span class="badge-pill">Phụ Lục A</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Enum legend -->
+            <div class="card-clean">
+              <div class="card-head">4 Trạng Thái (Không Phải Điểm Số)</div>
+              <ul class="bullet-list" style="font-size: 11.5px;">
+                <li><span class="tag tag-core">Phù hợp</span> Tiêu chí thoả mãn đầy đủ bằng bằng chứng đo được</li>
+                <li><span class="tag tag-sec">Cân nhắc</span> Dùng được với đánh đổi hoặc giải pháp thay thế nêu rõ</li>
+                <li><span class="tag tag-drop">Không phù hợp</span> Không thoả mãn — chặn nếu thuộc Nhóm A</li>
+                <li><span class="tag tag-na">Không áp dụng</span> Khái niệm/trường không tồn tại ở bộ dữ liệu này</li>
+              </ul>
+            </div>
+
+            <!-- R1-R5 -->
+            <div class="card-clean">
+              <div class="card-head">5 Yêu Cầu Bắt Buộc (R1–R5, Slide 01)</div>
+              <ul class="bullet-list" style="font-size: 11.5px;">
+                <li><strong>R1:</strong> Định danh actor thật (không phải proxy: tài xế, trạm xe, vùng)</li>
+                <li><strong>R2:</strong> Item ID ổn định, gợi ý được</li>
+                <li><strong>R3:</strong> Có mốc thời gian tuyệt đối</li>
+                <li><strong>R4:</strong> Giấy phép cho phép dùng nghiên cứu</li>
+                <li><strong>R5:</strong> Tải được & tái lập bằng script</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-clean">
+            <div class="card-head">10 Tiêu Chí So Sánh (Slide 03) — Nhóm A chặn, Nhóm B chỉ mô tả đánh đổi</div>
+            <div class="grid-2" style="gap: 10px; margin-top: 4px;">
+              <ul class="bullet-list" style="font-size: 11.5px;">
+                <li><span class="tag tag-drop" style="font-size:9px;">A</span> <strong>1. Khớp bài toán:</strong> Target có phải top-K next-item trực tiếp?</li>
+                <li><span class="tag tag-drop" style="font-size:9px;">A</span> <strong>2. Định danh người dùng:</strong> Có user ID thật, ổn định?</li>
+                <li><span class="tag tag-drop" style="font-size:9px;">A</span> <strong>3. Chiều sâu lịch sử:</strong> User có lặp lại đủ để mô hình hoá chuỗi?</li>
+                <li><span class="tag tag-drop" style="font-size:9px;">A</span> <strong>4. Thời gian & mùa vụ:</strong> Khoảng thời gian có phủ một chu kỳ mùa vụ?</li>
+                <li><span class="tag tag-sec" style="font-size:9px;">B</span> <strong>5. Ngữ cảnh chuyến đi:</strong> Trường ngữ cảnh có thật, không giả lập?</li>
+              </ul>
+              <ul class="bullet-list" style="font-size: 11.5px;">
+                <li><span class="tag tag-drop" style="font-size:9px;">A</span> <strong>6. Chất lượng tín hiệu:</strong> Tín hiệu là giao dịch mua hay yếu hơn?</li>
+                <li><span class="tag tag-sec" style="font-size:9px;">B</span> <strong>7. Metadata sản phẩm:</strong> Có text/thuộc tính item cho LLM rerank?</li>
+                <li><span class="tag tag-drop" style="font-size:9px;">A</span> <strong>8. Chất lượng dữ liệu:</strong> Tỷ lệ lỗi/thiếu ở mức nào?</li>
+                <li><span class="tag tag-sec" style="font-size:9px;">B</span> <strong>9. Tính khả thi:</strong> Có chạy được trong ngân sách 5 tuần?</li>
+                <li><span class="tag tag-sec" style="font-size:9px;">B</span> <strong>10. Giấy phép:</strong> Điều khoản sử dụng cho nghiên cứu?</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout-strip">
+            📐 <span><strong>Quy tắc quyết định (chi tiết → Slide 04):</strong> Đạt cả R1–R5 → vào vòng so sánh. Không có "Không phù hợp" nào ở 6 tiêu chí Nhóm A → <strong>Đã chọn</strong>. Trượt đúng 1 tiêu chí Nhóm A → <strong>Dự phòng</strong>, có điều kiện kích hoạt tường minh. Trượt ≥2 tiêu chí Nhóm A hoặc bất kỳ yêu cầu R → <strong>Loại</strong>. Nhóm B không bao giờ dùng để loại.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/dataset_selection.md — thay thế docs/dataset_rubric.md (rubric số đã gỡ bỏ 2026-09-21)</span>
+          <span>Phụ Lục A (Tham chiếu)</span>
+        </div>
+      </section>
+      <section class="slide" data-slide="B">
+        <div class="slide-header">
+          <div>
+            <div class="slide-meta">Phụ Lục B • Hồ Sơ Dự Phòng (Tham Chiếu)</div>
+            <h2 class="slide-title">Phương Án Dự Phòng: Trivago RecSys Challenge 2019</h2>
+            <p class="slide-subtitle">Kích hoạt chuyển đổi ngay nếu Expedia bị trùng lặp đề tài với nhóm nghiên cứu khác, hoặc RQ1 đổi sang bài toán session-based (điều kiện → Slide 04).</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="btn-action" id="btnBackToSlide1B" style="font-size: 11px; padding: 5px 12px; color: var(--primary); background: #ffffff; border-color: var(--primary-accent); font-weight: 700;">
+              ← Quay lại Slide 01
+            </button>
+            <span class="badge-pill">Phụ Lục B</span>
+          </div>
+        </div>
+
+        <div class="slide-body">
+          <div class="grid-2">
+            <!-- Strengths -->
+            <div class="card-clean accent-blue">
+              <div class="card-head">Thế Mạnh Của Trivago <span class="tag tag-sec" style="margin-left:6px;">Dự phòng</span></div>
+              <ul class="bullet-list">
+                <li><strong>Chuẩn Session-based:</strong> 15,932,992 dòng, 910,683 phiên, 1,586,586 clickout — trung vị 25 item/impression, giá hiển thị trung vị 82 (p10 29, p90 233; 55 platform theo quốc gia — BR/US/DE/UK/MX... — đơn vị tiền tệ local, <em>chưa quy đổi</em>, không so sánh trực tiếp giữa các thị trường).</li>
+                <li><strong>Có text metadata:</strong> 927,142 khách sạn có nhãn tiện ích (<code class="code-tag">item_metadata.csv</code>, trung vị 15 tag/item) → rất có lợi cho LLM Reranker.</li>
+                <li><strong>Tọa độ thực:</strong> 34,752 thành phố thật; đã test ghép thời tiết Open-Meteo khả thi.</li>
+                <li><strong>Dữ liệu sạch:</strong> 0% missing trên 9 cột cốt lõi.</li>
+              </ul>
+            </div>
+
+            <!-- Trade-offs -->
+            <div class="card-clean accent-amber">
+              <div class="card-head">Đánh Đổi Nếu Phải Chuyển Đổi</div>
+              <ul class="bullet-list">
+                <li><strong>Chỉ có 6 ngày dữ liệu:</strong> Mất hoàn toàn lát cắt mùa vụ trong năm của RQ1 (span ngắn hơn Expedia 144.6×).</li>
+                <li><strong>Bản chất bài toán đổi:</strong> Thành bài toán session-based next-clickout thay vì chuỗi dài hạn.</li>
+                <li><strong>Độ thưa cực lớn (99.999%):</strong> 289,506 khách sạn được click; mật độ tương tác/item chỉ 5.48 so với 30,006.9 của Expedia.</li>
+                <li><strong>Tín hiệu là Click:</strong> Không phải hành vi Booking thực tế như Expedia (xem tiêu chí "Chất lượng tín hiệu", Slide 03).</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout-strip">
+            ✏️ <span><strong>Đính chính số liệu:</strong> "56% user chỉ xuất hiện 1 lần" là tính theo <strong>lượt clickout</strong> (56.43% user clicking có đúng 1 clickout) — không phải theo dòng dữ liệu (chỉ 19.57% user có đúng 1 dòng) hay theo session (83.55% user có đúng 1 session). Số "57.6% item chỉ xuất hiện 1 lần" đo lại không tái lập — con số đúng là <strong>40.32%</strong> khách sạn chỉ được click đúng 1 lần.</span>
+          </div>
+
+          <!-- Other candidates dropped -->
+          <div class="callout-strip amber">
+            ❌ <span><strong>Các ứng viên du lịch khác bị loại:</strong> <strong>Airbnb</strong> chỉ có 1 booking/user và target 12 quốc gia (58.35% NDF); <strong>Hotel Booking Demand</strong> không có ID khách hàng và 26.80% dòng trùng lặp — chi tiết ma trận tiêu chí → Slide 03.</span>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <span class="source-tag">Nguồn: docs/data_cards/trivago_2019.md, airbnb_new_user.md • scripts/trivago_profile.py • dataset_benchmark.json</span>
+          <span>Phụ Lục B (Tham chiếu)</span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <footer class="nav-bar">
+    <div class="nav-left">
+      <span class="nav-counter" id="slideCounter">01 / 15</span>
+      <div class="nav-dots" id="navDots"></div>
+    </div>
+
+    <div class="nav-center">
+      <button class="btn-action" id="btnPrev" title="Slide trước (Phím ←)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Trước
+      </button>
+      <button class="btn-action" id="btnNext" title="Slide tiếp (Phím → / Space)">
+        Tiếp
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-action" id="btnToggleEffect" title="Đổi hiệu ứng chuyển slide (Phím T)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+        <span id="lblEffect">Hiệu ứng: Slide</span>
+      </button>
+      <button class="btn-action" id="btnOverview" title="Tổng quan slide (Phím O)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Tổng quan (O)
+      </button>
+      <button class="btn-action" id="btnFullscreen" title="Toàn màn hình (Phím F)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Toàn màn hình
+      </button>
+      <button class="btn-action" id="btnPrint" title="Xuất file PDF (Phím P)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Xuất PDF
+      </button>
+    </div>
+  </footer>
+
+  <!-- Slide Overview Modal -->
+  <div class="modal-overlay" id="overviewModal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+        <h3 style="font-size: 16px; font-weight: 700;">Tổng quan tất cả các Slide</h3>
+        <button class="btn-action" id="btnCloseOverview">Đóng (ESC)</button>
+      </div>
+      <div class="overview-tiles" id="overviewTiles"></div>
+    </div>
+  </div>
+
+  <!-- Script Controller -->
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const totalSlides = slides.length;
+      const MAIN_SLIDES_COUNT = 15;
+      const APPENDIX_LABELS = { 15: 'Phụ Lục A', 16: 'Phụ Lục B' }; // 0-indexed: 15th/16th in DOM
+      const isAppendixIndex = (idx) => idx >= MAIN_SLIDES_COUNT;
+      let currentIndex = 0;
+      let isFade = false;
+
+      const progressBar = document.getElementById('progressBar');
+      const slideCounter = document.getElementById('slideCounter');
+      const navDots = document.getElementById('navDots');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+      const btnToggleEffect = document.getElementById('btnToggleEffect');
+      const lblEffect = document.getElementById('lblEffect');
+      const btnOverview = document.getElementById('btnOverview');
+      const overviewModal = document.getElementById('overviewModal');
+      const overviewTiles = document.getElementById('overviewTiles');
+      const btnCloseOverview = document.getElementById('btnCloseOverview');
+      const btnFullscreen = document.getElementById('btnFullscreen');
+      const btnPrint = document.getElementById('btnPrint');
+      const slideDeck = document.getElementById('slideDeck');
+
+      const pillJumpCriteria = document.getElementById('pillJumpCriteria');
+      const btnLinkToCriteria = document.getElementById('btnLinkToCriteria');
+      const btnBackToSlide1 = document.getElementById('btnBackToSlide1');
+      const btnBackToSlide1B = document.getElementById('btnBackToSlide1B');
+
+      // Initialize Dots (15 main slides only)
+      for (let idx = 0; idx < MAIN_SLIDES_COUNT; idx++) {
+        const dot = document.createElement('div');
+        dot.className = `nav-dot ${idx === 0 ? 'active' : ''}`;
+        dot.title = `Tới slide ${idx + 1}`;
+        dot.addEventListener('click', () => goToSlide(idx));
+        navDots.appendChild(dot);
+      }
+
+      // Initialize Overview Tiles (Include Appendices with distinct indicator)
+      slides.forEach((slide, idx) => {
+        const title = slide.querySelector('.slide-title')?.innerText || `Slide ${idx + 1}`;
+        const isAppendix = isAppendixIndex(idx);
+        const meta = isAppendix ? `${APPENDIX_LABELS[idx]} (Tham Chiếu)` : `Trang ${idx + 1}`;
+        const tile = document.createElement('div');
+        tile.className = `tile-card ${idx === 0 ? 'current' : ''}`;
+        if (isAppendix) {
+          tile.style.borderStyle = 'dashed';
+        }
+        tile.innerHTML = `
+          <div style="font-size: 10px; font-weight: 700; color: ${isAppendix ? 'var(--warning)' : 'var(--primary-accent)'};">${meta}</div>
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--text-main); margin-top: 3px;">${title}</div>
+        `;
+        tile.addEventListener('click', () => {
+          goToSlide(idx);
+          closeOverview();
+        });
+        overviewTiles.appendChild(tile);
+      });
+
+      function updateSlide() {
+        slides.forEach((s, idx) => {
+          s.classList.remove('active', 'past');
+          if (idx === currentIndex) s.classList.add('active');
+          else if (idx < currentIndex) s.classList.add('past');
+        });
+
+        // Progress bar & Counter behavior
+        if (currentIndex < MAIN_SLIDES_COUNT) {
+          const pct = ((currentIndex + 1) / MAIN_SLIDES_COUNT) * 100;
+          progressBar.style.width = `${pct}%`;
+          slideCounter.innerText = `${String(currentIndex + 1).padStart(2, '0')} / ${String(MAIN_SLIDES_COUNT).padStart(2, '0')}`;
+          btnNext.disabled = currentIndex === MAIN_SLIDES_COUNT - 1;
+        } else {
+          // Appendix (A or B)
+          progressBar.style.width = '100%';
+          slideCounter.innerText = APPENDIX_LABELS[currentIndex] || 'Phụ Lục';
+          btnNext.disabled = true;
+        }
+
+        btnPrev.disabled = currentIndex === 0;
+
+        // Nav dots active state
+        navDots.querySelectorAll('.nav-dot').forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+
+        // Overview tiles active state
+        overviewTiles.querySelectorAll('.tile-card').forEach((tile, idx) => {
+          tile.classList.toggle('current', idx === currentIndex);
+        });
+      }
+
+      function goToSlide(idx) {
+        if (idx >= 0 && idx < totalSlides) {
+          currentIndex = idx;
+          updateSlide();
+        }
+      }
+
+      function next() {
+        if (currentIndex < MAIN_SLIDES_COUNT - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      }
+
+      function prev() {
+        if (isAppendixIndex(currentIndex)) {
+          goToSlide(0); // If on an appendix, return to Slide 1
+        } else if (currentIndex > 0) {
+          goToSlide(currentIndex - 1);
+        }
+      }
+
+      function toggleOverview() {
+        overviewModal.classList.toggle('show');
+      }
+      function closeOverview() {
+        overviewModal.classList.remove('show');
+      }
+
+      function toggleEffect() {
+        isFade = !isFade;
+        slideDeck.classList.toggle('deck-fade', isFade);
+        lblEffect.innerText = isFade ? 'Hiệu ứng: Fade' : 'Hiệu ứng: Slide';
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen?.();
+        }
+      }
+
+      // Event listeners
+      btnNext.addEventListener('click', next);
+      btnPrev.addEventListener('click', prev);
+      btnOverview.addEventListener('click', toggleOverview);
+      btnCloseOverview.addEventListener('click', closeOverview);
+      btnToggleEffect.addEventListener('click', toggleEffect);
+      btnFullscreen.addEventListener('click', toggleFullscreen);
+      btnPrint.addEventListener('click', () => window.print());
+
+      // Reference Links
+      if (pillJumpCriteria) pillJumpCriteria.addEventListener('click', () => goToSlide(MAIN_SLIDES_COUNT));
+      if (btnLinkToCriteria) btnLinkToCriteria.addEventListener('click', () => goToSlide(MAIN_SLIDES_COUNT));
+      if (btnBackToSlide1) btnBackToSlide1.addEventListener('click', () => goToSlide(0));
+      if (btnBackToSlide1B) btnBackToSlide1B.addEventListener('click', () => goToSlide(0));
+
+      overviewModal.addEventListener('click', (e) => {
+        if (e.target === overviewModal) closeOverview();
+      });
+
+      // Keyboard
+      window.addEventListener('keydown', (e) => {
+        if (overviewModal.classList.contains('show')) {
+          if (e.key === 'Escape') closeOverview();
+          return;
+        }
+
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'PageDown':
+          case ' ':
+            e.preventDefault();
+            next();
+            break;
+          case 'ArrowLeft':
+          case 'PageUp':
+            e.preventDefault();
+            prev();
+            break;
+          case 'Home':
+            e.preventDefault();
+            goToSlide(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            goToSlide(MAIN_SLIDES_COUNT - 1);
+            break;
+          case 'o':
+          case 'O':
+            e.preventDefault();
+            toggleOverview();
+            break;
+          case 'f':
+          case 'F':
+            e.preventDefault();
+            toggleFullscreen();
+            break;
+          case 't':
+          case 'T':
+            e.preventDefault();
+            toggleEffect();
+            break;
+          case 'p':
+          case 'P':
+            if (!e.ctrlKey && !e.metaKey) {
+              e.preventDefault();
+              window.print();
+            }
+            break;
+        }
+      });
+
+      // Touch gestures
+      let touchStartX = 0;
+      slideDeck.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      slideDeck.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        if (touchEndX < touchStartX - 50) next();
+        else if (touchEndX > touchStartX + 50) prev();
+      }, { passive: true });
+
+      updateSlide();
+    })();
+  </script>
+</body>
+</html>
