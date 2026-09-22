@@ -1,8 +1,0 @@
-Expedia full: 38/48 -> score=79 decision=Core
-Expedia no-C9: 36/45 -> score=80 decision=Core
-Trivago full: 37/48 -> score=77 decision=Core
-Trivago no-C9: 35/45 -> score=78 decision=Core
-Airbnb full: 22/48 -> score=46 decision=Drop
-Airbnb no-C9: 21/45 -> score=47 decision=Drop
-HotelBookingDemand full: 22/48 -> score=46 decision=Drop
-HotelBookingDemand no-C9: 21/45 -> score=47 decision=Drop
