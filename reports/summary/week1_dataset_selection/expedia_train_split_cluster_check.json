@@ -1,0 +1,34 @@
+{
+  "source": "data\\raw\\hospitality\\expedia\\train.csv",
+  "generated_by": "scripts/expedia_train_split_cluster_check.py",
+  "split": {
+    "cut": "2014-09-29 12:14:32.600000",
+    "n_all_bookings": 3000693,
+    "n_train_bookings": 2400554,
+    "n_test_bookings": 600139
+  },
+  "cluster_counts_full_dataset": {
+    "n_clusters": 100,
+    "min_cluster": 74,
+    "min_count": 2465,
+    "bottom5": {
+      "92": 6433,
+      "87": 6326,
+      "53": 5124,
+      "27": 2683,
+      "74": 2465
+    }
+  },
+  "cluster_counts_train_split_only": {
+    "n_clusters": 100,
+    "min_cluster": 74,
+    "min_count": 1943,
+    "bottom5": {
+      "87": 5345,
+      "92": 5131,
+      "53": 4012,
+      "27": 2055,
+      "74": 1943
+    }
+  }
+}
