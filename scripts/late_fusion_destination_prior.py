@@ -224,6 +224,8 @@ def summarize(rank: np.ndarray, mask: np.ndarray | None = None) -> dict:
         out[f"recall@{k}"] = r4((rank <= k).mean())
     out["ndcg@10"] = r4(((rank <= 10) / np.log2(rank + 1)).mean())
     out["mrr@10"] = r4(((rank <= 10) / rank).mean())
+    # one relevant item per row: AP@5 = 1/rank if rank <= 5 else 0, so MAP@5 = MRR@5
+    out["map@5"] = r4(((rank <= 5) / rank).mean())
     return out
 
 
