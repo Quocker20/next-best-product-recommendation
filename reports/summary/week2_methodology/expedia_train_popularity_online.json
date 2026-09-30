@@ -1,0 +1,204 @@
+{
+  "cut": "2014-09-29 12:14:32.600000",
+  "n_train": 2400554,
+  "m_smooth": 5,
+  "dest_threshold": 20,
+  "all_users": {
+    "n_bookings": 2400554,
+    "buckets": {
+      "0": {
+        "n": 34209,
+        "share": 0.01425,
+        "primary": {
+          "mean_rank": 42.431,
+          "median_rank": 42.0,
+          "mrr": 0.1048,
+          "recall@1": 0.0428,
+          "recall@5": 0.1289,
+          "recall@10": 0.1959,
+          "recall@20": 0.2719
+        },
+        "global": {
+          "mean_rank": 42.431,
+          "median_rank": 42.0,
+          "mrr": 0.1048,
+          "recall@1": 0.0428,
+          "recall@5": 0.1289,
+          "recall@10": 0.1959,
+          "recall@20": 0.2719
+        },
+        "dest_raw": {
+          "mean_rank": 42.431,
+          "median_rank": 42.0,
+          "mrr": 0.1048,
+          "recall@1": 0.0428,
+          "recall@5": 0.1289,
+          "recall@10": 0.1959,
+          "recall@20": 0.2719
+        }
+      },
+      "1-19": {
+        "n": 226796,
+        "share": 0.094477,
+        "primary": {
+          "mean_rank": 9.901,
+          "median_rank": 3.0,
+          "mrr": 0.4644,
+          "recall@1": 0.3042,
+          "recall@5": 0.6534,
+          "recall@10": 0.7728,
+          "recall@20": 0.8639
+        },
+        "global": {
+          "mean_rank": 36.317,
+          "median_rank": 33.0,
+          "mrr": 0.1334,
+          "recall@1": 0.0606,
+          "recall@5": 0.1707,
+          "recall@10": 0.2554,
+          "recall@20": 0.3439
+        },
+        "dest_raw": {
+          "mean_rank": 20.315,
+          "median_rank": 3.0,
+          "mrr": 0.4214,
+          "recall@1": 0.2649,
+          "recall@5": 0.5943,
+          "recall@10": 0.6393,
+          "recall@20": 0.6393
+        }
+      },
+      "20+": {
+        "n": 2139549,
+        "share": 0.891273,
+        "primary": {
+          "mean_rank": 8.451,
+          "median_rank": 5.0,
+          "mrr": 0.3528,
+          "recall@1": 0.1882,
+          "recall@5": 0.5401,
+          "recall@10": 0.7378,
+          "recall@20": 0.899
+        },
+        "global": {
+          "mean_rank": 33.225,
+          "median_rank": 28.0,
+          "mrr": 0.1072,
+          "recall@1": 0.0381,
+          "recall@5": 0.132,
+          "recall@10": 0.2249,
+          "recall@20": 0.3899
+        },
+        "dest_raw": {
+          "mean_rank": 8.988,
+          "median_rank": 5.0,
+          "mrr": 0.3507,
+          "recall@1": 0.1843,
+          "recall@5": 0.5343,
+          "recall@10": 0.733,
+          "recall@20": 0.8911
+        }
+      }
+    },
+    "overall_primary_mean_rank": 9.072
+  },
+  "user_history_lt5": {
+    "n_bookings": 1700813,
+    "buckets": {
+      "0": {
+        "n": 27367,
+        "share": 0.016091,
+        "primary": {
+          "mean_rank": 41.254,
+          "median_rank": 40.5,
+          "mrr": 0.1101,
+          "recall@1": 0.0456,
+          "recall@5": 0.1375,
+          "recall@10": 0.2063,
+          "recall@20": 0.2881
+        },
+        "global": {
+          "mean_rank": 41.254,
+          "median_rank": 40.5,
+          "mrr": 0.1101,
+          "recall@1": 0.0456,
+          "recall@5": 0.1375,
+          "recall@10": 0.2063,
+          "recall@20": 0.2881
+        },
+        "dest_raw": {
+          "mean_rank": 41.254,
+          "median_rank": 40.5,
+          "mrr": 0.1101,
+          "recall@1": 0.0456,
+          "recall@5": 0.1375,
+          "recall@10": 0.2063,
+          "recall@20": 0.2881
+        }
+      },
+      "1-19": {
+        "n": 169320,
+        "share": 0.099552,
+        "primary": {
+          "mean_rank": 10.733,
+          "median_rank": 3.0,
+          "mrr": 0.4437,
+          "recall@1": 0.2838,
+          "recall@5": 0.6306,
+          "recall@10": 0.7549,
+          "recall@20": 0.8488
+        },
+        "global": {
+          "mean_rank": 35.596,
+          "median_rank": 32.0,
+          "mrr": 0.1344,
+          "recall@1": 0.0606,
+          "recall@5": 0.1732,
+          "recall@10": 0.2592,
+          "recall@20": 0.3554
+        },
+        "dest_raw": {
+          "mean_rank": 21.507,
+          "median_rank": 3.5,
+          "mrr": 0.3991,
+          "recall@1": 0.2445,
+          "recall@5": 0.569,
+          "recall@10": 0.6164,
+          "recall@20": 0.6164
+        }
+      },
+      "20+": {
+        "n": 1504126,
+        "share": 0.884357,
+        "primary": {
+          "mean_rank": 8.544,
+          "median_rank": 5.0,
+          "mrr": 0.3514,
+          "recall@1": 0.1874,
+          "recall@5": 0.5378,
+          "recall@10": 0.7346,
+          "recall@20": 0.8968
+        },
+        "global": {
+          "mean_rank": 33.774,
+          "median_rank": 29.0,
+          "mrr": 0.1049,
+          "recall@1": 0.0369,
+          "recall@5": 0.1288,
+          "recall@10": 0.2201,
+          "recall@20": 0.3824
+        },
+        "dest_raw": {
+          "mean_rank": 9.121,
+          "median_rank": 5.0,
+          "mrr": 0.3492,
+          "recall@1": 0.1835,
+          "recall@5": 0.5318,
+          "recall@10": 0.7296,
+          "recall@20": 0.8885
+        }
+      }
+    },
+    "overall_primary_mean_rank": 9.288
+  }
+}
