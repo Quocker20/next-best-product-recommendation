@@ -1,4 +1,4 @@
-Wed 30 Sep 2026 10:43:54 INFO  
+Wed 30 Sep 2026 11:19:32 INFO  
 General Hyper Parameters:
 gpu_id = 0
 use_gpu = False
@@ -12,7 +12,7 @@ save_dataset = False
 save_dataloaders = False
 
 Training Hyper Parameters:
-epochs = 1
+epochs = 3
 train_batch_size = 1024
 learner = adam
 learning_rate = 0.001
@@ -89,7 +89,7 @@ train_neg_sample_args = {'strategy': 'none'}
 eval_neg_sample_args = {'strategy': 'full', 'distribution': 'uniform'}
 
 
-Wed 30 Sep 2026 10:44:04 INFO  expedia
+Wed 30 Sep 2026 11:19:40 INFO  expedia
 The number of users: 813986
 Average actions of users: 3.68642296848222
 The number of items: 101
@@ -97,9 +97,9 @@ Average actions of items: 30006.93
 The number of inters: 3000693
 The sparsity of the dataset: 96.35008075284239%
 Remain Fields: ['user_id', 'item_id', 'timestamp']
-Wed 30 Sep 2026 10:44:36 INFO  [Training]: train_batch_size = [1024] negative sampling: [None]
-Wed 30 Sep 2026 10:44:36 INFO  [Evaluation]: eval_batch_size = [4096] eval_args: [{'split': {'RS': [0.8, 0.1, 0.1]}, 'order': 'TO', 'group_by': None, 'mode': 'full'}]
-Wed 30 Sep 2026 10:44:36 INFO  SMLPREC(
+Wed 30 Sep 2026 11:20:06 INFO  [Training]: train_batch_size = [1024] negative sampling: [None]
+Wed 30 Sep 2026 11:20:06 INFO  [Evaluation]: eval_batch_size = [4096] eval_args: [{'split': {'RS': [0.8, 0.1, 0.1]}, 'order': 'TO', 'group_by': None, 'mode': 'full'}]
+Wed 30 Sep 2026 11:20:06 INFO  SMLPREC(
   (item_embedding): Embedding(101, 64, padding_idx=0)
   (layers): ModuleList(
     (0): SMLP(
@@ -131,10 +131,23 @@ Wed 30 Sep 2026 10:44:36 INFO  SMLPREC(
   (loss_fct): CrossEntropyLoss()
 )
 Trainable parameters: 33702
-Wed 30 Sep 2026 10:47:08 INFO  epoch 0 training [time: 150.21s, train loss: 6686.1206]
-Wed 30 Sep 2026 10:47:14 INFO  epoch 0 evaluating [time: 6.62s, valid_score: 0.281900]
-Wed 30 Sep 2026 10:47:14 INFO  valid result: 
+Wed 30 Sep 2026 11:23:22 INFO  epoch 0 training [time: 194.08s, train loss: 6686.1206]
+Wed 30 Sep 2026 11:23:32 INFO  epoch 0 evaluating [time: 10.69s, valid_score: 0.281900]
+Wed 30 Sep 2026 11:23:32 INFO  valid result: 
 recall@5 : 0.3325    recall@10 : 0.46    recall@20 : 0.6278    ndcg@5 : 0.2409    ndcg@10 : 0.2819    ndcg@20 : 0.3242    mrr@5 : 0.2108    mrr@10 : 0.2276    mrr@20 : 0.2391    hit@5 : 0.3325    hit@10 : 0.46    hit@20 : 0.6278
-Wed 30 Sep 2026 10:47:14 INFO  Saving current best: C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_10-44-36.pth
-Wed 30 Sep 2026 10:47:14 INFO  Loading model structure and parameters from C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_10-44-36.pth
-Wed 30 Sep 2026 10:47:21 INFO  test result: OrderedDict([('recall@5', 0.335), ('recall@10', 0.4624), ('recall@20', 0.6291), ('ndcg@5', 0.2426), ('ndcg@10', 0.2836), ('ndcg@20', 0.3255), ('mrr@5', 0.2122), ('mrr@10', 0.229), ('mrr@20', 0.2404), ('hit@5', 0.335), ('hit@10', 0.4624), ('hit@20', 0.6291)])
+Wed 30 Sep 2026 11:23:32 INFO  Saving current best: C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_11-20-06.pth
+Wed 30 Sep 2026 11:23:41 INFO  epoch 1 test result (current weights): {'recall@5': 0.335, 'recall@10': 0.4624, 'recall@20': 0.6291, 'ndcg@5': 0.2426, 'ndcg@10': 0.2836, 'ndcg@20': 0.3255, 'mrr@5': 0.2122, 'mrr@10': 0.229, 'mrr@20': 0.2404, 'hit@5': 0.335, 'hit@10': 0.4624, 'hit@20': 0.6291}
+Wed 30 Sep 2026 11:27:13 INFO  epoch 1 training [time: 212.40s, train loss: 6631.3986]
+Wed 30 Sep 2026 11:27:24 INFO  epoch 1 evaluating [time: 10.95s, valid_score: 0.283400]
+Wed 30 Sep 2026 11:27:24 INFO  valid result: 
+recall@5 : 0.3347    recall@10 : 0.4617    recall@20 : 0.6294    ndcg@5 : 0.2426    ndcg@10 : 0.2834    ndcg@20 : 0.3256    mrr@5 : 0.2123    mrr@10 : 0.229    mrr@20 : 0.2405    hit@5 : 0.3347    hit@10 : 0.4617    hit@20 : 0.6294
+Wed 30 Sep 2026 11:27:24 INFO  Saving current best: C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_11-20-06.pth
+Wed 30 Sep 2026 11:27:35 INFO  epoch 2 test result (current weights): {'recall@5': 0.3359, 'recall@10': 0.4628, 'recall@20': 0.6292, 'ndcg@5': 0.2433, 'ndcg@10': 0.2842, 'ndcg@20': 0.3261, 'mrr@5': 0.2129, 'mrr@10': 0.2296, 'mrr@20': 0.241, 'hit@5': 0.3359, 'hit@10': 0.4628, 'hit@20': 0.6292}
+Wed 30 Sep 2026 11:31:05 INFO  epoch 2 training [time: 210.26s, train loss: 6626.1111]
+Wed 30 Sep 2026 11:31:13 INFO  epoch 2 evaluating [time: 7.77s, valid_score: 0.283800]
+Wed 30 Sep 2026 11:31:13 INFO  valid result: 
+recall@5 : 0.3352    recall@10 : 0.4623    recall@20 : 0.6309    ndcg@5 : 0.2429    ndcg@10 : 0.2838    ndcg@20 : 0.3263    mrr@5 : 0.2126    mrr@10 : 0.2293    mrr@20 : 0.2409    hit@5 : 0.3352    hit@10 : 0.4623    hit@20 : 0.6309
+Wed 30 Sep 2026 11:31:13 INFO  Saving current best: C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_11-20-06.pth
+Wed 30 Sep 2026 11:31:20 INFO  epoch 3 test result (current weights): {'recall@5': 0.3369, 'recall@10': 0.4645, 'recall@20': 0.6309, 'ndcg@5': 0.2439, 'ndcg@10': 0.285, 'ndcg@20': 0.3269, 'mrr@5': 0.2133, 'mrr@10': 0.2302, 'mrr@20': 0.2416, 'hit@5': 0.3369, 'hit@10': 0.4645, 'hit@20': 0.6309}
+Wed 30 Sep 2026 11:31:20 INFO  Loading model structure and parameters from C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_11-20-06.pth
+Wed 30 Sep 2026 11:31:27 INFO  test result: OrderedDict([('recall@5', 0.3369), ('recall@10', 0.4645), ('recall@20', 0.6309), ('ndcg@5', 0.2439), ('ndcg@10', 0.285), ('ndcg@20', 0.3269), ('mrr@5', 0.2133), ('mrr@10', 0.2302), ('mrr@20', 0.2416), ('hit@5', 0.3369), ('hit@10', 0.4645), ('hit@20', 0.6309)])

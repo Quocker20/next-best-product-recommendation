@@ -55,7 +55,7 @@ def grouped_bars() -> str:
             [REP[f"recall@{k}"] for k in KS],
             "#f59e0b",
         ),
-        ("SMLP4Rec (1 epoch)", [T[f"recall@{k}"] for k in KS], BLUE),
+        (f"SMLP4Rec (epoch {BEST}/{N_EP})", [T[f"recall@{k}"] for k in KS], BLUE),
     ]
     w, h, top, bottom, left = 720, 330, 26, 34, 10
     ymax = 0.7
@@ -106,6 +106,13 @@ S = R["splits"]
 CFG = R["config"]
 DS = R["dataset_stats"]
 TM = R["timing_seconds"]
+PE = R["per_epoch"]
+BEST = R["best_epoch_by_valid"]
+N_EP = len(PE)
+TB = R["top5_behavior"]
+TV, TT = TB["valid"], TB["test"]
+MIX = R["target_mix"]
+GAIN = PE[-1]["test"]["recall@5"] - PE[0]["test"]["recall@5"]
 
 slides = []
 
@@ -118,7 +125,7 @@ slides.append(
         """<div class="cover"><div class="kicker">Tuần 3 · Kiểm tra pipeline</div>
 <h1>Chạy thử SMLP4Rec trên Expedia<br><span>những gì đã đổi, đã chạy và đã thấy</span></h1>
 <p class="lead">Topic C1 · Next-Best-Product Recommendation · 30/09/2026</p>
-<div class="cover-tags"><span>Pipeline end-to-end</span><span>1 epoch · CPU</span><span>Chưa phải benchmark</span></div></div>""",
+<div class="cover-tags"><span>Pipeline end-to-end</span><span>3 epoch · CPU</span><span>Chưa phải benchmark</span></div></div>""",
     )
 )
 
@@ -214,14 +221,14 @@ slides.append(
     (
         "Đã chạy",
         "Luồng pipeline và thiết lập",
-        "Một lần chạy, seed 2022, CPU",
+        "Một lần chạy 3 epoch, seed 2022, CPU",
         f"""<div class="flow">{flow}</div>
 <div class="kpis">
 <div class="kpi"><b>{num(DS["users"])}</b><span>người dùng</span></div>
 <div class="kpi"><b>{DS["items"]}</b><span>cụm khách sạn</span></div>
 <div class="kpi"><b>{num(DS["sequence_targets"])}</b><span>mục tiêu “đặt tiếp theo”</span></div>
 <div class="kpi"><b>{num(R["n_parameters"])}</b><span>tham số</span></div></div>
-<p class="note">Mô hình: {CFG["n_layers"]} lớp, hidden {CFG["hidden_size"]}, dropout {CFG["hidden_dropout_prob"]}, lr {CFG["learning_rate"]}, batch {CFG["train_batch_size"]}, {CFG["epochs"]} epoch, lịch sử tối đa {CFG["MAX_ITEM_LIST_LENGTH"]} lần đặt. Thời gian: dựng dữ liệu {TM["data_build"]:.1f}s · train + valid {TM["train_and_valid"]:.1f}s · test {TM["test"]:.1f}s.</p>""",
+<p class="note">Mô hình: {CFG["n_layers"]} lớp, hidden {CFG["hidden_size"]}, dropout {CFG["hidden_dropout_prob"]}, lr {CFG["learning_rate"]}, batch {CFG["train_batch_size"]}, {CFG["epochs"]} epoch, lịch sử tối đa {CFG["MAX_ITEM_LIST_LENGTH"]} lần đặt. Thời gian: dựng dữ liệu {TM["data_build"]:.1f}s · train + valid + test sau mỗi epoch {TM["train_and_valid"]:.1f}s · test cuối {TM["test"]:.1f}s.</p>""",
     )
 )
 
@@ -256,13 +263,126 @@ slides.append(
     (
         "Đã thấy",
         "Kết quả trên tập test",
-        "Xếp hạng đầy đủ trên 100 cụm · cùng các dòng test cho cả ba phương pháp",
+        f"Trọng số tốt nhất theo valid (epoch {BEST}/{N_EP}) · xếp hạng đầy đủ trên 100 cụm · cùng các dòng test",
         f"""<div class="split"><div>{grouped_bars()}</div>
 <div class="side">
-<div class="th-card"><div class="lbl">SMLP4Rec, test</div><div class="val">Recall@5 {pct(T["recall@5"])}</div>
+<div class="th-card"><div class="lbl">SMLP4Rec, test, epoch {BEST}</div><div class="val">Recall@5 {pct(T["recall@5"])}</div>
 <p>NDCG@10 {dec(T["ndcg@10"])} · MRR@10 {dec(T["mrr@10"])}</p></div>
 <div class="th-card"><div class="lbl">So với lặp lại cụm cuối</div><div class="val">{pp(T["recall@5"], REP["recall@5"])}</div><p>Recall@5</p></div>
 <div class="th-card"><div class="lbl">So với popularity toàn cục</div><div class="val">{pp(T["recall@5"], POP["recall@5"])}</div><p>Recall@5</p></div></div></div>""",
+    )
+)
+
+# 7b per-epoch
+ep_rows = [
+    [
+        str(e["epoch"]),
+        num(round(e["train_loss"])),
+        pct(e["valid"]["recall@5"]),
+        dec(e["valid"]["ndcg@10"]),
+        pct(e["test"]["recall@5"]),
+        pct(e["test"]["recall@10"]),
+        dec(e["test"]["ndcg@10"]),
+        f"{e['train_seconds']:.0f}s",
+    ]
+    for e in PE
+]
+slides.append(
+    (
+        "Đã thấy",
+        "Kết quả sau từng epoch",
+        "Valid và test được tính lại sau mỗi epoch; epoch tốt nhất chọn theo valid, không theo test",
+        table(
+            [
+                "Epoch",
+                "Loss train",
+                "Valid Recall@5",
+                "Valid NDCG@10",
+                "Test Recall@5",
+                "Test Recall@10",
+                "Test NDCG@10",
+                "Thời gian train",
+            ],
+            ep_rows,
+            hl_last=True,
+        )
+        + f"""<div class="kpis">
+<div class="kpi"><b>{pp(PE[-1]["test"]["recall@5"], PE[0]["test"]["recall@5"])}</b><span>Recall@5 test, epoch {N_EP} so với epoch 1</span></div>
+<div class="kpi"><b>{pct((PE[0]["train_loss"] - PE[-1]["train_loss"]) / PE[0]["train_loss"], 1)}</b><span>loss train giảm sau {N_EP - 1} epoch thêm</span></div>
+<div class="kpi"><b>{BEST}/{N_EP}</b><span>epoch tốt nhất theo valid</span></div>
+<div class="kpi"><b>{dec(PE[0]["test"]["recall@5"])}</b><span>Recall@5 epoch 1 trùng lần chạy trước (tái lập)</span></div></div>""",
+    )
+)
+
+# 7c target mix
+slides.append(
+    (
+        "Đã thấy",
+        "Người dùng đặt cụm nào tiếp theo?",
+        "Tỉ lệ dòng mục tiêu theo loại cụm được đặt · tính trên từng tập",
+        table(
+            ["Người dùng đặt…", "Train", "Valid", "Test"],
+            [
+                ["Cụm vừa đặt gần nhất"]
+                + [pct(MIX[k]["last"]) for k in ("train", "valid", "test")],
+                ["Cụm cũ, không phải cụm gần nhất"]
+                + [pct(MIX[k]["older_not_last"]) for k in ("train", "valid", "test")],
+                ["<b>Cụm cũ (gồm cả cụm gần nhất)</b>"]
+                + [pct(MIX[k]["old_incl_last"]) for k in ("train", "valid", "test")],
+                ["<b>Cụm mới (chưa từng đặt)</b>"]
+                + [pct(MIX[k]["new"]) for k in ("train", "valid", "test")],
+            ],
+        )
+        + f"""<div class="two">
+<div class="card"><h3>Nhận xét</h3><ul>
+<li>Khoảng {pct(MIX["test"]["new"], 0)} lần đặt tiếp theo là <b>cụm mới</b>: chỉ nhìn lịch sử thì không thể đoán được các trường hợp này.</li>
+<li>Quy tắc “đặt lại cụm gần nhất” đúng {pct(MIX["test"]["last"])} trên test, bằng đúng tỉ lệ dòng ở hàng đầu.</li></ul></div>
+<div class="card off"><h3>Lưu ý</h3><ul>
+<li>Train có {pct(MIX["train"]["old_incl_last"], 1)} đặt lại cụm cũ, valid/test có {pct(MIX["valid"]["old_incl_last"], 1)} / {pct(MIX["test"]["old_incl_last"], 1)}: lịch sử dài dần theo thời gian (có thể là lý do tỉ lệ đặt lại tăng nhẹ).</li>
+<li>Một dòng thuộc đúng một trong ba loại: gần nhất, cũ khác, mới.</li></ul></div></div>""",
+    )
+)
+
+# 7d top-5 composition
+slides.append(
+    (
+        "Đã thấy",
+        "Top 5 của mô hình gồm những gì?",
+        f"Trọng số epoch {TB['checkpoint_epoch']}/{N_EP} · % tính trên toàn bộ dòng, trừ khi ghi “trên dòng cũ/mới”",
+        table(
+            ["Chỉ số", "Valid", "Test", "Ý nghĩa"],
+            [
+                [
+                    "Top 1 là cụm đặt gần nhất",
+                    pct(TV["top1_is_last_booking"]),
+                    pct(TT["top1_is_last_booking"]),
+                    "Vị trí số 1 gần như luôn là “đặt lại cụm vừa đặt”",
+                ],
+                [
+                    "Cụm đặt gần nhất nằm trong top 5",
+                    pct(TV["last_booking_in_top5"]),
+                    pct(TT["last_booking_in_top5"]),
+                    "Hầu như luôn có mặt trong danh sách",
+                ],
+                [
+                    "Đặt cụm cũ (gồm cả gần nhất) và trúng top 5",
+                    f'{pct(TV["old_target_in_top5_of_all_rows"])} <span class="sm">({pct(TV["old_target_in_top5_of_old_rows"], 1)} trên dòng cũ)</span>',
+                    f'{pct(TT["old_target_in_top5_of_all_rows"])} <span class="sm">({pct(TT["old_target_in_top5_of_old_rows"], 1)} trên dòng cũ)</span>',
+                    "Phần lớn điểm Recall@5 đến từ đây",
+                ],
+                [
+                    "Đặt cụm mới và trúng top 5",
+                    f'{pct(TV["new_target_in_top5_of_all_rows"])} <span class="sm">({pct(TV["new_target_in_top5_of_new_rows"], 1)} trên dòng mới)</span>',
+                    f'{pct(TT["new_target_in_top5_of_all_rows"])} <span class="sm">({pct(TT["new_target_in_top5_of_new_rows"], 1)} trên dòng mới)</span>',
+                    "Phần “khám phá”, còn yếu",
+                ],
+            ],
+        )
+        + f"""<div class="kpis">
+<div class="kpi"><b>{pct(TT["old_target_in_top5_of_all_rows"] / TT["recall@5_check"], 1)}</b><span>số lần trúng (test) là cụm cũ; còn lại {pct(TT["new_target_in_top5_of_all_rows"] / TT["recall@5_check"], 1)} là cụm mới</span></div>
+<div class="kpi"><b>{pct(TT["new_target_in_top5_of_new_rows"], 1)} vs {pct(TT["global_popularity_top5_on_new_rows"], 1)}</b><span>trên dòng cụm mới (test): mô hình vs popularity toàn cục top 5</span></div>
+<div class="kpi"><b>{pct(TT["top5_slots_new_share"], 1)}</b><span>ô trong top 5 (test) là cụm chưa có trong lịch sử, nhưng ít khi trúng</span></div></div>
+<p class="note">Kết luận: mô hình chủ yếu <b>gợi lại</b> cụm đã đặt, làm tốt phần đó ({pct(TT["old_target_in_top5_of_old_rows"], 0)} trúng), nhưng ở phần cụm mới nó không hơn popularity. Giá trị “gợi ý mới” phải đến từ ngữ cảnh tìm kiếm (điểm đến) và hybrid.</p>""",
     )
 )
 
@@ -273,10 +393,10 @@ slides.append(
         "Đọc kết quả",
         "",
         f"""<div class="finds">
-<div class="fd"><span>1</span><div><h3>Pipeline chạy thông suốt</h3><p>Xuất dữ liệu, dựng chuỗi, chia theo thời gian, huấn luyện, xếp hạng đầy đủ và nạp lại checkpoint đều chạy không lỗi, tổng cộng khoảng {(TM["data_build"] + TM["train_and_valid"] + TM["test"]) / 60:.1f} phút trên CPU.</p></div></div>
+<div class="fd"><span>1</span><div><h3>Pipeline chạy thông suốt</h3><p>Xuất dữ liệu, dựng chuỗi, chia theo thời gian, huấn luyện {N_EP} epoch, xếp hạng đầy đủ sau mỗi epoch và nạp lại checkpoint đều chạy không lỗi, tổng cộng khoảng {(TM["data_build"] + TM["train_and_valid"] + TM["test"]) / 60:.1f} phút trên CPU. Checkpoint đã lưu để dùng cho thử nghiệm gợi ý.</p></div></div>
 <div class="fd"><span>2</span><div><h3>Lịch sử đặt phòng tự nó có tín hiệu</h3><p>SMLP4Rec vượt lặp-lại-cụm-cuối {pp(T["recall@5"], REP["recall@5"])} và popularity {pp(T["recall@5"], POP["recall@5"])} ở Recall@5. Valid ({pct(V["recall@5"])}) và test gần nhau, không thấy lệch giữa hai tập.</p></div></div>
-<div class="fd"><span>3</span><div><h3>Còn thấp hơn mốc tuần 2 (53,07%)</h3><p>Mô hình chỉ thấy các cụm đã đặt, chưa thấy điểm đến của lần tìm kiếm hiện tại, tức tín hiệu mạnh nhất. Đây chính là chỗ query token cần lấp.</p></div></div>
-<div class="fd warn"><span>!</span><div><h3>Chưa so sánh trực tiếp với tuần 2</h3><p>Tuần 2 cắt theo phân vị 80% của thời gian đặt và có cả người dùng mới; lần chạy này chia 80/10/10 trên các mục tiêu và bỏ lần đặt đầu của mỗi người.</p></div></div></div>""",
+<div class="fd"><span>3</span><div><h3>Thêm epoch gần như không giúp</h3><p>Recall@5 test đổi {pp(PE[-1]["test"]["recall@5"], PE[0]["test"]["recall@5"])} sau {N_EP} epoch trong khi loss train vẫn giảm. Mô hình chỉ có {num(R["n_parameters"])} tham số và chỉ thấy lịch sử, nên trần điểm nằm ở thông tin đầu vào và kiến trúc, không ở số epoch. Cần chạy lâu hơn mới kết luận chắc.</p></div></div>
+<div class="fd warn"><span>!</span><div><h3>Còn thấp hơn nhiều so với mốc tuần 2 (53,07%), và chưa so sánh trực tiếp</h3><p>Mô hình chưa thấy điểm đến của lần tìm kiếm hiện tại (query token). Ngoài ra tuần 2 cắt theo phân vị 80% thời gian đặt và có cả người dùng mới; lần chạy này chia 80/10/10 trên các mục tiêu và bỏ lần đặt đầu của mỗi người.</p></div></div></div>""",
     )
 )
 
@@ -322,12 +442,12 @@ slides.append(
         "",
         """<div class="two">
 <div class="card off"><h3>Hạn chế của lần chạy này</h3><ul>
-<li>1 epoch, chưa tinh chỉnh, một seed duy nhất</li>
+<li>Chỉ 3 epoch, chưa tinh chỉnh, một seed duy nhất</li>
 <li>Chưa có ngữ cảnh tìm kiếm (điểm đến, ngày, số người, gói)</li>
 <li>Chưa có cold-start hybrid</li>
 <li>RecBole 1.0.1 buộc dùng numpy 1.23 / pandas 1.5 trong venv riêng</li></ul></div>
 <div class="card"><h3>Đề xuất</h3><ol>
-<li>Thêm query token cho ngữ cảnh tìm kiếm hiện tại</li>
+<li>Thêm query token cho ngữ cảnh tìm kiếm hiện tại (đòn bẩy chính, không phải thêm epoch)</li>
 <li>Thêm cold-start hybrid (prior theo điểm đến, cổng học theo độ dài lịch sử)</li>
 <li>Căn chỉnh cách chia với tuần 2 để so với mốc 57,85%</li>
 <li>Quyết định: giữ RecBole hay chuyển sang PyTorch thuần</li>
@@ -374,6 +494,7 @@ ul.tight{padding-left:22px;font-size:15.5px;color:var(--muted);line-height:1.7}
 .split{display:flex;gap:28px;align-items:center}
 .chart{width:720px;height:330px}
 .cv{font-size:11.5px;fill:#334155;font-weight:600}.cl{font-size:11px;fill:#94a3b8}.ck{font-size:14px;fill:#334155;font-weight:600}
+.sm{font-size:12px;color:var(--sub)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);margin-top:8px}
 .lg:before{content:'';display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--c);margin-right:6px;vertical-align:-1px}
 .side{display:flex;flex-direction:column;gap:12px;flex:1}

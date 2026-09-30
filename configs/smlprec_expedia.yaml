@@ -1,4 +1,4 @@
-# SMLP4Rec on Expedia bookings — week-3 pipeline-validation run (not a tuned result).
+# SMLP4Rec on Expedia bookings — week-3 pipeline-validation run, 3 epochs (not a tuned result).
 # Input: data/interim/recbole/expedia/expedia.inter from scripts/expedia_to_recbole.py.
 # data_path and checkpoint_dir are set by scripts/run_smlprec_expedia.py.
 
@@ -20,7 +20,8 @@ pooling_mode: mean
 loss_type: CE
 
 # training
-epochs: 1
+epochs: 3
+stopping_step: 10   # no early stop inside 3 epochs
 train_batch_size: 1024
 learning_rate: 0.001
 neg_sampling: ~

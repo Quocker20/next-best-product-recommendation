@@ -1,14 +1,14 @@
 {
-  "run": "week3 pipeline validation - SMLP4Rec on Expedia bookings (research adaptation)",
+  "run": "week3 pipeline validation, 3 epochs - SMLP4Rec on Expedia bookings (research adaptation)",
   "dataset": "expedia (train.csv, is_booking == 1; item = hotel_cluster)",
-  "git_commit": "93fcb9e",
+  "git_commit": "43f7295",
   "config": {
     "MAX_ITEM_LIST_LENGTH": 20,
     "n_layers": 2,
     "hidden_size": 64,
     "hidden_dropout_prob": 0.0,
     "loss_type": "CE",
-    "epochs": 1,
+    "epochs": 3,
     "train_batch_size": 1024,
     "learning_rate": 0.001,
     "seed": 2022,
@@ -58,37 +58,140 @@
     }
   },
   "timing_seconds": {
-    "data_build": 42.2,
-    "train_and_valid": 156.9,
-    "test": 6.4
+    "data_build": 34.3,
+    "train_and_valid": 672.5,
+    "test": 7.3
   },
+  "best_epoch_by_valid": 3,
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\data\\interim\\recbole\\saved\\SMLPREC-Sep-30-2026_11-20-06.pth",
+  "per_epoch": [
+    {
+      "epoch": 1,
+      "train_loss": 6686.1206,
+      "train_seconds": 194.1,
+      "valid": {
+        "recall@5": 0.3325,
+        "recall@10": 0.46,
+        "recall@20": 0.6278,
+        "ndcg@5": 0.2409,
+        "ndcg@10": 0.2819,
+        "ndcg@20": 0.3242,
+        "mrr@5": 0.2108,
+        "mrr@10": 0.2276,
+        "mrr@20": 0.2391,
+        "hit@5": 0.3325,
+        "hit@10": 0.46,
+        "hit@20": 0.6278
+      },
+      "test": {
+        "recall@5": 0.335,
+        "recall@10": 0.4624,
+        "recall@20": 0.6291,
+        "ndcg@5": 0.2426,
+        "ndcg@10": 0.2836,
+        "ndcg@20": 0.3255,
+        "mrr@5": 0.2122,
+        "mrr@10": 0.229,
+        "mrr@20": 0.2404,
+        "hit@5": 0.335,
+        "hit@10": 0.4624,
+        "hit@20": 0.6291
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 6631.3986,
+      "train_seconds": 212.4,
+      "valid": {
+        "recall@5": 0.3347,
+        "recall@10": 0.4617,
+        "recall@20": 0.6294,
+        "ndcg@5": 0.2426,
+        "ndcg@10": 0.2834,
+        "ndcg@20": 0.3256,
+        "mrr@5": 0.2123,
+        "mrr@10": 0.229,
+        "mrr@20": 0.2405,
+        "hit@5": 0.3347,
+        "hit@10": 0.4617,
+        "hit@20": 0.6294
+      },
+      "test": {
+        "recall@5": 0.3359,
+        "recall@10": 0.4628,
+        "recall@20": 0.6292,
+        "ndcg@5": 0.2433,
+        "ndcg@10": 0.2842,
+        "ndcg@20": 0.3261,
+        "mrr@5": 0.2129,
+        "mrr@10": 0.2296,
+        "mrr@20": 0.241,
+        "hit@5": 0.3359,
+        "hit@10": 0.4628,
+        "hit@20": 0.6292
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 6626.1111,
+      "train_seconds": 210.3,
+      "valid": {
+        "recall@5": 0.3352,
+        "recall@10": 0.4623,
+        "recall@20": 0.6309,
+        "ndcg@5": 0.2429,
+        "ndcg@10": 0.2838,
+        "ndcg@20": 0.3263,
+        "mrr@5": 0.2126,
+        "mrr@10": 0.2293,
+        "mrr@20": 0.2409,
+        "hit@5": 0.3352,
+        "hit@10": 0.4623,
+        "hit@20": 0.6309
+      },
+      "test": {
+        "recall@5": 0.3369,
+        "recall@10": 0.4645,
+        "recall@20": 0.6309,
+        "ndcg@5": 0.2439,
+        "ndcg@10": 0.285,
+        "ndcg@20": 0.3269,
+        "mrr@5": 0.2133,
+        "mrr@10": 0.2302,
+        "mrr@20": 0.2416,
+        "hit@5": 0.3369,
+        "hit@10": 0.4645,
+        "hit@20": 0.6309
+      }
+    }
+  ],
   "valid": {
-    "recall@5": 0.3325,
-    "recall@10": 0.46,
-    "recall@20": 0.6278,
-    "ndcg@5": 0.2409,
-    "ndcg@10": 0.2819,
-    "ndcg@20": 0.3242,
-    "mrr@5": 0.2108,
-    "mrr@10": 0.2276,
-    "mrr@20": 0.2391,
-    "hit@5": 0.3325,
-    "hit@10": 0.46,
-    "hit@20": 0.6278
+    "recall@5": 0.3352,
+    "recall@10": 0.4623,
+    "recall@20": 0.6309,
+    "ndcg@5": 0.2429,
+    "ndcg@10": 0.2838,
+    "ndcg@20": 0.3263,
+    "mrr@5": 0.2126,
+    "mrr@10": 0.2293,
+    "mrr@20": 0.2409,
+    "hit@5": 0.3352,
+    "hit@10": 0.4623,
+    "hit@20": 0.6309
   },
   "test": {
-    "recall@5": 0.335,
-    "recall@10": 0.4624,
-    "recall@20": 0.6291,
-    "ndcg@5": 0.2426,
-    "ndcg@10": 0.2836,
-    "ndcg@20": 0.3255,
-    "mrr@5": 0.2122,
-    "mrr@10": 0.229,
-    "mrr@20": 0.2404,
-    "hit@5": 0.335,
-    "hit@10": 0.4624,
-    "hit@20": 0.6291
+    "recall@5": 0.3369,
+    "recall@10": 0.4645,
+    "recall@20": 0.6309,
+    "ndcg@5": 0.2439,
+    "ndcg@10": 0.285,
+    "ndcg@20": 0.3269,
+    "mrr@5": 0.2133,
+    "mrr@10": 0.2302,
+    "mrr@20": 0.2416,
+    "hit@5": 0.3369,
+    "hit@10": 0.4645,
+    "hit@20": 0.6309
   },
   "heuristics_same_test_rows": {
     "global_popularity": {
@@ -100,6 +203,60 @@
       "recall@5": 0.257,
       "recall@10": 0.3439,
       "recall@20": 0.4762
+    }
+  },
+  "top5_behavior": {
+    "checkpoint_epoch": 3,
+    "valid": {
+      "rows": 218670,
+      "top1_is_last_booking": 0.8274,
+      "last_booking_in_top5": 0.9884,
+      "target_in_history": 0.3114,
+      "old_target_in_top5_of_all_rows": 0.2534,
+      "old_target_in_top5_of_old_rows": 0.8139,
+      "new_target": 0.6886,
+      "new_target_in_top5_of_all_rows": 0.0817,
+      "new_target_in_top5_of_new_rows": 0.1187,
+      "recall@5_check": 0.3352,
+      "top5_slots_new_share": 0.456,
+      "global_popularity_top5_on_new_rows": 0.1265
+    },
+    "test": {
+      "rows": 218670,
+      "top1_is_last_booking": 0.8304,
+      "last_booking_in_top5": 0.989,
+      "target_in_history": 0.3074,
+      "old_target_in_top5_of_all_rows": 0.2517,
+      "old_target_in_top5_of_old_rows": 0.8189,
+      "new_target": 0.6926,
+      "new_target_in_top5_of_all_rows": 0.0852,
+      "new_target_in_top5_of_new_rows": 0.123,
+      "recall@5_check": 0.3369,
+      "top5_slots_new_share": 0.4621,
+      "global_popularity_top5_on_new_rows": 0.1369
+    }
+  },
+  "target_mix": {
+    "train": {
+      "rows": 1749368,
+      "last": 0.1477,
+      "older_not_last": 0.1323,
+      "old_incl_last": 0.28,
+      "new": 0.72
+    },
+    "valid": {
+      "rows": 218670,
+      "last": 0.1462,
+      "older_not_last": 0.1652,
+      "old_incl_last": 0.3114,
+      "new": 0.6886
+    },
+    "test": {
+      "rows": 218670,
+      "last": 0.1487,
+      "older_not_last": 0.1587,
+      "old_incl_last": 0.3074,
+      "new": 0.6926
     }
   }
 }
