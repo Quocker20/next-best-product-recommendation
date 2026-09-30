@@ -1,0 +1,140 @@
+Wed 30 Sep 2026 10:43:54 INFO  
+General Hyper Parameters:
+gpu_id = 0
+use_gpu = False
+seed = 2022
+state = INFO
+reproducibility = True
+data_path = C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\expedia
+checkpoint_dir = C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved
+show_progress = False
+save_dataset = False
+save_dataloaders = False
+
+Training Hyper Parameters:
+epochs = 1
+train_batch_size = 1024
+learner = adam
+learning_rate = 0.001
+neg_sampling = None
+eval_step = 1
+stopping_step = 10
+clip_grad_norm = None
+weight_decay = 0.0
+loss_decimal_place = 4
+
+Evaluation Hyper Parameters:
+eval_args = {'split': {'RS': [0.8, 0.1, 0.1]}, 'order': 'TO', 'group_by': None, 'mode': 'full'}
+repeatable = True
+metrics = ['Recall', 'NDCG', 'MRR', 'Hit']
+topk = [5, 10, 20]
+valid_metric = NDCG@10
+valid_metric_bigger = True
+eval_batch_size = 4096
+metric_decimal_place = 4
+
+Dataset Hyper Parameters:
+field_separator = 	
+seq_separator =  
+USER_ID_FIELD = user_id
+ITEM_ID_FIELD = item_id
+RATING_FIELD = rating
+TIME_FIELD = timestamp
+seq_len = None
+LABEL_FIELD = label
+threshold = None
+NEG_PREFIX = neg_
+load_col = {'inter': ['user_id', 'item_id', 'timestamp']}
+unload_col = None
+unused_col = None
+additional_feat_suffix = None
+rm_dup_inter = None
+val_interval = None
+filter_inter_by_user_or_item = True
+user_inter_num_interval = [0,inf)
+item_inter_num_interval = [0,inf)
+alias_of_user_id = None
+alias_of_item_id = None
+alias_of_entity_id = None
+alias_of_relation_id = None
+preload_weight = None
+normalize_field = None
+normalize_all = None
+ITEM_LIST_LENGTH_FIELD = item_length
+LIST_SUFFIX = _list
+MAX_ITEM_LIST_LENGTH = 20
+POSITION_FIELD = position_id
+HEAD_ENTITY_ID_FIELD = head_id
+TAIL_ENTITY_ID_FIELD = tail_id
+RELATION_ID_FIELD = relation_id
+ENTITY_ID_FIELD = entity_id
+benchmark_filename = None
+
+Other Hyper Parameters: 
+n_layers = 2
+hidden_size = 64
+hidden_dropout_prob = 0.0
+hidden_act = gelu
+layer_norm_eps = 1e-12
+initializer_range = 0.02
+selected_features = []
+pooling_mode = mean
+loss_type = CE
+MODEL_TYPE = ModelType.SEQUENTIAL
+n_heads = 1
+MODEL_INPUT_TYPE = InputType.POINTWISE
+eval_type = EvaluatorType.RANKING
+device = cpu
+train_neg_sample_args = {'strategy': 'none'}
+eval_neg_sample_args = {'strategy': 'full', 'distribution': 'uniform'}
+
+
+Wed 30 Sep 2026 10:44:04 INFO  expedia
+The number of users: 813986
+Average actions of users: 3.68642296848222
+The number of items: 101
+Average actions of items: 30006.93
+The number of inters: 3000693
+The sparsity of the dataset: 96.35008075284239%
+Remain Fields: ['user_id', 'item_id', 'timestamp']
+Wed 30 Sep 2026 10:44:36 INFO  [Training]: train_batch_size = [1024] negative sampling: [None]
+Wed 30 Sep 2026 10:44:36 INFO  [Evaluation]: eval_batch_size = [4096] eval_args: [{'split': {'RS': [0.8, 0.1, 0.1]}, 'order': 'TO', 'group_by': None, 'mode': 'full'}]
+Wed 30 Sep 2026 10:44:36 INFO  SMLPREC(
+  (item_embedding): Embedding(101, 64, padding_idx=0)
+  (layers): ModuleList(
+    (0): SMLP(
+      (c): Sequential(
+        (0): Linear(in_features=1, out_features=3, bias=False)
+        (1): GELU(approximate='none')
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Linear(in_features=3, out_features=1, bias=False)
+        (4): Dropout(p=0.0, inplace=False)
+      )
+      (h): Sequential(
+        (0): Linear(in_features=20, out_features=60, bias=False)
+        (1): GELU(approximate='none')
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Linear(in_features=60, out_features=20, bias=False)
+        (4): Dropout(p=0.0, inplace=False)
+      )
+      (w): Sequential(
+        (0): Linear(in_features=64, out_features=192, bias=False)
+        (1): GELU(approximate='none')
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Linear(in_features=192, out_features=64, bias=False)
+        (4): Dropout(p=0.0, inplace=False)
+      )
+      (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True, bias=True)
+    )
+  )
+  (LayerNorm): LayerNorm((64,), eps=1e-12, elementwise_affine=True, bias=True)
+  (loss_fct): CrossEntropyLoss()
+)
+Trainable parameters: 33702
+Wed 30 Sep 2026 10:47:08 INFO  epoch 0 training [time: 150.21s, train loss: 6686.1206]
+Wed 30 Sep 2026 10:47:14 INFO  epoch 0 evaluating [time: 6.62s, valid_score: 0.281900]
+Wed 30 Sep 2026 10:47:14 INFO  valid result: 
+recall@5 : 0.3325    recall@10 : 0.46    recall@20 : 0.6278    ndcg@5 : 0.2409    ndcg@10 : 0.2819    ndcg@20 : 0.3242    mrr@5 : 0.2108    mrr@10 : 0.2276    mrr@20 : 0.2391    hit@5 : 0.3325    hit@10 : 0.46    hit@20 : 0.6278
+Wed 30 Sep 2026 10:47:14 INFO  Saving current best: C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_10-44-36.pth
+Wed 30 Sep 2026 10:47:14 INFO  Loading model structure and parameters from C:\workspace\PROJECTS\next-best-product-recommendation\data\interim\recbole\saved\SMLPREC-Sep-30-2026_10-44-36.pth
+Wed 30 Sep 2026 10:47:21 INFO  test result: OrderedDict([('recall@5', 0.335), ('recall@10', 0.4624), ('recall@20', 0.6291), ('ndcg@5', 0.2426), ('ndcg@10', 0.2836), ('ndcg@20', 0.3255), ('mrr@5', 0.2122), ('mrr@10', 0.229), ('mrr@20', 0.2404), ('hit@5', 0.335), ('hit@10', 0.4624), ('hit@20', 0.6291)])

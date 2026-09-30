@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuần 3: Chạy thử pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1e3a8a;--blue:#2563eb;--teal:#0f766e;--amber:#b45309;--red:#dc2626;
+--ink:#0f172a;--muted:#475569;--sub:#64748b;--line:#e2e8f0;--bg:#f8fafc}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e2e8f0;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink)}
+.deck{width:1280px;height:720px;transform-origin:top left}
+.slide{display:none;position:relative;width:1280px;height:720px;background:#fff;padding:44px 64px 56px;flex-direction:column}
+.slide.on{display:flex}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px}
+.meta{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+h2{font-size:34px;font-weight:700;letter-spacing:-.01em}
+.sub{font-size:16px;color:var(--sub);margin-top:6px}
+.pg{font-size:13px;color:var(--sub);border:1px solid var(--line);border-radius:20px;padding:5px 12px}
+.body{flex:1;display:flex;flex-direction:column;gap:16px;min-height:0}
+.ft{position:absolute;left:64px;right:64px;bottom:20px;display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+code{font-family:Consolas,monospace;font-size:.88em;background:#f1f5f9;border-radius:5px;padding:1px 6px;color:var(--navy)}
+.note{font-size:14.5px;color:var(--sub);line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.card{border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:14px;padding:20px 24px;background:#fff}
+.card.off{border-top-color:var(--amber);background:var(--bg)}
+.card h3{font-size:19px;margin-bottom:12px;color:var(--navy)}
+.card ul,.card ol{padding-left:20px;font-size:16px;line-height:1.65;color:var(--muted)}
+.card li{margin-bottom:6px}
+.tbl{width:100%;border-collapse:collapse;font-size:15.5px}
+.tbl th{text-align:left;color:var(--sub);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em;padding:10px 14px;border-bottom:2px solid var(--line)}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--muted);line-height:1.5;vertical-align:top}
+.tbl td:first-child{color:var(--ink);font-weight:500}
+.tbl.hl,.tbl tr.hl td{color:var(--teal);font-weight:700}
+ul.tight{padding-left:22px;font-size:15.5px;color:var(--muted);line-height:1.7}
+.flow{display:flex;align-items:stretch;gap:6px}
+.st{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 12px;background:var(--bg);display:flex;flex-direction:column;gap:4px;text-align:center}
+.st b{font-size:15px;color:var(--navy)}.st span{font-size:12.5px;color:var(--sub)}
+.ar{display:flex;align-items:center;color:var(--blue);font-size:28px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff}
+.kpi b{display:block;font-size:30px;color:var(--navy);letter-spacing:-.01em}.kpi span{font-size:14px;color:var(--sub)}
+.split{display:flex;gap:28px;align-items:center}
+.chart{width:720px;height:330px}
+.cv{font-size:11.5px;fill:#334155;font-weight:600}.cl{font-size:11px;fill:#94a3b8}.ck{font-size:14px;fill:#334155;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);margin-top:8px}
+.lg:before{content:'';display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--c);margin-right:6px;vertical-align:-1px}
+.side{display:flex;flex-direction:column;gap:12px;flex:1}
+.th-card{border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.th-card .lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--sub)}
+.th-card .val{font-size:22px;font-weight:700;color:var(--navy);margin:4px 0}
+.th-card p{font-size:13.5px;color:var(--muted)}
+.finds{display:flex;flex-direction:column;gap:12px}
+.fd{display:flex;gap:18px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:14px 20px}
+.fd>span{flex:none;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center}
+.fd h3{font-size:17px;margin-bottom:2px}.fd p{font-size:14.5px;color:var(--muted);line-height:1.55}
+.fd.warn{background:#fffbeb;border-color:#fde68a}.fd.warn>span{background:var(--amber)}
+.cover{flex:1;display:flex;flex-direction:column;justify-content:center;padding-left:24px;border-left:6px solid var(--navy)}
+.kicker{font-size:15px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.cover h1{font-size:50px;font-weight:700;line-height:1.18;letter-spacing:-.02em}
+.cover h1 span{font-size:28px;font-weight:500;color:var(--muted)}
+.lead{font-size:18px;color:var(--sub);margin-top:22px}
+.cover-tags{display:flex;gap:10px;margin-top:28px}
+.cover-tags span{font-size:13.5px;padding:7px 14px;border-radius:20px;background:#eff6ff;color:var(--navy);font-weight:600}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff;height:auto;overflow:visible}
+  .deck{transform:none!important;position:static!important;width:auto;height:auto}
+  .slide{display:flex!important;position:relative;height:720px;page-break-after:always;break-after:page;break-inside:avoid}
+  .slide:last-child{page-break-after:auto;break-after:auto}
+}
+</style></head>
+<body><div class="deck"><section class="slide"><div class="cover"><div class="kicker">Tuần 3 · Kiểm tra pipeline</div>
+<h1>Chạy thử SMLP4Rec trên Expedia<br><span>những gì đã đổi, đã chạy và đã thấy</span></h1>
+<p class="lead">Topic C1 · Next-Best-Product Recommendation · 30/09/2026</p>
+<div class="cover-tags"><span>Pipeline end-to-end</span><span>1 epoch · CPU</span><span>Chưa phải benchmark</span></div></div><div class="ft"><span>Topic C1 · Next-Best-Product Recommendation</span><span>1 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Mục tiêu</div><h2>Chạy pipeline một lần trên Expedia</h2><div class="sub">Chỉ kiểm tra luồng chạy và đọc kết quả, không tối ưu</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><div class="two">
+<div class="card"><h3>Trong phạm vi</h3><ul>
+<li>Chuyển mã SMLP4Rec vào <code>src/</code></li>
+<li>Chỉnh tối thiểu để chạy với Expedia</li>
+<li>Huấn luyện, validate, test một lần</li>
+<li>Lưu kết quả vào <code>reports/summary/week3/</code></li></ul></div>
+<div class="card off"><h3>Ngoài phạm vi</h3><ul>
+<li>Xử lý dữ liệu, feature engineering</li>
+<li>Viết mô hình mới từ đầu</li>
+<li>Tinh chỉnh siêu tham số</li>
+<li>Query token và cold-start hybrid (bước sau)</li></ul></div></div>
+<p class="note">Kết quả chỉ nhằm xác nhận pipeline chạy được. Mọi con số trong bộ slide này lấy từ <code>smlprec_expedia_run.json</code>.</p></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>2 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Đã thay đổi</div><h2>Các file mới trong repo</h2><div class="sub">Không sửa dữ liệu gốc, không sửa thư viện ngoài repo này</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><table class="tbl"><tr><th>File</th><th>Vai trò</th></tr><tr><td><code>src/models/smlprec.py</code></td><td>SMLP4Rec chép từ fork, 2 chỉnh sửa nhỏ (đánh dấu <code># ADAPTED</code>)</td></tr><tr><td><code>scripts/expedia_to_recbole.py</code></td><td>Xuất đặt phòng ra file <code>.inter</code> của RecBole: chỉ user, cụm khách sạn, thời gian</td></tr><tr><td><code>configs/smlprec_expedia.yaml</code></td><td>Cấu hình mô hình, huấn luyện, đánh giá</td></tr><tr><td><code>scripts/run_smlprec_expedia.py</code></td><td>Chạy train, valid, test và hai heuristic trên cùng dòng test</td></tr><tr><td><code>reports/summary/week3/</code></td><td>README, JSON kết quả, log RecBole</td></tr></table><p class="note">Cập nhật thêm: <code>PROGRESS.md</code> (mục Phase 3) và sơ đồ thư mục trong <code>CLAUDE.md</code>.</p></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>3 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Đã thay đổi</div><h2>Chỉnh sửa mô hình: chỉ hai điểm</h2><div class="sub">Còn lại giữ nguyên như bản gốc của fork</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><div class="two">
+<div class="card"><h3>Đã chỉnh</h3><ol>
+<li><b>Độ dài chuỗi</b> lấy từ <code>MAX_ITEM_LIST_LENGTH</code> thay vì cố định 50</li>
+<li><b>Cho phép danh sách feature rỗng</b>: cụm khách sạn không có thuộc tính, nên bỏ lớp embedding feature</li></ol></div>
+<div class="card off"><h3>Giữ nguyên (đã biết là vấn đề)</h3><ul>
+<li>Một khối SMLP dùng lại cho mọi lớp, trọng số chung</li>
+<li>Không có kết nối residual quanh khối</li>
+<li>Còn code thừa chưa dùng</li>
+<li>Repo gốc không có file license: chỉ dùng nội bộ, gắn nhãn “research adaptation”</li></ul></div></div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>4 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Đã chạy</div><h2>Luồng pipeline và thiết lập</h2><div class="sub">Một lần chạy, seed 2022, CPU</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><div class="flow"><div class="st"><b>train.csv</b><span>4 GB, đọc theo khối</span></div><div class="ar">›</div><div class="st"><b>Lọc is_booking = 1</b><span>3.000.693 đặt phòng</span></div><div class="ar">›</div><div class="st"><b>expedia.inter</b><span>user · cluster · giờ</span></div><div class="ar">›</div><div class="st"><b>RecBole</b><span>chuỗi + chia theo thời gian</span></div><div class="ar">›</div><div class="st"><b>SMLP4Rec</b><span>CE trên 100 cụm</span></div><div class="ar">›</div><div class="st"><b>Đánh giá</b><span>xếp hạng đầy đủ</span></div></div>
+<div class="kpis">
+<div class="kpi"><b>813.985</b><span>người dùng</span></div>
+<div class="kpi"><b>100</b><span>cụm khách sạn</span></div>
+<div class="kpi"><b>2.186.708</b><span>mục tiêu “đặt tiếp theo”</span></div>
+<div class="kpi"><b>33.702</b><span>tham số</span></div></div>
+<p class="note">Mô hình: 2 lớp, hidden 64, dropout 0.0, lr 0.001, batch 1024, 1 epoch, lịch sử tối đa 20 lần đặt. Thời gian: dựng dữ liệu 42.2s · train + valid 156.9s · test 6.4s.</p></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>5 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Đã chạy</div><h2>Cách chia dữ liệu</h2><div class="sub">Chia theo thời gian 80/10/10 trên các mục tiêu, không chia ngẫu nhiên</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><table class="tbl"><tr><th>Tập</th><th>Số mục tiêu</th><th>Từ ngày</th><th>Đến ngày</th><th>Lịch sử trung bình</th></tr><tr><td>Train</td><td>1.749.368</td><td>07/01/2013</td><td>08/10/2014</td><td>5,853</td></tr><tr><td>Valid</td><td>218.670</td><td>08/10/2014</td><td>19/11/2014</td><td>7,391</td></tr><tr><td>Test</td><td>218.670</td><td>19/11/2014</td><td>01/01/2015</td><td>7,255</td></tr></table><ul class="tight">
+<li>Mục tiêu = mọi lần đặt phòng trừ lần đặt đầu tiên của mỗi người dùng; lịch sử = các lần đặt trước đó của người đó.</li>
+<li>Đánh giá xếp hạng đầy đủ trên 100 cụm, không lấy mẫu âm.</li>
+<li>Người dùng chưa từng đặt (cold-start) <b>không</b> nằm trong tập test của lần chạy này.</li></ul></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>6 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Đã thấy</div><h2>Kết quả trên tập test</h2><div class="sub">Xếp hạng đầy đủ trên 100 cụm · cùng các dòng test cho cả ba phương pháp</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><div class="split"><div><svg viewBox="0 0 720 330" class="chart"><line x1="10" x2="720" y1="218.9" y2="218.9" stroke="#e2e8f0"/><text x="10" y="214.9" class="cl">20%</text><line x1="10" x2="720" y1="141.7" y2="141.7" stroke="#e2e8f0"/><text x="10" y="137.7" class="cl">40%</text><line x1="10" x2="720" y1="64.6" y2="64.6" stroke="#e2e8f0"/><text x="10" y="60.6" class="cl">60%</text><rect x="40.8" y="239.0" width="56.8" height="57.0" rx="4" fill="#94a3b8"/><text x="69.2" y="233.0" class="cv" text-anchor="middle">14,8%</text><rect x="103.6" y="196.9" width="56.8" height="99.1" rx="4" fill="#f59e0b"/><text x="132.0" y="190.9" class="cv" text-anchor="middle">25,7%</text><rect x="166.4" y="166.8" width="56.8" height="129.2" rx="4" fill="#2563eb"/><text x="194.8" y="160.8" class="cv" text-anchor="middle">33,5%</text><text x="132.0" y="320" class="ck" text-anchor="middle">Recall@5</text><rect x="277.4" y="200.5" width="56.8" height="95.5" rx="4" fill="#94a3b8"/><text x="305.8" y="194.5" class="cv" text-anchor="middle">24,8%</text><rect x="340.2" y="163.4" width="56.8" height="132.6" rx="4" fill="#f59e0b"/><text x="368.6" y="157.4" class="cv" text-anchor="middle">34,4%</text><rect x="403.0" y="117.6" width="56.8" height="178.4" rx="4" fill="#2563eb"/><text x="431.4" y="111.6" class="cv" text-anchor="middle">46,2%</text><text x="368.6" y="320" class="ck" text-anchor="middle">Recall@10</text><rect x="514.1" y="144.6" width="56.8" height="151.4" rx="4" fill="#94a3b8"/><text x="542.5" y="138.6" class="cv" text-anchor="middle">39,2%</text><rect x="576.9" y="112.3" width="56.8" height="183.7" rx="4" fill="#f59e0b"/><text x="605.3" y="106.3" class="cv" text-anchor="middle">47,6%</text><rect x="639.7" y="53.3" width="56.8" height="242.7" rx="4" fill="#2563eb"/><text x="668.1" y="47.3" class="cv" text-anchor="middle">62,9%</text><text x="605.3" y="320" class="ck" text-anchor="middle">Recall@20</text></svg><div class="legend"><span class="lg" style="--c:#94a3b8">Popularity toàn cục</span><span class="lg" style="--c:#f59e0b">Lặp lại cụm cuối, rồi popularity</span><span class="lg" style="--c:#2563eb">SMLP4Rec (1 epoch)</span></div></div>
+<div class="side">
+<div class="th-card"><div class="lbl">SMLP4Rec, test</div><div class="val">Recall@5 33,50%</div>
+<p>NDCG@10 0,2836 · MRR@10 0,2290</p></div>
+<div class="th-card"><div class="lbl">So với lặp lại cụm cuối</div><div class="val">+7,80 điểm %</div><p>Recall@5</p></div>
+<div class="th-card"><div class="lbl">So với popularity toàn cục</div><div class="val">+18,72 điểm %</div><p>Recall@5</p></div></div></div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>7 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Đã thấy</div><h2>Đọc kết quả</h2></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><div class="finds">
+<div class="fd"><span>1</span><div><h3>Pipeline chạy thông suốt</h3><p>Xuất dữ liệu, dựng chuỗi, chia theo thời gian, huấn luyện, xếp hạng đầy đủ và nạp lại checkpoint đều chạy không lỗi, tổng cộng khoảng 3.4 phút trên CPU.</p></div></div>
+<div class="fd"><span>2</span><div><h3>Lịch sử đặt phòng tự nó có tín hiệu</h3><p>SMLP4Rec vượt lặp-lại-cụm-cuối +7,80 điểm % và popularity +18,72 điểm % ở Recall@5. Valid (33,25%) và test gần nhau, không thấy lệch giữa hai tập.</p></div></div>
+<div class="fd"><span>3</span><div><h3>Còn thấp hơn mốc tuần 2 (53,07%)</h3><p>Mô hình chỉ thấy các cụm đã đặt, chưa thấy điểm đến của lần tìm kiếm hiện tại, tức tín hiệu mạnh nhất. Đây chính là chỗ query token cần lấp.</p></div></div>
+<div class="fd warn"><span>!</span><div><h3>Chưa so sánh trực tiếp với tuần 2</h3><p>Tuần 2 cắt theo phân vị 80% của thời gian đặt và có cả người dùng mới; lần chạy này chia 80/10/10 trên các mục tiêu và bỏ lần đặt đầu của mỗi người.</p></div></div></div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>8 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Vấn đề gặp phải</div><h2>Lỗi đã gặp và cách xử lý</h2><div class="sub">Bốn lỗi, đều đã xử lý; lỗi thứ tư có thể làm sai kết quả nếu bỏ sót</div></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><table class="tbl"><tr><th>Vấn đề</th><th>Nguyên nhân</th><th>Xử lý</th></tr><tr><td>Torch không nạp được DLL</td><td>Đường dẫn workspace quá dài trên Windows</td><td>Venv Python 3.11 đặt ở đường dẫn ngắn</td></tr><tr><td>Huấn luyện rất chậm</td><td><code>sine.py</code> bật anomaly detection khi import</td><td>Tắt trong script chạy</td></tr><tr><td>Bước test lỗi khi nạp checkpoint</td><td>PyTorch ≥ 2.6 mặc định <code>weights_only=True</code></td><td>Nạp với <code>weights_only=False</code> (file do chính lần chạy tạo ra)</td></tr><tr><td><b>Sai đơn vị thời gian</b></td><td>pandas 3 đọc ngày ra micro giây, chia 10⁹ làm các lần đặt cách nhau dưới ~17 phút trùng thời điểm</td><td>Đổi sang tính giây tường minh, chạy lại; số liệu ở đây là của lần chạy đã sửa</td></tr></table></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>9 / 10</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Bước tiếp theo</div><h2>Hạn chế và việc cần làm</h2></div><div class="pg">Tuần 3 · Pipeline</div></div><div class="body"><div class="two">
+<div class="card off"><h3>Hạn chế của lần chạy này</h3><ul>
+<li>1 epoch, chưa tinh chỉnh, một seed duy nhất</li>
+<li>Chưa có ngữ cảnh tìm kiếm (điểm đến, ngày, số người, gói)</li>
+<li>Chưa có cold-start hybrid</li>
+<li>RecBole 1.0.1 buộc dùng numpy 1.23 / pandas 1.5 trong venv riêng</li></ul></div>
+<div class="card"><h3>Đề xuất</h3><ol>
+<li>Thêm query token cho ngữ cảnh tìm kiếm hiện tại</li>
+<li>Thêm cold-start hybrid (prior theo điểm đến, cổng học theo độ dài lịch sử)</li>
+<li>Căn chỉnh cách chia với tuần 2 để so với mốc 57,85%</li>
+<li>Quyết định: giữ RecBole hay chuyển sang PyTorch thuần</li>
+<li>Sửa lỗi kiến trúc: trọng số riêng mỗi lớp, thêm residual</li></ol></div></div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ smlprec_expedia_run.json; mốc tuần 2 (53,07% / 57,85%) từ scripts/expedia_context_signal.py và expedia_history_slices.py</span><span>10 / 10</span></div></section></div><script>
+const s=[...document.querySelectorAll('.slide')];let i=0;
+function show(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((e,k)=>e.classList.toggle('on',k===i));}
+function fit(){const d=document.querySelector('.deck');const k=Math.min(innerWidth/1280,innerHeight/720);
+ d.style.transform=`scale(${k})`;d.style.position='absolute';d.style.left=((innerWidth-1280*k)/2)+'px';d.style.top=((innerHeight-720*k)/2)+'px';}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);});
+addEventListener('click',e=>show(e.clientX>innerWidth/2?i+1:i-1));
+addEventListener('resize',fit);fit();show((parseInt(location.hash.slice(1))||1)-1);
+</script></body></html>

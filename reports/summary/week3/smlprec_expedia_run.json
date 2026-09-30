@@ -1,0 +1,105 @@
+{
+  "run": "week3 pipeline validation - SMLP4Rec on Expedia bookings (research adaptation)",
+  "dataset": "expedia (train.csv, is_booking == 1; item = hotel_cluster)",
+  "git_commit": "93fcb9e",
+  "config": {
+    "MAX_ITEM_LIST_LENGTH": 20,
+    "n_layers": 2,
+    "hidden_size": 64,
+    "hidden_dropout_prob": 0.0,
+    "loss_type": "CE",
+    "epochs": 1,
+    "train_batch_size": 1024,
+    "learning_rate": 0.001,
+    "seed": 2022,
+    "eval_args": {
+      "split": {
+        "RS": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "order": "TO",
+      "group_by": null,
+      "mode": "full"
+    },
+    "topk": [
+      5,
+      10,
+      20
+    ],
+    "valid_metric": "NDCG@10"
+  },
+  "dataset_stats": {
+    "users": 813985,
+    "items": 100,
+    "sequence_targets": 2186708
+  },
+  "n_parameters": 33702,
+  "splits": {
+    "train": {
+      "targets": 1749368,
+      "first_target_unix": 1357518976,
+      "last_target_unix": 1412776704,
+      "mean_history_len": 5.853
+    },
+    "valid": {
+      "targets": 218670,
+      "first_target_unix": 1412776704,
+      "last_target_unix": 1416398080,
+      "mean_history_len": 7.391
+    },
+    "test": {
+      "targets": 218670,
+      "first_target_unix": 1416398080,
+      "last_target_unix": 1420070400,
+      "mean_history_len": 7.255
+    }
+  },
+  "timing_seconds": {
+    "data_build": 42.2,
+    "train_and_valid": 156.9,
+    "test": 6.4
+  },
+  "valid": {
+    "recall@5": 0.3325,
+    "recall@10": 0.46,
+    "recall@20": 0.6278,
+    "ndcg@5": 0.2409,
+    "ndcg@10": 0.2819,
+    "ndcg@20": 0.3242,
+    "mrr@5": 0.2108,
+    "mrr@10": 0.2276,
+    "mrr@20": 0.2391,
+    "hit@5": 0.3325,
+    "hit@10": 0.46,
+    "hit@20": 0.6278
+  },
+  "test": {
+    "recall@5": 0.335,
+    "recall@10": 0.4624,
+    "recall@20": 0.6291,
+    "ndcg@5": 0.2426,
+    "ndcg@10": 0.2836,
+    "ndcg@20": 0.3255,
+    "mrr@5": 0.2122,
+    "mrr@10": 0.229,
+    "mrr@20": 0.2404,
+    "hit@5": 0.335,
+    "hit@10": 0.4624,
+    "hit@20": 0.6291
+  },
+  "heuristics_same_test_rows": {
+    "global_popularity": {
+      "recall@5": 0.1478,
+      "recall@10": 0.2476,
+      "recall@20": 0.3925
+    },
+    "repeat_last_then_popularity": {
+      "recall@5": 0.257,
+      "recall@10": 0.3439,
+      "recall@20": 0.4762
+    }
+  }
+}

@@ -1,0 +1,41 @@
+# SMLP4Rec on Expedia bookings — week-3 pipeline-validation run (not a tuned result).
+# Input: data/interim/recbole/expedia/expedia.inter from scripts/expedia_to_recbole.py.
+# data_path and checkpoint_dir are set by scripts/run_smlprec_expedia.py.
+
+# data
+load_col:
+  inter: [user_id, item_id, timestamp]
+MAX_ITEM_LIST_LENGTH: 20
+
+# model (light config from the ML-100K smoke run; paper-style config is too slow on CPU)
+n_layers: 2
+n_heads: 1                 # read by the original code, unused
+hidden_size: 64
+hidden_dropout_prob: 0.0
+hidden_act: gelu
+layer_norm_eps: 1.0e-12
+initializer_range: 0.02
+selected_features: []     # hotel clusters have no item attributes
+pooling_mode: mean
+loss_type: CE
+
+# training
+epochs: 1
+train_batch_size: 1024
+learning_rate: 0.001
+neg_sampling: ~
+seed: 2022
+reproducibility: true
+use_gpu: false
+show_progress: false
+
+# evaluation: global temporal split over next-booking targets, full ranking over all clusters
+eval_args:
+  split: {RS: [0.8, 0.1, 0.1]}
+  order: TO
+  group_by: ~
+  mode: full
+eval_batch_size: 4096
+metrics: [Recall, NDCG, MRR, Hit]
+topk: [5, 10, 20]
+valid_metric: NDCG@10
