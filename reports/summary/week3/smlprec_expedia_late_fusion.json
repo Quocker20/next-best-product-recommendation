@@ -642,6 +642,180 @@
       }
     }
   },
+  "cold_users_prior_only": {
+    "valid": {
+      "n_cold_rows": 50803,
+      "prior_only": {
+        "n": 50803,
+        "recall@5": 0.529,
+        "recall@10": 0.7158,
+        "recall@20": 0.8849,
+        "ndcg@10": 0.4219,
+        "mrr@10": 0.3313
+      },
+      "global_popularity": {
+        "n": 50803,
+        "recall@5": 0.1251,
+        "recall@10": 0.2101,
+        "recall@20": 0.3651,
+        "ndcg@10": 0.1073,
+        "mrr@10": 0.0764
+      },
+      "prior_only_by_destination_support": {
+        "n_dest=0": {
+          "n": 298,
+          "recall@5": 0.1107,
+          "recall@10": 0.151,
+          "recall@20": 0.245,
+          "ndcg@10": 0.0838,
+          "mrr@10": 0.0632,
+          "share": 0.0059
+        },
+        "n_dest 1-19": {
+          "n": 1951,
+          "recall@5": 0.6458,
+          "recall@10": 0.7637,
+          "recall@20": 0.8954,
+          "ndcg@10": 0.5373,
+          "mrr@10": 0.466,
+          "share": 0.0384
+        },
+        "n_dest>=20": {
+          "n": 48554,
+          "recall@5": 0.5269,
+          "recall@10": 0.7173,
+          "recall@20": 0.8884,
+          "ndcg@10": 0.4193,
+          "mrr@10": 0.3276,
+          "share": 0.9557
+        }
+      }
+    },
+    "test": {
+      "n_cold_rows": 49443,
+      "prior_only": {
+        "n": 49443,
+        "recall@5": 0.5123,
+        "recall@10": 0.7017,
+        "recall@20": 0.8751,
+        "ndcg@10": 0.4119,
+        "mrr@10": 0.3228
+      },
+      "global_popularity": {
+        "n": 49443,
+        "recall@5": 0.1317,
+        "recall@10": 0.2269,
+        "recall@20": 0.3634,
+        "ndcg@10": 0.1118,
+        "mrr@10": 0.0773
+      },
+      "prior_only_by_destination_support": {
+        "n_dest=0": {
+          "n": 283,
+          "recall@5": 0.1095,
+          "recall@10": 0.159,
+          "recall@20": 0.2155,
+          "ndcg@10": 0.0941,
+          "mrr@10": 0.0746,
+          "share": 0.0057
+        },
+        "n_dest 1-19": {
+          "n": 1954,
+          "recall@5": 0.6556,
+          "recall@10": 0.7728,
+          "recall@20": 0.8951,
+          "ndcg@10": 0.5317,
+          "mrr@10": 0.4555,
+          "share": 0.0395
+        },
+        "n_dest>=20": {
+          "n": 47206,
+          "recall@5": 0.5088,
+          "recall@10": 0.702,
+          "recall@20": 0.8783,
+          "ndcg@10": 0.4089,
+          "mrr@10": 0.3188,
+          "share": 0.9548
+        }
+      }
+    }
+  },
+  "combined_warm_plus_cold": {
+    "valid": {
+      "n_warm_rows": 218670,
+      "n_cold_rows": 50803,
+      "cold_share_of_events": 0.1885,
+      "hybrid: fusion on warm + prior-only on cold": {
+        "n": 269473,
+        "recall@5": 0.5863,
+        "recall@10": 0.765,
+        "recall@20": 0.9106,
+        "ndcg@10": 0.4735,
+        "mrr@10": 0.3833
+      },
+      "prior-only for everyone": {
+        "n": 269473,
+        "recall@5": 0.5404,
+        "recall@10": 0.7313,
+        "recall@20": 0.8932,
+        "ndcg@10": 0.4321,
+        "mrr@10": 0.3399
+      },
+      "week-2 heuristic (same-dest history, prior when cold)": {
+        "n": 269473,
+        "recall@5": 0.5855,
+        "recall@10": 0.7565,
+        "recall@20": 0.9021,
+        "ndcg@10": 0.4838,
+        "mrr@10": 0.3996
+      },
+      "plain SMLP4Rec on warm + global popularity on cold": {
+        "n": 269473,
+        "recall@5": 0.2956,
+        "recall@10": 0.4147,
+        "recall@20": 0.5808,
+        "ndcg@10": 0.2505,
+        "mrr@10": 0.2005
+      }
+    },
+    "test": {
+      "n_warm_rows": 218670,
+      "n_cold_rows": 49443,
+      "cold_share_of_events": 0.1844,
+      "hybrid: fusion on warm + prior-only on cold": {
+        "n": 268113,
+        "recall@5": 0.5772,
+        "recall@10": 0.7539,
+        "recall@20": 0.9024,
+        "ndcg@10": 0.4667,
+        "mrr@10": 0.3779
+      },
+      "prior-only for everyone": {
+        "n": 268113,
+        "recall@5": 0.5266,
+        "recall@10": 0.7176,
+        "recall@20": 0.8828,
+        "ndcg@10": 0.4226,
+        "mrr@10": 0.3319
+      },
+      "week-2 heuristic (same-dest history, prior when cold)": {
+        "n": 268113,
+        "recall@5": 0.5747,
+        "recall@10": 0.745,
+        "recall@20": 0.8931,
+        "ndcg@10": 0.4768,
+        "mrr@10": 0.3941
+      },
+      "plain SMLP4Rec on warm + global popularity on cold": {
+        "n": 268113,
+        "recall@5": 0.299,
+        "recall@10": 0.4206,
+        "recall@20": 0.5815,
+        "ndcg@10": 0.253,
+        "mrr@10": 0.202
+      }
+    }
+  },
   "sweep": {
     "valid": {
       "0.0": {
@@ -1489,6 +1663,6 @@
     }
   },
   "timing_seconds": {
-    "prep": 89.3
+    "prep": 106.0
   }
 }

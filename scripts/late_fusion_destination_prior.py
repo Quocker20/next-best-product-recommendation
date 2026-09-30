@@ -18,6 +18,14 @@ first bookings are never targets, so L >= 1 everywhere: cold users are not evalu
 Reference rows on the same split: destination prior alone, and "same-destination history first,
 then prior" (recency 0.7^age), the week-2 heuristic.
 
+Cold users (L = 0): each user's first booking has no history, so RecBole never makes it a
+target. They are scored here separately with 100% prior (no SMLP4Rec score at all) on the same
+time windows: valid = first bookings between the last train target and the last valid target,
+test = first bookings from the last valid target on (RecBole stores timestamps as float32, so
+window edges blur by <= 64 s). The combined system = fusion (w = best global) on warm rows +
+prior-only on cold rows; it is compared with prior-only for everyone and with the week-2
+heuristic (which equals the prior when there is no history).
+
 Needs data/interim/recbole/expedia_dest/expedia_dest.inter (scripts/expedia_to_recbole.py
 --with-destination).
 
@@ -52,6 +60,7 @@ from src.models.smlprec import SMLPREC
 
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
 PREV = base.OUT_DIR / "smlprec_expedia_run.json"
+INTER_DEST = base.WORK / "expedia_dest" / "expedia_dest.inter"
 OUT_JSON = base.OUT_DIR / "smlprec_expedia_late_fusion.json"
 M_SMOOTH = 5
 EPS = 1e-6
@@ -312,6 +321,7 @@ def main() -> None:
         return w
 
     rows = {}
+    rk_store = {}
     for sp, a in arr.items():
         y, in_hist = a["y"], a["in_hist"]
         old = in_hist[np.arange(len(y)), y]
@@ -323,14 +333,92 @@ def main() -> None:
             "fusion_per_bucket_w": fused(ml[sp], pr[sp], per_row_w(sp)),
         }
         rows[sp] = {}
+        rk_store[sp] = {}
         for name, sc in variants.items():
             rk = ranks(sc, y)
+            rk_store[sp][name] = rk
             rows[sp][name] = {
                 "all": summarize(rk),
                 "old_target_rows": summarize(rk, old),
                 "new_target_rows": summarize(rk, ~old),
                 **{b: summarize(rk, m) for b, m in masks[sp].items()},
             }
+
+    # ---- cold users (first booking, L = 0): 100% destination prior, no SMLP4Rec score
+    import pandas as pd
+
+    inter = pd.read_csv(INTER_DEST, sep="\t")
+    inter = inter.sort_values(["user_id:token", "timestamp:float"], kind="stable")
+    first = inter.drop_duplicates("user_id:token", keep="first")
+    t_train = float(ts.max())
+    t_valid = float(valid_data.dataset.inter_feat[config["TIME_FIELD"]].max())
+    windows = {
+        "valid": (first["timestamp:float"] >= t_train)
+        & (first["timestamp:float"] < t_valid),
+        "test": first["timestamp:float"] >= t_valid,
+    }
+    glob_ids = np.zeros(n_items, np.float32)
+    glob_ids[cluster_ids] = np.log(tables["global"] + EPS)
+    cold = {}
+    combined = {}
+    for sp, mask in windows.items():
+        f = first[mask]
+        y = np.array([tok2id[str(int(c))] for c in f["item_id:token"]])
+        dests = f["srch_destination_id:float"].values.astype(np.int64)
+        prior_c = prior_logp(tables, dests, cluster_ids, n_items)
+        rk_prior = ranks(prior_c, y)
+        rk_glob = ranks(np.tile(glob_ids, (len(y), 1)), y)
+        n_dest = np.array(
+            [tables["dest"][d].sum() if d in tables["dest"] else 0 for d in dests]
+        )
+        support = {
+            "n_dest=0": n_dest == 0,
+            "n_dest 1-19": (n_dest >= 1) & (n_dest < 20),
+            "n_dest>=20": n_dest >= 20,
+        }
+        cold[sp] = {
+            "n_cold_rows": len(y),
+            "prior_only": summarize(rk_prior),
+            "global_popularity": summarize(rk_glob),
+            "prior_only_by_destination_support": {
+                k: {**summarize(rk_prior, m), "share": round(float(m.mean()), 4)}
+                for k, m in support.items()
+            },
+        }
+        warm = rk_store[sp]
+        n_warm = len(warm["plain_model (w=0)"])
+        fusion_key = f"fusion_global_w={best_global}"
+        combined[sp] = {
+            "n_warm_rows": n_warm,
+            "n_cold_rows": len(y),
+            "cold_share_of_events": round(len(y) / (len(y) + n_warm), 4),
+            "hybrid: fusion on warm + prior-only on cold": summarize(
+                np.concatenate([warm[fusion_key], rk_prior])
+            ),
+            "prior-only for everyone": summarize(
+                np.concatenate([warm["destination_prior_only"], rk_prior])
+            ),
+            "week-2 heuristic (same-dest history, prior when cold)": summarize(
+                np.concatenate([warm["same_dest_history_then_prior"], rk_prior])
+            ),
+            "plain SMLP4Rec on warm + global popularity on cold": summarize(
+                np.concatenate([warm["plain_model (w=0)"], rk_glob])
+            ),
+        }
+        print(
+            sp,
+            "cold rows",
+            len(y),
+            "prior-only R@5",
+            cold[sp]["prior_only"]["recall@5"],
+            "| global pop R@5",
+            cold[sp]["global_popularity"]["recall@5"],
+        )
+        for name, v in combined[sp].items():
+            if isinstance(v, dict):
+                print(
+                    f"   combined {name:55s} R@5 {v['recall@5']:.4f}  R@10 {v['recall@10']:.4f}  R@20 {v['recall@20']:.4f}"
+                )
 
     result = {
         "run": "week3 experiment: late fusion of SMLP4Rec log-probs with a destination prior, weight swept per history bucket",
@@ -353,6 +441,8 @@ def main() -> None:
         },
         "sanity_plain_reproduces_earlier_run": sanity,
         "variants": rows,
+        "cold_users_prior_only": cold,
+        "combined_warm_plus_cold": combined,
         "sweep": sweep,
         "timing_seconds": {"prep": round(t_prep, 1)},
     }
