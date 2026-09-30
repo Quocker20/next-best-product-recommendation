@@ -1,0 +1,176 @@
+{
+  "train": {
+    "0 (new)": {
+      "bookings": 701903,
+      "pct_of_split": 29.24,
+      "pct_same_as_last": 0.0,
+      "pct_old_not_last": 0.0,
+      "pct_any_history": 0.0,
+      "pct_new_cluster": 0.0
+    },
+    "1": {
+      "bookings": 410308,
+      "pct_of_split": 17.09,
+      "pct_same_as_last": 13.58,
+      "pct_old_not_last": 0.0,
+      "pct_any_history": 13.58,
+      "pct_new_cluster": 86.42
+    },
+    "2": {
+      "bookings": 265785,
+      "pct_of_split": 11.07,
+      "pct_same_as_last": 13.92,
+      "pct_old_not_last": 4.89,
+      "pct_any_history": 18.8,
+      "pct_new_cluster": 81.2
+    },
+    "3": {
+      "bookings": 185877,
+      "pct_of_split": 7.74,
+      "pct_same_as_last": 14.32,
+      "pct_old_not_last": 8.67,
+      "pct_any_history": 22.99,
+      "pct_new_cluster": 77.01
+    },
+    "4": {
+      "bookings": 136940,
+      "pct_of_split": 5.7,
+      "pct_same_as_last": 14.69,
+      "pct_old_not_last": 11.81,
+      "pct_any_history": 26.5,
+      "pct_new_cluster": 73.5
+    },
+    "5-9": {
+      "bookings": 353819,
+      "pct_of_split": 14.74,
+      "pct_same_as_last": 15.21,
+      "pct_old_not_last": 18.11,
+      "pct_any_history": 33.32,
+      "pct_new_cluster": 66.68
+    },
+    "10+": {
+      "bookings": 345922,
+      "pct_of_split": 14.41,
+      "pct_same_as_last": 16.72,
+      "pct_old_not_last": 35.54,
+      "pct_any_history": 52.26,
+      "pct_new_cluster": 47.74
+    }
+  },
+  "valid": {
+    "0 (new)": {
+      "bookings": 56645,
+      "pct_of_split": 18.88,
+      "pct_same_as_last": 0.0,
+      "pct_old_not_last": 0.0,
+      "pct_any_history": 0.0,
+      "pct_new_cluster": 0.0
+    },
+    "1": {
+      "bookings": 43334,
+      "pct_of_split": 14.44,
+      "pct_same_as_last": 12.36,
+      "pct_old_not_last": 0.0,
+      "pct_any_history": 12.36,
+      "pct_new_cluster": 87.64
+    },
+    "2": {
+      "bookings": 31929,
+      "pct_of_split": 10.64,
+      "pct_same_as_last": 13.45,
+      "pct_old_not_last": 4.72,
+      "pct_any_history": 18.17,
+      "pct_new_cluster": 81.83
+    },
+    "3": {
+      "bookings": 24123,
+      "pct_of_split": 8.04,
+      "pct_same_as_last": 13.44,
+      "pct_old_not_last": 8.8,
+      "pct_any_history": 22.24,
+      "pct_new_cluster": 77.76
+    },
+    "4": {
+      "bookings": 18524,
+      "pct_of_split": 6.17,
+      "pct_same_as_last": 14.1,
+      "pct_old_not_last": 12.16,
+      "pct_any_history": 26.25,
+      "pct_new_cluster": 73.75
+    },
+    "5-9": {
+      "bookings": 53350,
+      "pct_of_split": 17.78,
+      "pct_same_as_last": 14.87,
+      "pct_old_not_last": 18.58,
+      "pct_any_history": 33.45,
+      "pct_new_cluster": 66.55
+    },
+    "10+": {
+      "bookings": 72164,
+      "pct_of_split": 24.05,
+      "pct_same_as_last": 16.54,
+      "pct_old_not_last": 37.61,
+      "pct_any_history": 54.15,
+      "pct_new_cluster": 45.85
+    }
+  },
+  "test": {
+    "0 (new)": {
+      "bookings": 55437,
+      "pct_of_split": 18.47,
+      "pct_same_as_last": 0.0,
+      "pct_old_not_last": 0.0,
+      "pct_any_history": 0.0,
+      "pct_new_cluster": 0.0
+    },
+    "1": {
+      "bookings": 44664,
+      "pct_of_split": 14.88,
+      "pct_same_as_last": 12.42,
+      "pct_old_not_last": 0.0,
+      "pct_any_history": 12.42,
+      "pct_new_cluster": 87.58
+    },
+    "2": {
+      "bookings": 32531,
+      "pct_of_split": 10.84,
+      "pct_same_as_last": 13.15,
+      "pct_old_not_last": 5.03,
+      "pct_any_history": 18.18,
+      "pct_new_cluster": 81.82
+    },
+    "3": {
+      "bookings": 24744,
+      "pct_of_split": 8.25,
+      "pct_same_as_last": 13.95,
+      "pct_old_not_last": 8.53,
+      "pct_any_history": 22.48,
+      "pct_new_cluster": 77.52
+    },
+    "4": {
+      "bookings": 18971,
+      "pct_of_split": 6.32,
+      "pct_same_as_last": 14.59,
+      "pct_old_not_last": 11.62,
+      "pct_any_history": 26.21,
+      "pct_new_cluster": 73.79
+    },
+    "5-9": {
+      "bookings": 53145,
+      "pct_of_split": 17.71,
+      "pct_same_as_last": 15.56,
+      "pct_old_not_last": 18.01,
+      "pct_any_history": 33.57,
+      "pct_new_cluster": 66.43
+    },
+    "10+": {
+      "bookings": 70578,
+      "pct_of_split": 23.52,
+      "pct_same_as_last": 17.1,
+      "pct_old_not_last": 37.33,
+      "pct_any_history": 54.43,
+      "pct_new_cluster": 45.57
+    }
+  }
+}
