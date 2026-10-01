@@ -32,7 +32,7 @@ Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5
 
 ## To confirm before Day 1
 
-- [ ] **Add `torch` (CPU build), `pyyaml`, `pytest` to `pyproject.toml` and the project `.venv`** (heavy dependency, CLAUDE.md section 10). RecBole venv and the MLP4Rec clone are retired after the Day 5 check.
+- [x] **Add `torch` (CPU build), `pyyaml`, `pytest` to `pyproject.toml` and the project `.venv`** (heavy dependency, CLAUDE.md section 10). RecBole venv and the MLP4Rec clone are retired after the Day 5 check.
 - [ ] **Protocol change: event-level global time split** (every booking after the cut is a target, including each user's first booking; validation carved from the end of train time). Replaces the RecBole 80/10/10 split over targets, which cannot score cold users.
 - [ ] **Colab T4** (optional, Days 7-9 only). Decide by Day 6 after a first GPU timing check. Device-agnostic code from Day 1.
 
@@ -48,11 +48,12 @@ Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5
 ## Phase 1: Foundation (Days 1-5)
 
 ### Day 1 (Thu 1 Oct): environment and skeleton
-- [ ] Pin dependencies in `pyproject.toml`; install torch into `.venv`.
-- [ ] Create `src/nbp/` with `paths.py` (single path helper), `config.py` (YAML into dataclass), `seed.py`; create `tests/`, `configs/`, `experiments/`.
-- [ ] Device-agnostic training config (`device: auto`).
-- [ ] `ruff` and `pytest` wired in; one smoke test passing.
+- [x] Pin dependencies in `pyproject.toml`; install torch into `.venv`.
+- [x] Create `src/nbp/` with `paths.py` (single path helper), `config.py` (YAML into dataclass), `seed.py`; create `tests/`, `configs/`, `experiments/`.
+- [x] Device-agnostic training config (`device: auto`).
+- [x] `ruff` and `pytest` wired in; one smoke test passing.
 - Output: skeleton committed, `pytest` green.
+- Done 2026-10-02: torch 2.14.1+cpu installed, `pip install -e ".[dev]"`, ruff check/format clean, 3 smoke tests pass. `resolve_device()` lives in `nbp.config` (no training config yet; `device: auto` in `configs/data.yaml`).
 
 ### Day 2 (Fri 2 Oct): data
 - [ ] `src/nbp/data/load.py`: one chunked pass over `train.csv`, bookings with all context columns, unit-safe timestamps. Output `data/interim/expedia_bookings.parquet`.
@@ -148,3 +149,4 @@ reports/benchmark_results.csv  reports/summary/week4/
 | Date | Change | Reason |
 |---|---|---|
 | 2026-09-30 | Plan created | Hybrid decision locked (SMLP4Rec + weighted prior + sameDest) |
+| 2026-10-02 | Day 1 done | Deps installed, skeleton committed, pytest green; Day 2 data audit run in scratchpad, open data decisions listed in `PROGRESS.md` |
