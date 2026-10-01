@@ -52,8 +52,14 @@ next-best-product-recommendation/
 │   ├── run_smlprec_expedia.py # Chạy huấn luyện + đánh giá SMLP4Rec trên Expedia (tuần 3)
 │   ├── recommend_smlprec_expedia.py # Gợi ý cụm tiếp theo cho một người dùng từ checkpoint đã lưu
 │   └── week*_*_slides.py      # Sinh slide từng tuần từ file kết quả JSON
+├── tests/                     # pytest (hiện chỉ có smoke test)
+├── experiments/               # Kết quả chạy huấn luyện (gitignored)
 └── src/                       # Mã nguồn cốt lõi (reusable core modules)
-    └── models/smlprec.py      # SMLP4Rec chép từ fork, chỉnh tối thiểu (đánh dấu # ADAPTED)
+    ├── models/smlprec.py      # LEGACY (RecBole): SMLP4Rec chép từ fork, giữ nguyên làm tham chiếu, xóa ở Ngày 10
+    └── nbp/                   # Package mới dạng module, xây dần theo docs/plan_oct_01_14.md
+        ├── paths.py config.py seed.py   # tiện ích nền (Ngày 1)
+        ├── data/ priors/ baselines/     # dữ liệu, prior điểm đến, baseline (Ngày 2-4)
+        ├── models/ hybrid/ eval/        # SMLP4Rec PyTorch thuần, hybrid, đánh giá (Ngày 4-8)
 ```
 
 ## Hướng dẫn cài đặt
