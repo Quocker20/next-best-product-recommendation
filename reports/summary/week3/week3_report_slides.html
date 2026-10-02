@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuần 3: Triển khai SMLP4Rec trên Expedia và các thử nghiệm bổ sung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1e3a8a;--blue:#2563eb;--teal:#0f766e;--amber:#b45309;--red:#dc2626;--ink:#0f172a;--muted:#475569;--sub:#64748b;--line:#e2e8f0;--soft:#f8fafc}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#eef2f7;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.deck{width:1280px;height:720px;position:relative;transform-origin:0 0}
+.slide{width:1280px;height:720px;background:#fff;padding:44px 60px 40px;display:none;flex-direction:column;position:absolute;inset:0;overflow:hidden}
+.slide.on{display:flex}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1.5px solid var(--line);padding-bottom:14px;margin-bottom:26px}
+.meta{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+h2{font-size:34px;font-weight:700;letter-spacing:-.01em}
+.sub{font-size:14px;color:var(--sub);margin-top:4px}
+.pg{font-size:13px;color:var(--sub);font-weight:500}
+.ft{position:absolute;left:60px;right:60px;bottom:16px;display:flex;justify-content:space-between;font-size:11.5px;color:#94a3b8}
+.body{flex:1;display:flex;flex-direction:column;gap:22px;min-height:0;justify-content:center;padding-bottom:18px}
+.row{display:flex;gap:22px;flex:1;min-height:0}
+.panel{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.grow{flex:1;display:flex;flex-direction:column}.grow .chart{flex:1;margin:auto 0}.side{width:340px;display:flex;flex-direction:column;justify-content:center}.side2{width:470px;display:flex;flex-direction:column;gap:14px;background:none;border:none;padding:0}
+.ph{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.axis-note{font-size:12px;color:var(--sub);text-align:right}
+.chart{width:100%;height:auto;display:block}
+.chart .cv{font-size:13px;font-weight:600;fill:#334155;text-anchor:middle}
+.chart .cl{font-size:12.5px;fill:#64748b;text-anchor:middle}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff}
+.kpi>b{display:block;font-size:32px;font-weight:700;color:var(--navy)}
+.kpi span{font-size:14px;color:var(--sub)}.kpi span b{color:var(--ink)}
+.big{font-size:40px;font-weight:700;color:var(--navy);line-height:1.1}.big.amber{color:var(--amber)}.big.red{color:var(--red)}
+.muted{color:var(--muted);font-size:15px;margin:2px 0 14px}
+.small{font-size:12.5px;color:var(--sub);line-height:1.5}
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:14px;font-size:15.5px;color:var(--muted)}
+ul.clean li{padding-left:18px;position:relative}ul.clean li:before{content:'';position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--blue)}
+ul.clean b{color:var(--ink)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3.tight .card{padding:16px 18px}
+.card{border:1px solid var(--line);border-radius:14px;padding:26px 28px;background:#fff}
+.card h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.card p{font-size:16.5px;color:var(--muted);line-height:1.55}
+.card.good{border-left:4px solid var(--teal);border-radius:0 14px 14px 0}
+.ic{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:10px}
+.tag{font-size:11px;font-weight:600;color:var(--blue);background:#eff6ff;border-radius:20px;padding:3px 9px;vertical-align:middle;margin-left:6px}
+.plus{color:var(--teal)!important;margin-top:6px}.minus{color:#9f1239!important;margin-top:6px}
+.note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:15px 22px;font-size:16px;color:#1e3a8a;line-height:1.5}
+.note.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.tbl{width:100%;border-collapse:collapse;font-size:17.5px}
+.tbl th{text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--sub);padding:12px 16px;border-bottom:2px solid var(--line)}
+.tbl td{padding:17px 18px;border-bottom:1px solid var(--line);color:var(--muted)}
+.tbl td:first-child{color:var(--ink);font-weight:600}
+.tbl.cmp th.win{color:var(--teal)}.tbl.cmp td.win{background:#f0fdfa;color:#134e4a}
+.diagram-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#fff;padding:6px}
+.diagram{width:100%;height:auto}
+.diagram .d{font-size:13px;fill:#334155;text-anchor:middle}.diagram .dt{font-size:15px;font-weight:600}.diagram .dm{fill:#64748b;font-size:12.5px}
+.steps{width:300px;gap:16px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step span{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.step p{font-size:15px;color:var(--muted);line-height:1.5}
+.flow{display:flex;align-items:center;gap:14px;justify-content:center;padding:6px 0 4px}
+.fcol{display:flex;flex-direction:column;gap:16px}
+.fbox{border-radius:12px;padding:14px 18px;text-align:center;font-size:16px;font-weight:600;min-width:170px;border:1.5px solid}
+.fbox small{display:block;font-weight:500;font-size:12.5px;margin-top:3px;opacity:.85}
+.fbox.in{background:#f8fafc;border-color:#cbd5e1;color:#334155}
+.fbox.model{background:#eef2ff;border-color:#6366f1;color:#3730a3}
+.fbox.prior{background:#ecfdf5;border-color:#0f766e;color:#115e59}
+.fbox.gate{background:#fffbeb;border-color:#d97706;color:#92400e}
+.fbox.out{background:var(--navy);border-color:var(--navy);color:#fff}
+.farrow{font-size:26px;color:#94a3b8}
+.legend{display:flex;gap:18px;font-size:12.5px;color:var(--muted);margin-top:4px}
+.legend.col{flex-direction:column;gap:4px}.legend b{color:var(--ink)}
+.lg:before{content:'';display:inline-block;width:18px;height:3px;background:var(--c);vertical-align:middle;margin-right:6px}
+.lg.dash:before{background:repeating-linear-gradient(90deg,var(--c) 0 5px,transparent 5px 9px)}
+.th-card{border:1px solid var(--line);border-radius:14px;padding:14px 18px;background:#fff}
+.th-card .lbl{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--sub)}
+.th-card .val{font-size:22px;font-weight:700;color:var(--navy);margin:4px 0 6px}
+.th-card p{font-size:13.5px;color:var(--muted)}
+.mini{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+.mini th{color:var(--sub);font-weight:600;text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}
+.mini td{text-align:right;padding:3px 6px;color:var(--muted)}.mini th:first-child,.mini td:first-child{text-align:left}
+.mini td.hl{color:var(--teal);font-weight:700}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.mode{padding:16px 22px;display:flex;flex-direction:column;gap:2px}
+.mode b{font-size:17px}.mode span{font-size:13.5px;color:var(--sub)}.mode em{font-style:normal;font-weight:600;font-size:15px;margin-top:6px}
+.m0{background:#ecfdf5}.m0 em{color:#0f766e}.m1{background:#fffbeb}.m1 em{color:#b45309}.m2{background:#eef2ff}.m2 em{color:#3730a3}
+.agenda{display:flex;flex-direction:column;gap:14px}
+.ag{display:flex;gap:20px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:16px 22px}
+.ag span{flex:none;width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center}
+.ag h3{font-size:19px;margin-bottom:2px}.ag p{font-size:15px;color:var(--muted)}
+.tbl.cmp3 td{font-size:16px;padding:14px 16px}.tbl.cmp3 th{padding:10px 16px}
+.tbl.cmp3 td.ok{color:#0f766e}.tbl.cmp3 td.bad{color:#b91c1c}
+.weak{justify-content:center}.wk{border-left:4px solid var(--red);padding:6px 0 6px 16px}
+.wk>b{font-size:30px;color:var(--red);display:block;line-height:1.1}.wk p{font-size:14.5px;color:var(--muted);margin-top:4px}
+.wk:nth-child(3){border-color:var(--amber)}.wk:nth-child(3)>b{color:var(--amber)}
+.sum{display:flex;gap:22px}
+.sum-main{flex:1;border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:0 14px 14px 0;padding:22px 26px}
+.sum-main .lbl{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.sum-main h3{font-size:24px;margin:4px 0 14px;color:var(--navy)}
+.sum-side{width:330px;display:flex;flex-direction:column;gap:14px}
+.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:4px}
+.tl{border-top:4px solid var(--blue);padding-top:16px}
+.tl span{font-size:28px;font-weight:700;color:var(--blue)}
+.tl h3{font-size:20px;margin:6px 0 8px}.tl p{font-size:16px;color:var(--muted);line-height:1.55}
+.cover{flex:1;display:flex;flex-direction:column;justify-content:center;padding-left:20px;border-left:6px solid var(--navy)}
+.kicker{font-size:15px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.cover h1{font-size:52px;font-weight:700;line-height:1.15;letter-spacing:-.02em}
+.cover h1 span{font-size:30px;font-weight:500;color:var(--muted)}
+.lead{font-size:18px;color:var(--sub);margin-top:22px}
+.cover-tags{display:flex;gap:10px;margin-top:28px}
+.cover-tags span{font-size:13.5px;padding:7px 14px;border-radius:20px;background:#eff6ff;color:var(--navy);font-weight:600}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{background:#fff}
+  .deck{transform:none!important;position:static!important;width:auto;height:auto}
+  .slide{display:flex!important;position:relative;page-break-after:always;break-after:page}
+  .slide:last-child{page-break-after:auto;break-after:auto}
+  html,body{height:auto;overflow:visible}
+  .slide{height:720px;break-inside:avoid}
+}
+
+.tbl.dense td{padding:11px 14px;font-size:15.5px}.tbl.dense th{padding:9px 14px;font-size:12px}
+.tbl.dense tr.hl td{background:#f0fdfa;color:#134e4a;font-weight:600}
+.tbl.dense td.r,.tbl.dense th.r{text-align:right}
+.sm{font-size:12.5px;color:var(--sub);font-weight:500}
+.kpis.three{grid-template-columns:repeat(3,1fr)}.kpis.two{grid-template-columns:repeat(2,1fr)}
+.kpi>b.s{font-size:26px}
+.flow.six{gap:8px}.flow.six .fbox{min-width:0;flex:1;padding:12px 8px;font-size:14.5px}.flow.six .farrow{font-size:20px}
+.cmp2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.eq{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:14px 20px;font-family:Consolas,monospace;font-size:17px;color:#1e3a8a;line-height:1.7}
+.ex td,.ex th{padding:8px 12px}
+</style></head>
+<body><div class="deck"><section class="slide"><div class="cover">
+  <div class="kicker">Tuần 3 · Triển khai &amp; thử nghiệm</div>
+  <h1>Triển khai code gốc SMLP4Rec trên Expedia<br><span>và các thử nghiệm bổ sung</span></h1>
+  <p class="lead">Next-Best-Product Recommendation · Vinpearl × GSM · Bối cảnh (a): du lịch</p>
+  <div class="cover-tags"><span>Code gốc SMLP4Rec</span><span>Dữ liệu Expedia</span><span>Thử nghiệm bổ sung</span></div>
+</div><div class="ft"><span>Topic C1 · Next-Best-Product Recommendation</span><span>1 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">Nội dung</div><h2>Nội dung báo cáo</h2></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="agenda">
+  <div class="ag"><span>1</span><div><h3>Nhắc lại thiết kế (tuần 2)</h3><p>Kiến trúc SMLP4Rec đã chọn</p></div></div>
+  <div class="ag"><span>2</span><div><h3>Từ code gốc đến bản chạy với Expedia</h3><p>Những gì đã đổi, giữ nguyên, và luồng pipeline</p></div></div>
+  <div class="ag"><span>3</span><div><h3>Kết quả chạy plain</h3><p>SMLP4Rec chỉ dùng lịch sử, 3 epoch: điểm số, từng epoch, top 5 gồm gì</p></div></div>
+  <div class="ag"><span>4</span><div><h3>Các cách thử nghiệm và phát hiện chính</h3><p>Ép tỉ lệ cũ/mới, fusion với prior điểm đến, người dùng mới, hybrid có sameDest</p></div></div>
+  <div class="ag"><span>5</span><div><h3>Kết luận và bước tiếp theo</h3><p>Quyết định, hạn chế, kế hoạch</p></div></div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>2 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">1 · Nhắc lại thiết kế (tuần 2)</div><h2>Chọn SMLP4Rec: ý tưởng và kiến trúc</h2><div class="sub">Gao et al., ACM TOIS 2024 — slide giữ nguyên từ tuần 2</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body">
+<div class="row">
+  <div class="panel diagram-wrap"><svg viewBox="0 0 900 500" width="900" height="500" class="diagram"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs><rect x="24" y="14" width="270" height="452" rx="14" fill="none" stroke="#94a3b8"/><text x="159" y="40" class="d">Lịch sử booking (left-pad)</text><rect x="40" y="52" width="238" height="26" rx="4" fill="#eef2ff" stroke="#6366f1" stroke-width="1.3"/><text x="159" y="69.5" class="d" fill="#4338ca">Booking 1: cluster ID</text><rect x="40" y="78" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="95.5" class="d" fill="#0f766e">Destination, market</text><rect x="40" y="104" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="121.5" class="d" fill="#0f766e">Party, package, tháng</text><rect x="40" y="130" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="147.5" class="d" fill="#0f766e">Lead time, số đêm</text><line x1="278" y1="104" x2="304" y2="104" stroke="#64748b" marker-end="url(#ar)"/><text x="159" y="176" class="d">…</text><rect x="40" y="188" width="238" height="26" rx="4" fill="#eef2ff" stroke="#6366f1" stroke-width="1.3"/><text x="159" y="205.5" class="d" fill="#4338ca">Booking t: cluster ID</text><rect x="40" y="214" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="231.5" class="d" fill="#0f766e">Destination, market</text><rect x="40" y="240" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="257.5" class="d" fill="#0f766e">Party, package, tháng</text><rect x="40" y="266" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="283.5" class="d" fill="#0f766e">Lead time, số đêm</text><line x1="278" y1="240" x2="304" y2="240" stroke="#64748b" marker-end="url(#ar)"/><text x="159" y="330" class="d">Query: lượt search hiện tại</text><rect x="33" y="338" width="252" height="114" rx="6" fill="none" stroke="#ea580c" stroke-dasharray="5 4" stroke-width="1.5"/><rect x="40" y="344" width="238" height="26" rx="4" fill="#f1f5f9" stroke="#64748b" stroke-width="1.3"/><text x="159" y="361.5" class="d" fill="#334155">[MASK]</text><rect x="40" y="370" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="387.5" class="d" fill="#0f766e">Destination → market (từ train)</text><rect x="40" y="396" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="413.5" class="d" fill="#0f766e">Party, package, tháng</text><rect x="40" y="422" width="238" height="26" rx="4" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.3"/><text x="159" y="439.5" class="d" fill="#0f766e">Lead time, số đêm</text><line x1="285" y1="395" x2="304" y2="395" stroke="#64748b" marker-end="url(#ar)"/><rect x="306" y="52" width="34" height="370" rx="5" fill="#f1f5f9" stroke="#64748b"/><text class="d" transform="translate(323,237) rotate(-90)">Embedding layer</text><rect x="356" y="14" width="440" height="420" rx="18" fill="none" stroke="#94a3b8"/><text x="576" y="44" class="d dt">Main operation layer (× L, dùng chung tham số)</text><line x1="340" y1="237" x2="374" y2="237" stroke="#64748b" marker-end="url(#ar)"/><polygon points="376,200 398,180 468,180 446,200" fill="#ecfdf5" stroke="#0f766e"/><polygon points="446,200 468,180 468,254 446,274" fill="#ecfdf5" stroke="#0f766e"/><rect x="376" y="200" width="70" height="74" fill="#eef2ff" stroke="#6366f1"/><text x="422" y="300" class="d">(S+1) × F × C</text><line x1="468" y1="237" x2="486" y2="237" stroke="#64748b" marker-end="url(#ar)"/><rect x="488" y="150" width="32" height="174" rx="5" fill="#f1f5f9" stroke="#64748b"/><text class="d" transform="translate(504,237) rotate(-90)">LayerNorm</text><path d="M520 237 H534 V145 H548 M534 237 H548 M534 237 V329 H548" fill="none" stroke="#64748b"/><rect x="550" y="126" width="170" height="38" rx="6" fill="#f8fafc" stroke="#64748b"/><text x="635" y="150" class="d">Sequence mixing</text><rect x="550" y="218" width="170" height="38" rx="6" fill="#f8fafc" stroke="#64748b"/><text x="635" y="242" class="d">Feature mixing</text><rect x="550" y="310" width="170" height="38" rx="6" fill="#f8fafc" stroke="#64748b"/><text x="635" y="334" class="d">Channel mixing</text><path d="M720 145 H752 V225 M720 237 H740 M720 329 H752 V249" fill="none" stroke="#64748b"/><circle cx="752" cy="237" r="12" fill="#fff" stroke="#64748b"/><text x="752" y="242" class="d dt">+</text><text x="504" y="370" class="d dm">Norm</text><text x="635" y="370" class="d dm">Extraction</text><text x="752" y="370" class="d dm">Fusion</text><line x1="764" y1="237" x2="816" y2="237" stroke="#64748b" marker-end="url(#ar)"/><rect x="818" y="52" width="34" height="370" rx="5" fill="#f1f5f9" stroke="#64748b"/><text class="d" transform="translate(835,237) rotate(-90)">Output: hàng query · bảng cluster</text><text x="876" y="490" class="d dm" style="text-anchor:end">→ 100 điểm cluster (CE)</text><rect x="24" y="478" width="12" height="12" rx="2" fill="#eef2ff" stroke="#6366f1"/><text x="42" y="488" class="d dm" style="text-anchor:start">Cluster ID</text><rect x="130" y="478" width="12" height="12" rx="2" fill="#ecfdf5" stroke="#0f766e"/><text x="148" y="488" class="d dm" style="text-anchor:start">Context booking</text><rect x="270" y="478" width="12" height="12" rx="2" fill="none" stroke="#ea580c" stroke-dasharray="3 2"/><text x="288" y="488" class="d dm" style="text-anchor:start">Query token</text></svg></div>
+  <div class="panel side steps">
+    <div class="step"><span>1</span><p>Mỗi lượt dự đoán → khối <b>(S+1) × F × C</b>: chuỗi booking + query token của lượt search.</p></div>
+    <div class="step"><span>2</span><p>Ba MLP <b>song song</b> trộn thông tin theo <b>thời gian</b>, <b>context</b> và <b>chiều embedding</b>, cộng lại, lặp L lần.</p></div>
+    <div class="step"><span>3</span><p>Lấy hàng của query, so với 100 cluster → điểm xếp hạng.</p></div>
+  </div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>3 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">2 · Thích ứng với Expedia</div><h2>Từ code gốc đến bản chạy với Expedia: những gì đã đổi</h2><div class="sub">Chỉnh sửa tối thiểu: thích ứng để chạy được, chưa tối ưu</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><table class="tbl dense"><tr><th class="">Hạng mục</th><th class="">Code gốc (fork SMLP4Rec trên RecBole)</th><th class="">Bản thích ứng cho Expedia</th></tr><tr><td class="">Dữ liệu</td><td class="">MovieLens ML-100K; item có feature (thể loại, tên phim, năm)</td><td class="">Booking Expedia: user, hotel cluster (100), thời gian; cluster không có feature</td></tr><tr><td class="">Độ dài chuỗi</td><td class="">Cố định 50 trong code</td><td class="">Lấy từ cấu hình <code>MAX_ITEM_LIST_LENGTH</code> (= 20)</td></tr><tr><td class="">Feature của item</td><td class="">Bắt buộc có lớp embedding feature</td><td class="">Cho phép danh sách feature rỗng, bỏ lớp feature</td></tr><tr><td class="">Chia dữ liệu và đánh giá</td><td class="">Leave-one-out; xếp hạng với 100 mẫu theo popularity (pop100)</td><td class="">Chia theo thời gian 80/10/10; xếp hạng đầy đủ trên 100 cụm</td></tr><tr><td class="">Cấu hình mô hình</td><td class="">Cấu hình paper: nhiều lớp, dropout 0,5, quá chậm trên CPU</td><td class="">2 lớp, hidden 64, dropout 0, lr 0,001 (nhẹ, chạy được trên CPU)</td></tr><tr><td class="">Môi trường</td><td class="">RecBole 1.0.1 cần numpy 1.23 / pandas 1.5; torch lỗi DLL khi đường dẫn dài</td><td class="">Venv Python 3.11 riêng ở đường dẫn ngắn; hai bản vá nhỏ cho RecBole</td></tr></table><div class="note">Mọi chỉnh sửa trong mã mô hình được đánh dấu <code>ADAPTED</code> và chỉ có hai điểm; phần còn lại giữ nguyên bản gốc.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>4 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">2 · Thích ứng với Expedia</div><h2>Phần giữ nguyên từ bản gốc (đã biết là hạn chế)</h2></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="grid2">
+  <div class="card"><h3>Một khối dùng lại cho mọi lớp</h3><p>Chỉ có một khối SMLP, lặp <code>n_layers</code> lần với trọng số chung. Tham số <code>n_layers</code> không thêm lớp thật.</p></div>
+  <div class="card"><h3>Không có kết nối residual</h3><p>Đầu ra mỗi lớp thay thế đầu vào thay vì cộng vào, nên xếp nhiều lớp khó huấn luyện hơn.</p></div>
+  <div class="card"><h3>Mô hình không thấy ngữ cảnh tìm kiếm</h3><p>Đầu vào chỉ là id cluster đã đặt; không có điểm đến, ngày, số người của lượt search hiện tại.</p></div>
+</div>
+<div class="note warn">Các hạn chế này nằm trong kế hoạch sửa (trọng số riêng mỗi lớp, residual, query token) ở bước dựng lại pipeline, không thuộc lần chạy kiểm tra này.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>5 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">2 · Thích ứng với Expedia</div><h2>Luồng pipeline và thiết lập</h2><div class="sub">Một lần chạy end-to-end trên CPU; có sửa lỗi đơn vị thời gian (pandas 3 đọc ngày ra micro giây)</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="flow six"><div class="fbox in">train.csv<small>4 GB, đọc theo khối</small></div><div class="farrow">→</div><div class="fbox in">Lọc is_booking = 1<small>giữ booking, bỏ click</small></div><div class="farrow">→</div><div class="fbox prior">expedia.inter<small>user · cluster · giờ</small></div><div class="farrow">→</div><div class="fbox gate">RecBole<small>chuỗi + chia theo thời gian</small></div><div class="farrow">→</div><div class="fbox model">SMLP4Rec<small>CE trên 100 cluster</small></div><div class="farrow">→</div><div class="fbox out">Đánh giá<small>xếp hạng đầy đủ</small></div></div>
+<div class="kpis">
+  <div class="kpi"><b>813.985</b><span>người dùng</span></div>
+  <div class="kpi"><b>100</b><span>cụm khách sạn (item)</span></div>
+  <div class="kpi"><b>2.186.708</b><span>mục tiêu “đặt tiếp theo”</span></div>
+  <div class="kpi"><b>33.702</b><span>tham số của mô hình</span></div>
+</div>
+<div class="note">Mô hình: 2 lớp, hidden 64, dropout 0.0, lr 0.001, batch 1024, 3 epoch, lịch sử tối đa 20 lần đặt, seed 2022. Thời gian: dựng dữ liệu 34s, huấn luyện + đánh giá từng epoch 672s.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>6 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">2 · Thích ứng với Expedia</div><h2>Cách chia dữ liệu</h2><div class="sub">Xếp hạng đầy đủ trên 100 cụm, không lấy mẫu âm</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><table class="tbl dense"><tr><th class="">Tập</th><th class="r">Số mục tiêu</th><th class="r">Từ ngày</th><th class="r">Đến ngày</th><th class="r">Lịch sử trung bình</th></tr><tr><td class="">Train</td><td class="r">1.749.368</td><td class="r">07/01/2013</td><td class="r">08/10/2014</td><td class="r">5,85</td></tr><tr><td class="">Valid</td><td class="r">218.670</td><td class="r">08/10/2014</td><td class="r">19/11/2014</td><td class="r">7,39</td></tr><tr><td class="">Test</td><td class="r">218.670</td><td class="r">19/11/2014</td><td class="r">01/01/2015</td><td class="r">7,25</td></tr></table><div class="grid3 tight">
+  <div class="card"><h3>Theo thời gian</h3><p>Chia 80/10/10 theo thứ tự thời gian của các mục tiêu, không chia ngẫu nhiên, để mùa vụ không rò rỉ.</p></div>
+  <div class="card"><h3>Mục tiêu là gì</h3><p>Mọi lần đặt phòng trừ lần đặt đầu của mỗi người dùng; lịch sử là các lần đặt trước đó của người đó.</p></div>
+  <div class="card"><h3>Chưa có người dùng mới</h3><p>Lần đặt đầu không có lịch sử nên không phải mục tiêu; người dùng mới được đánh giá riêng ở phần 4.</p></div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>7 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">3 · Kết quả plain</div><h2>Kết quả plain: SMLP4Rec chỉ dùng lịch sử (test)</h2><div class="sub">Xếp hạng đầy đủ trên 100 cụm · người dùng có ít nhất một booking trước đó</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="row">
+  <div class="panel grow"><div class="ph">Recall@K trên tập test · cùng các dòng cho cả hai phương pháp</div>
+    <svg viewBox="0 0 640 300" class="chart"><line x1="6" x2="640" y1="199.7" y2="199.7" stroke="#e2e8f0"/><text x="6" y="195.7" font-size="11" fill="#94a3b8">20%</text><line x1="6" x2="640" y1="129.4" y2="129.4" stroke="#e2e8f0"/><text x="6" y="125.4" font-size="11" fill="#94a3b8">40%</text><line x1="6" x2="640" y1="59.1" y2="59.1" stroke="#e2e8f0"/><text x="6" y="55.1" font-size="11" fill="#94a3b8">60%</text><rect x="35.6" y="218.1" width="46.5" height="51.9" rx="4" fill="#94a3b8"/><text x="58.8" y="213.1" class="cv">14,8%</text><rect x="88.1" y="151.6" width="46.5" height="118.4" rx="4" fill="#2563eb"/><text x="111.3" y="146.6" class="cv">33,7%</text><text x="85.1" y="292" class="cl">Recall@5</text><rect x="246.9" y="183.0" width="46.5" height="87.0" rx="4" fill="#94a3b8"/><text x="270.2" y="178.0" class="cv">24,8%</text><rect x="299.4" y="106.8" width="46.5" height="163.2" rx="4" fill="#2563eb"/><text x="322.7" y="101.8" class="cv">46,5%</text><text x="296.4" y="292" class="cl">Recall@10</text><rect x="458.3" y="132.1" width="46.5" height="137.9" rx="4" fill="#94a3b8"/><text x="481.5" y="127.1" class="cv">39,2%</text><rect x="510.7" y="48.3" width="46.5" height="221.7" rx="4" fill="#2563eb"/><text x="534.0" y="43.3" class="cv">63,1%</text><text x="507.7" y="292" class="cl">Recall@20</text></svg><div class="legend"><span class="lg" style="--c:#94a3b8">Popularity toàn cục</span><span class="lg" style="--c:#2563eb">SMLP4Rec (epoch 3)</span></div></div>
+  <div class="panel side">
+    <div class="th-card"><div class="lbl">SMLP4Rec, test</div><div class="val">Recall@5 33,69%</div><p>NDCG@10 0,2850 · MRR@10 0,2302</p></div>
+  </div>
+</div>
+<div class="note">Lịch sử đặt phòng tự nó có tín hiệu, nhưng điểm vẫn thấp (Recall@5 33,7%) vì mô hình chưa biết điểm đến của lần tìm kiếm.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>8 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">3 · Kết quả plain</div><h2>Kết quả sau từng epoch: thêm epoch gần như không giúp</h2><div class="sub">Valid và test được tính lại sau mỗi epoch; epoch tốt nhất chọn theo valid</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><table class="tbl dense"><tr><th class="">Epoch</th><th class="r">Loss train</th><th class="r">Valid Recall@5</th><th class="r">Test Recall@5</th><th class="r">Test Recall@10</th><th class="r">Test NDCG@10</th></tr><tr><td class="">1</td><td class="r">6.686</td><td class="r">33,25%</td><td class="r">33,50%</td><td class="r">46,24%</td><td class="r">0,2836</td></tr><tr><td class="">2</td><td class="r">6.631</td><td class="r">33,47%</td><td class="r">33,59%</td><td class="r">46,28%</td><td class="r">0,2842</td></tr><tr class="hl"><td class="">3</td><td class="r">6.626</td><td class="r">33,52%</td><td class="r">33,69%</td><td class="r">46,45%</td><td class="r">0,2850</td></tr></table><div class="kpis three">
+  <div class="kpi"><b>+0,19 điểm</b><span>Recall@5 test, epoch 3 so với epoch 1</span></div>
+  <div class="kpi"><b>0,9%</b><span>loss train giảm sau 2 epoch thêm</span></div>
+  <div class="kpi"><b>3/3</b><span>epoch tốt nhất theo valid</span></div>
+</div>
+<div class="note">Trần điểm nằm ở <b>thông tin đầu vào</b> (chỉ có lịch sử, không có điểm đến) và ở kiến trúc nhỏ, không nằm ở số epoch huấn luyện.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>9 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">3 · Kết quả plain</div><h2>Plain chủ yếu gợi lại cụm đã đặt</h2><div class="sub">Trọng số epoch tốt nhất · tính trên toàn bộ dòng test</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="row">
+  <div class="panel grow"><div class="ph">Người dùng đặt cụm nào tiếp theo (tỉ lệ dòng mục tiêu)</div>
+    <table class="tbl dense"><tr><th class="">Đặt…</th><th class="r">Train</th><th class="r">Valid</th><th class="r">Test</th></tr><tr><td class="">Cụm vừa đặt gần nhất</td><td class="r">14,77%</td><td class="r">14,62%</td><td class="r">14,87%</td></tr><tr><td class="">Cụm cũ, không phải gần nhất</td><td class="r">13,23%</td><td class="r">16,52%</td><td class="r">15,87%</td></tr><tr><td class=""><b>Cụm cũ (gồm gần nhất)</b></td><td class="r">28,00%</td><td class="r">31,14%</td><td class="r">30,74%</td></tr><tr><td class=""><b>Cụm mới (chưa từng đặt)</b></td><td class="r">72,00%</td><td class="r">68,86%</td><td class="r">69,26%</td></tr></table></div>
+  <div class="panel side2">
+    <div class="wk"><b>83,0%</b><p>dòng test có <b>top 1 = cụm đặt gần nhất</b></p></div>
+    <div class="wk"><b>81,9%</b><p>trúng trong top 5 khi người dùng đặt lại <b>cụm cũ</b></p></div>
+    <div class="wk"><b>12,3%</b><p>trúng khi đặt <b>cụm mới</b>, thấp hơn popularity top 5 (13,7%)</p></div>
+  </div>
+</div>
+<div class="note warn">Khoảng 69% lần đặt tiếp theo là cụm mới: chỉ nhìn lịch sử không thể đoán được các trường hợp này. 74,7% số lần trúng của mô hình là cụm cũ.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>10 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">4 · Thử nghiệm</div><h2>Thử 1–2: ép tỉ lệ cụm cũ / cụm mới trong top 5</h2><div class="sub">Test, epoch tốt nhất theo valid · “cụm cũ/mới trúng” là % trên toàn bộ dòng</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><table class="tbl dense"><tr><th class="">Cách</th><th class="r">Recall@5</th><th class="r">MAP@5</th><th class="r">Cụm cũ trúng</th><th class="r">Cụm mới trúng</th><th class="r">Slot cụm cũ TB</th></tr><tr class="hl"><td class="">Plain: 5 điểm cao nhất</td><td class="r">33,69%</td><td class="r">0,2133</td><td class="r">25,17%</td><td class="r">8,52%</td><td class="r">2,69</td></tr><tr><td class="">Cố định 2 cũ + 3 mới (1 cũ + 4 mới nếu chỉ có 1 cụm cũ)</td><td class="r">31,43%</td><td class="r">0,2072</td><td class="r">20,42%</td><td class="r">11,01%</td><td class="r">1,79</td></tr><tr><td class="">Giới hạn động: tối đa 1 cụm cũ nếu L &lt; 5, tối đa 2 nếu L ≥ 5</td><td class="r">30,43%</td><td class="r">0,2032</td><td class="r">18,58%</td><td class="r">11,84%</td><td class="r">1,50</td></tr></table><div class="grid2">
+  <div class="card good"><h3>Cả hai đều làm giảm độ chính xác</h3><p>Recall@5 giảm 2,26 và 3,26 điểm, đổi lại cụm mới trúng nhiều hơn.</p></div>
+  <div class="card good"><h3>Giá của việc “khám phá”</h3><p>Mỗi cụm mới trúng thêm làm mất khoảng <b>1,9</b> (cố định) và <b>2,0</b> (giới hạn động) cụm cũ. Gợi ý mới của mô hình yếu hơn nhiều so với gợi ý lại.</p></div>
+</div>
+<div class="note">L = số booking trước đó của người dùng. Quy tắc chỉ thay cách <b>chọn</b> top 5 sau khi chấm điểm; trọng số mô hình không đổi (kết quả khớp lần chạy plain từng epoch).</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>11 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">4 · Thử nghiệm</div><h2>Thử 3: kết hợp SMLP4Rec với prior điểm đến (late fusion)</h2><div class="sub">Không huấn luyện lại; w chọn trên valid, đọc test một lần</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="eq">điểm(cluster) = log p<sub>SMLP4Rec</sub> + w × log p<sub>prior</sub>(cluster | điểm đến tìm kiếm)</div>
+<div class="row">
+  <div class="panel grow"><div class="ph">Recall@5 theo trọng số w của prior (w = 0 là plain)</div>
+    <svg viewBox="0 0 640 300" class="chart"><line x1="44" x2="626" y1="266.0" y2="266.0" stroke="#e2e8f0"/><text x="38" y="270.0" font-size="11" fill="#94a3b8" text-anchor="end">30%</text><line x1="44" x2="626" y1="216.8" y2="216.8" stroke="#e2e8f0"/><text x="38" y="220.8" font-size="11" fill="#94a3b8" text-anchor="end">37%</text><line x1="44" x2="626" y1="167.6" y2="167.6" stroke="#e2e8f0"/><text x="38" y="171.6" font-size="11" fill="#94a3b8" text-anchor="end">44%</text><line x1="44" x2="626" y1="118.4" y2="118.4" stroke="#e2e8f0"/><text x="38" y="122.4" font-size="11" fill="#94a3b8" text-anchor="end">51%</text><line x1="44" x2="626" y1="69.2" y2="69.2" stroke="#e2e8f0"/><text x="38" y="73.2" font-size="11" fill="#94a3b8" text-anchor="end">58%</text><line x1="44" x2="626" y1="20.0" y2="20.0" stroke="#e2e8f0"/><text x="38" y="24.0" font-size="11" fill="#94a3b8" text-anchor="end">65%</text><text x="44.0" y="290" class="cl">0.0</text><text x="108.7" y="290" class="cl">0.1</text><text x="173.3" y="290" class="cl">0.25</text><text x="238.0" y="290" class="cl">0.5</text><text x="302.7" y="290" class="cl">0.75</text><text x="367.3" y="290" class="cl">1.0</text><text x="432.0" y="290" class="cl">1.5</text><text x="496.7" y="290" class="cl">2.0</text><text x="561.3" y="290" class="cl">3.0</text><text x="626.0" y="290" class="cl">5.0</text><polyline points="44.0,241.3 108.7,178.0 173.3,122.1 238.0,82.3 302.7,64.9 367.3,57.7 432.0,55.4 496.7,57.9 561.3,64.5 626.0,73.6" fill="none" stroke="#2563eb" stroke-width="2.5"/><circle cx="44.0" cy="241.3" r="3.5" fill="#2563eb"/><circle cx="108.7" cy="178.0" r="3.5" fill="#2563eb"/><circle cx="173.3" cy="122.1" r="3.5" fill="#2563eb"/><circle cx="238.0" cy="82.3" r="3.5" fill="#2563eb"/><circle cx="302.7" cy="64.9" r="3.5" fill="#2563eb"/><circle cx="367.3" cy="57.7" r="3.5" fill="#2563eb"/><circle cx="432.0" cy="55.4" r="3.5" fill="#2563eb"/><circle cx="496.7" cy="57.9" r="3.5" fill="#2563eb"/><circle cx="561.3" cy="64.5" r="3.5" fill="#2563eb"/><circle cx="626.0" cy="73.6" r="3.5" fill="#2563eb"/><text x="432.0" y="46.4" class="cv">60,0%</text><polyline points="44.0,240.1 108.7,177.4 173.3,123.5 238.0,85.5 302.7,69.3 367.3,62.5 432.0,60.8 496.7,64.7 561.3,72.2 626.0,81.9" fill="none" stroke="#0f766e" stroke-width="2.5"/><circle cx="44.0" cy="240.1" r="3.5" fill="#0f766e"/><circle cx="108.7" cy="177.4" r="3.5" fill="#0f766e"/><circle cx="173.3" cy="123.5" r="3.5" fill="#0f766e"/><circle cx="238.0" cy="85.5" r="3.5" fill="#0f766e"/><circle cx="302.7" cy="69.3" r="3.5" fill="#0f766e"/><circle cx="367.3" cy="62.5" r="3.5" fill="#0f766e"/><circle cx="432.0" cy="60.8" r="3.5" fill="#0f766e"/><circle cx="496.7" cy="64.7" r="3.5" fill="#0f766e"/><circle cx="561.3" cy="72.2" r="3.5" fill="#0f766e"/><circle cx="626.0" cy="81.9" r="3.5" fill="#0f766e"/><text x="432.0" y="51.8" class="cv">59,2%</text></svg><div class="legend"><span class="lg" style="--c:#2563eb">Valid</span><span class="lg" style="--c:#0f766e">Test</span></div></div>
+  <div class="panel side">
+    <div class="th-card"><div class="lbl">Prior điểm đến</div><p>Đếm cluster theo điểm đến, làm mượt về market (m = 5), điểm đến chưa thấy dùng global. Chỉ dùng booking trước kỳ đánh giá.</p></div>
+    <div class="th-card"><div class="lbl">Trọng số tốt nhất (valid)</div><div class="val">w = 1.5</div><p>Đường cong mượt, một đỉnh.</p></div>
+  </div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>12 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">4 · Thử nghiệm</div><h2>Thử 3: prior điểm đến là đòn bẩy lớn nhất</h2></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><table class="tbl dense"><tr><th class="">Cách (test, người dùng có lịch sử)</th><th class="r">Recall@5</th><th class="r">Recall@10</th><th class="r">NDCG@10</th><th class="r">MAP@5</th></tr><tr><td class="">Plain SMLP4Rec</td><td class="r">33,69%</td><td class="r">46,45%</td><td class="r">0,2850</td><td class="r">0,2133</td></tr><tr><td class="">Prior điểm đến một mình</td><td class="r">52,98%</td><td class="r">72,12%</td><td class="r">0,4251</td><td class="r">0,3083</td></tr><tr class="hl"><td class="">SMLP4Rec + prior (w = 1.5)</td><td class="r">59,19%</td><td class="r">76,57%</td><td class="r">0,4791</td><td class="r">0,3669</td></tr></table><div class="kpis three">
+  <div class="kpi"><b>+25,5 điểm</b><span>Recall@5 so với plain</span></div>
+  <div class="kpi"><b>12,3% → 49,1%</b><span>Recall@5 trên dòng đặt cụm mới</span></div>
+  <div class="kpi"><b>81,8%</b><span>trên dòng đặt lại cụm cũ (plain 81,9%): giữ nguyên</span></div>
+</div>
+<div class="note">Gần như toàn bộ mức tăng nằm ở nhóm cụm mới. Prior một mình (53,0%) đã tái hiện mốc tuần 2 (53,07%); SMLP4Rec cộng thêm +6,2 điểm.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>13 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">4 · Thử nghiệm</div><h2>Người dùng mới (chưa có lịch sử): 100% prior, không dùng SMLP4Rec</h2><div class="sub">Cửa sổ thời gian valid/test giống các dòng có lịch sử; prior chỉ tính từ booking trước kỳ đánh giá</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="row">
+  <div class="panel grow"><div class="ph">Lần đặt đầu tiên của người dùng, chỉ xếp hạng bằng prior điểm đến</div>
+    <table class="tbl dense"><tr><th class="">Tập</th><th class="r">Số dòng</th><th class="r">Recall@5</th><th class="r">Recall@10</th><th class="r">Recall@20</th><th class="r">Popularity toàn cục @5</th></tr><tr><td class="">Valid</td><td class="r">50.803</td><td class="r">52,90%</td><td class="r">71,58%</td><td class="r">88,49%</td><td class="r">12,51%</td></tr><tr class="hl"><td class="">Test</td><td class="r">49.443</td><td class="r">51,23%</td><td class="r">70,17%</td><td class="r">87,51%</td><td class="r">13,17%</td></tr></table></div>
+  <div class="panel side2">
+    <div class="th-card"><div class="lbl">Test theo độ phủ của điểm đến trong prior</div>
+      <table class="tbl dense"><tr><th class="">Số booking trước</th><th class="r">Tỉ lệ</th><th class="r">Recall@5</th></tr><tr><td class="">Chưa thấy (0)</td><td class="r">0,6%</td><td class="r">10,9%</td></tr><tr><td class="">1–19</td><td class="r">4,0%</td><td class="r">65,6%</td></tr><tr><td class="">≥ 20</td><td class="r">95,5%</td><td class="r">50,9%</td></tr></table></div>
+  </div>
+</div>
+<div class="note">Người dùng mới chiếm khoảng 18% sự kiện test. Điểm của họ phụ thuộc hoàn toàn vào prior: cải thiện cần ngữ cảnh tìm kiếm hoặc prior tốt hơn, không phải mô hình tuần tự.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>14 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">4 · Thử nghiệm</div><h2>Thử 4: thêm tín hiệu sameDest vào hybrid</h2><div class="sub">Mỗi tín hiệu là một số hạng; trọng số chọn trên valid, đọc test một lần</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="eq">điểm = 1·log p<sub>SMLP4Rec</sub> + w<sub>p</sub>·log p<sub>prior</sub> + w<sub>s</sub>·sameDest</div>
+<div class="row">
+  <div class="panel grow">
+    <div class="ph">sameDest(cluster) = tổng 0,7<sup>tuổi</sup> của các lần đặt cluster đó <b>tại đúng điểm đến đang tìm</b></div>
+    <table class="tbl dense ex"><tr><th class="">Lịch sử (cũ → mới)</th><th class="r">Cluster</th><th class="r">Điểm đến</th><th class="r">Tuổi</th><th class="r">0,7^tuổi</th></tr><tr><td class="">Booking 1</td><td class="r">12</td><td class="r">Cancún</td><td class="r">3</td><td class="r">0,343</td></tr><tr><td class="">Booking 2</td><td class="r">45</td><td class="r">Miami</td><td class="r">2</td><td class="r">bỏ (khác điểm đến)</td></tr><tr><td class="">Booking 3</td><td class="r">3</td><td class="r">Cancún</td><td class="r">1</td><td class="r">0,700</td></tr><tr><td class="">Booking 4</td><td class="r">12</td><td class="r">Cancún</td><td class="r">0</td><td class="r">1,000</td></tr></table>
+    <p class="small" style="margin-top:8px">Truy vấn: Cancún. sameDest(12) = 0,343 + 1 = <b>1,343</b>, sameDest(3) = <b>0,700</b>, sameDest(45) = 0.</p>
+  </div>
+  <div class="panel side">
+    <div class="th-card"><div class="lbl">Vì sao cần</div><p>SMLP4Rec chỉ thấy id cluster, không biết cluster đó đặt ở đâu. sameDest cho nó biết “đặt lại ở nơi đã ở”.</p></div>
+    <div class="th-card"><div class="lbl">Trọng số tốt nhất (valid)</div><div class="val">w<sub>p</sub> 1,5–2,0 · w<sub>s</sub> = 8</div><p>Theo từng nhóm số booking trước; các nhóm gần như giống nhau.</p></div>
+  </div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>15 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">4 · Thử nghiệm</div><h2>So sánh bốn cách (test)</h2></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><table class="tbl dense"><tr><th class="">Cách</th><th class="r">Recall@5</th><th class="r">Recall@10</th><th class="r">NDCG@10</th><th class="r">MAP@5</th><th class="r">Tất cả sự kiện R@5</th><th class="r">Tất cả sự kiện MAP@5</th></tr><tr><td class="">1. Plain SMLP4Rec</td><td class="r">33,69%</td><td class="r">46,45%</td><td class="r">0,2850</td><td class="r">0,2133</td><td class="r">29,90%</td><td class="r">0,1860</td></tr><tr><td class="">2. Prior điểm đến một mình</td><td class="r">52,98%</td><td class="r">72,12%</td><td class="r">0,4251</td><td class="r">0,3083</td><td class="r">52,66%</td><td class="r">0,3063</td></tr><tr><td class="">3. SMLP4Rec + prior</td><td class="r">59,19%</td><td class="r">76,57%</td><td class="r">0,4791</td><td class="r">0,3669</td><td class="r">57,72%</td><td class="r">0,3541</td></tr><tr class="hl"><td class=""><b>4. Hybrid: + sameDest</b></td><td class="r">60,74%</td><td class="r">77,27%</td><td class="r">0,5035</td><td class="r">0,3979</td><td class="r">58,99%</td><td class="r">0,3794</td></tr></table><div class="note">Cột 2–5: người dùng có lịch sử. “Tất cả sự kiện” gồm cả người dùng mới (prior; riêng plain dùng popularity toàn cục cho nhóm này). Hybrid cao nhất ở mọi cột.</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>16 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">5 · Kết luận</div><h2>Các phát hiện chính</h2><div class="sub">Tổng hợp từ lần chạy plain và các thử nghiệm</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="grid3">
+  <div class="card good"><h3>1 · Phần lớn đặt cụm mới</h3><p>69% lần đặt tiếp theo là cụm chưa từng đặt; chỉ 14,9% đặt lại cụm cuối.</p></div>
+  <div class="card good"><h3>2 · Điểm đến là tín hiệu chủ đạo</h3><p>Prior điểm đến đưa Recall@5 từ 34% lên 59%, hầu hết ở nhóm cụm mới.</p></div>
+  <div class="card good"><h3>3 · Ép tỉ lệ làm giảm điểm</h3><p>Gợi ý mới của mô hình yếu: mỗi hit mới tốn khoảng 2 hit cũ. Cần cải thiện cách chấm gợi ý mới, không phải hạn ngạch.</p></div>
+  <div class="card good"><h3>4 · SMLP4Rec cộng thêm trên prior</h3><p>Trên cùng prior điểm đến, thêm SMLP4Rec tăng Recall@5 +6,2 điểm: lịch sử cá nhân có giá trị, nhưng nhỏ hơn prior.</p></div>
+  <div class="card good"><h3>5 · Hybrid ba tín hiệu cao nhất</h3><p>SMLP4Rec + prior + sameDest đạt Recall@5 60,7% và MAP@5 0,3979, cao hơn fusion không có sameDest (59,2% / 0,3669).</p></div>
+  <div class="card good"><h3>6 · Người dùng mới nhờ prior</h3><p>Chiếm khoảng 18% sự kiện test, Recall@5 51,2%; chỉ prior mới giúp được họ.</p></div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>17 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">5 · Kết luận</div><h2>Hạn chế cần nhớ</h2></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="grid2">
+  <div class="card"><h3>Trọng số chạm mép lưới</h3><p>w<sub>s</sub> = 8 là giá trị lớn nhất đã thử, ở mọi nhóm. Với w<sub>s</sub> lớn, cụm cùng điểm đến gần như luôn xếp đầu, phần còn lại do mô hình và prior sắp xếp; cần mở rộng lưới trước khi coi trọng số là cuối cùng.</p></div>
+  <div class="card"><h3>Đóng góp riêng của SMLP4Rec chưa chứng minh</h3><p>Chưa so sánh với mô hình đếm lịch sử (history-counts) trong cùng hybrid. Nếu hai bên ngang nhau, kiến trúc tuần tự không đem thêm giá trị.</p></div>
+  <div class="card"><h3>Giới hạn của lần chạy</h3><p>Một seed, prior tĩnh (không cập nhật qua valid/test), 3 epoch chưa tinh chỉnh, bootstrap theo dòng.</p></div>
+  <div class="card"><h3>Chia dữ liệu</h3><p>Cách chia 80/10/10 trên các mục tiêu khác tuần 2, nên so với mốc tuần 2 chỉ là gần đúng; kế hoạch dựng lại dùng chia theo sự kiện gồm cả người dùng mới.</p></div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>18 / 19</span></div></section><section class="slide"><div class="hd"><div><div class="meta">5 · Kết luận</div><h2>Kết luận và bước tiếp theo</h2><div class="sub">Kế hoạch 10 ngày: docs/plan_oct_01_14.md</div></div><div class="pg">Tuần 3 · Triển khai</div></div><div class="body"><div class="sum">
+  <div class="sum-main"><div class="lbl">Quyết định hiện tại</div>
+    <h3>SMLP4Rec + prior điểm đến + sameDest, trọng số theo nhóm</h3>
+    <ul class="clean">
+      <li>Prior vùng/điểm đến là <b>nền tảng độ chính xác</b>; SMLP4Rec là lớp cá nhân hóa trên đó.</li>
+      <li>Hybrid đạt Recall@5 <b>60,74%</b> / MAP@5 <b>0,3979</b> (test, có lịch sử), so với plain 33,69% / 0,2133.</li>
+      <li>Người dùng mới chỉ dùng prior; Recall@5 51,2%.</li>
+    </ul></div>
+  <div class="sum-side">
+    <div class="th-card"><div class="lbl">Cổng quyết định</div><p>Nếu mô hình học không thắng mô hình đếm lịch sử sau khi có đủ ngữ cảnh, báo cáo kết luận như vậy và chuyển trọng tâm sang mô hình ngữ cảnh.</p></div>
+  </div>
+</div>
+<div class="timeline">
+  <div class="tl"><span>1</span><h3>Dữ liệu</h3><p>Làm sạch, chia theo sự kiện gồm người dùng mới</p></div>
+  <div class="tl"><span>2</span><h3>Baseline</h3><p>Prior, ItemKNN và các baseline trên chia mới</p></div>
+  <div class="tl"><span>3</span><h3>Dựng lại</h3><p>SMLP4Rec dạng module, PyTorch thuần</p></div>
+  <div class="tl"><span>4</span><h3>Hybrid</h3><p>Mở rộng lưới, so với mô hình đếm lịch sử</p></div>
+  <div class="tl"><span>5</span><h3>Ngữ cảnh</h3><p>Điểm đến từng booking, query token, seed, ablation</p></div>
+</div></div><div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>19 / 19</span></div></section></div><script>
+const s=[...document.querySelectorAll('.slide')];let i=0;
+function show(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((e,k)=>e.classList.toggle('on',k===i));}
+function fit(){const d=document.querySelector('.deck');const k=Math.min(innerWidth/1280,innerHeight/720);
+ d.style.transform=`scale(${k})`;d.style.position='absolute';d.style.left=((innerWidth-1280*k)/2)+'px';d.style.top=((innerHeight-720*k)/2)+'px';}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);});
+addEventListener('click',e=>show(e.clientX>innerWidth/2?i+1:i-1));
+addEventListener('resize',fit);fit();show((parseInt(location.hash.slice(1))||1)-1);
+</script></body></html>
