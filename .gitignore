@@ -65,3 +65,6 @@ reports/summary/week2_methodology/methodology_selection_en.docx
 # Training runs (config, metrics, checkpoints)
 experiments/*
 !experiments/.gitkeep
+
+# CodeGraph index
+.codegraph/
