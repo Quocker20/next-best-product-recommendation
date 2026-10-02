@@ -4,7 +4,7 @@ Dự án nghiên cứu và benchmark các họ mô hình Next-Best-Product Recom
 
 **Phạm vi hiện tại (khóa 2026-09-18):** chỉ domain du lịch, một dataset chính là **Expedia Hotel Recommendations** (Trivago 2019 là phương án dự phòng, chưa làm). **Phương pháp chính (chốt 2026-09-30):** SMLP4Rec làm bộ chấm điểm lõi, kết hợp **hybrid có trọng số** cho mọi người dùng: `điểm = w_m·log p_SMLP4Rec + w_p·log p_prior(điểm đến) + w_s·sameDest`, trọng số theo nhóm số lần đặt trước đó, chỉnh trên tập validation; người dùng mới (chưa có lịch sử) chỉ dùng prior điểm đến. Query token và ngữ cảnh theo từng lần đặt bên trong mô hình là phương án dự phòng. AdaGIN là mô hình so sánh có ngữ cảnh, LightGBM là baseline dạng bảng, quy tắc “cụm đã đặt tại cùng điểm đến trước, rồi prior” là mốc không học để vượt. Domain food, ride và cross-sell chưa nằm trong phạm vi. Chi tiết: `CLAUDE.md`, tiến độ và quyết định: `PROGRESS.md`.
 
-**Trạng thái:** tuần 3 đã chạy thử pipeline SMLP4Rec trên Expedia (3 epoch, chỉ dùng lịch sử đặt phòng); kết quả ở `reports/summary/week3/`. Các thử nghiệm hybrid (fusion với prior điểm đến, người dùng mới, MAP@5) nằm ở các nhánh local `exp/*` và được ghi trong `PROGRESS.md`. Đây là kiểm tra pipeline, chưa phải kết quả benchmark. Kế hoạch 10 ngày dựng lại pipeline dạng module: `docs/plan_oct_01_14.md`.
+**Trạng thái:** tuần 3 đã chạy thử pipeline SMLP4Rec trên Expedia (3 epoch, chỉ dùng lịch sử đặt phòng); kết quả ở `reports/summary/week3/`. Các thử nghiệm luật top-5 và hybrid (fusion với prior điểm đến, sameDest, người dùng mới) đã gộp vào `master` và chạy lại trong `notebooks/hospitality/smlp4rec/`; ghi chép trong `PROGRESS.md`. Đây là kiểm tra pipeline, chưa phải kết quả benchmark. Kế hoạch 10 ngày dựng lại pipeline dạng module: `docs/plan_oct_01_14.md`.
 
 ## Cấu trúc thư mục (Directory Structure)
 
@@ -101,8 +101,14 @@ pip install --no-deps -e <đường-dẫn-tới-bản-clone-MLP4Rec>
 RecBole 1.0.1 cần hai bản vá nhỏ: `weights_only=False` cho `torch.load` (PyTorch ≥ 2.6) và tắt anomaly detection do `sine.py` bật khi import. Chạy:
 
 ```bash
-python scripts/expedia_to_recbole.py                  # trong .venv của dự án
-python scripts/run_smlprec_expedia.py                 # trong venv smlp4rec
+python scripts/expedia_to_recbole.py                     # trong .venv của dự án
+python scripts/expedia_to_recbole.py --with-destination  # bản có srch_destination_id (notebook 03)
 ```
 
-Kết quả ghi vào `reports/summary/week3/`.
+Huấn luyện, test và tính metric (Recall@K, NDCG@K) nằm trong các notebook `notebooks/hospitality/smlp4rec/` (kernel `smlp4rec`, đăng ký bằng `python -m ipykernel install --user --name smlp4rec` trong venv smlp4rec):
+
+1. `01_train_test_smlp4rec.ipynb`: train 3 epoch bằng vòng lặp tường minh, test, heuristic, so sánh với `reports/summary/week3/smlprec_expedia_run.json`.
+2. `02_top5_rerank_rules.ipynb`: luật past/novel trên top-5 (quota cố định, cap theo L), dùng trọng số từng epoch của notebook 01.
+3. `03_destination_prior_hybrid.ipynb`: late fusion với prior điểm đến, hybrid + sameDest, người dùng mới, bootstrap.
+
+Mỗi notebook ghi kết quả vào `experiments/<ngày>_expedia_smlp4rec_week3-repro/` (gitignored) và so từng con số với JSON của bản chạy bằng script trong `reports/summary/week3/`.

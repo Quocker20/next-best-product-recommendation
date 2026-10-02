@@ -17,7 +17,7 @@ score(k) = w_m[L] * log p_SMLP4Rec(k | history)
 - `sameDest(k)`: recency-weighted flag (0.7^age) that the user booked cluster `k` at the searched destination before.
 - Weights per bucket of `L` (0 | 1 | 2-4 | 5-9 | 10+), tuned on validation only.
 
-Decision record: `PROGRESS.md` (Decision 2026-09-30). Success bar: beat the no-learning same-destination rule on both Recall@5 and MAP@5 on test (warm users and all events), paired-bootstrap interval not crossing zero. If the hybrid cannot, report that the learned part only adds recall depth and move the destination information inside the model (per-booking destination / same-destination flag + query token).
+Decision record: `PROGRESS.md` (Decision 2026-09-30). Success bar: beat the no-learning same-destination rule on both Recall@5 and NDCG@5 (was MAP@5; metric focus changed 2026-10-02) on test (warm users and all events), paired-bootstrap interval not crossing zero. If the hybrid cannot, report that the learned part only adds recall depth and move the destination information inside the model (per-booking destination / same-destination flag + query token).
 
 ## Reference numbers to start from (current RecBole-era split, test, users with history)
 
@@ -28,7 +28,7 @@ Decision record: `PROGRESS.md` (Decision 2026-09-30). Success bar: beat the no-l
 | Same-destination history rule | 0.5888 | 0.3880 |
 | Late fusion (model + prior, w = 1.5) | 0.5919 | 0.3669 |
 
-Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5772, rule 0.5747. Source: `reports/summary/week3/smlprec_expedia_late_fusion.json` (branch `exp/late-fusion-destination-prior`). These numbers change under the new split; the new baselines on the new split replace them.
+Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5772, rule 0.5747. Source: `reports/summary/week3/smlprec_expedia_late_fusion.json` (merged to master 2026-10-02; re-run in `notebooks/hospitality/smlp4rec/03_destination_prior_hybrid.ipynb`). These numbers change under the new split; the new baselines on the new split replace them.
 
 ## To confirm before Day 1
 
@@ -64,13 +64,13 @@ Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5
 ### Day 3 (Mon 5 Oct): split, sequences, protocol
 - [ ] `src/nbp/data/split.py`: event-level time cut, validation carve-out, `L` per row.
 - [ ] `src/nbp/data/sequences.py`: history per event (up to 20 clusters with each booking's destination), query destination; output `data/processed/*.parquet`.
-- [ ] `docs/eval_protocol.md`: Recall@5 primary; MAP@5 and NDCG@10 secondary; slices by repeat vs new cluster, by `L`, by destination support; paired bootstrap 95% intervals; 3 seeds for final tables.
+- [ ] `docs/eval_protocol.md`: Recall@K and NDCG@K only (K = 5, 10, 20; Recall@5 primary); slices by repeat vs new cluster, by `L`, by destination support; paired bootstrap 95% intervals; 3 seeds for final tables.
 - [ ] Tests for split and sequence functions against hand-made examples.
 - Output: processed data, protocol document, passing tests.
 
 ### Day 4 (Tue 6 Oct): metrics and baselines
-- [ ] `src/nbp/eval/metrics.py`: Recall, NDCG, MRR/MAP at 5, 10, 20; intra-list diversity; popularity bias. Each unit-tested against hand-computed cases.
-- [ ] `src/nbp/eval/evaluate.py` (slices) and `bootstrap.py` (paired CI).
+- [ ] `src/nbp/eval/metrics.py`: Recall and NDCG at 5, 10, 20 (done 2026-10-02); intra-list diversity; popularity bias. Each unit-tested against hand-computed cases.
+- [ ] `src/nbp/eval/evaluate.py` (slices); `bootstrap.py` (paired CI) done 2026-10-02.
 - [ ] `src/nbp/priors/destination.py`: smoothed destination prior, built only from data before the evaluated period.
 - [ ] `src/nbp/baselines/`: global and per-destination popularity, repeat-last, ItemKNN, same-destination rule.
 - Output: first rows of `reports/benchmark_results.csv` (the new bars on the new split).
@@ -150,3 +150,4 @@ reports/benchmark_results.csv  reports/summary/week4/
 |---|---|---|
 | 2026-09-30 | Plan created | Hybrid decision locked (SMLP4Rec + weighted prior + sameDest) |
 | 2026-10-02 | Day 1 done | Deps installed, skeleton committed, pytest green; Day 2 data audit run in scratchpad, open data decisions listed in `PROGRESS.md` |
+| 2026-10-02 | exp branches merged to master; week-3 runs re-done as notebooks (`notebooks/hospitality/smlp4rec/`), all numbers reproduced; metrics = Recall@K and NDCG@K only; `nbp.eval.metrics` / `bootstrap` added early | User request |
