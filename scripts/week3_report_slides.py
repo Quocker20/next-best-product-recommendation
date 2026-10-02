@@ -5,13 +5,13 @@ Sections: (1) design recap from week 2 (SMLP4Rec architecture + hybrid flow slid
 experiments and their findings, (5) conclusion. CSS, JS and the architecture diagram are read
 from scripts/week2_methodology_slides.py so the style stays identical.
 
-Every number on the slides is read from persisted outputs in reports/summary/week3/:
+Every number on the slides is read from persisted outputs in reports/summary/week3_implementation/:
 smlprec_expedia_run.json (plain run), smlprec_expedia_mixed_run.json (fixed quota),
 smlprec_expedia_dynamic_cap_run.json (dynamic cap), smlprec_expedia_late_fusion.json (prior
 fusion + cold users), smlprec_expedia_hybrid_samedest.json (hybrid with sameDest + bootstrap).
 
 Usage: python scripts/week3_report_slides.py
-Output: reports/summary/week3/week3_report_slides.html (PDF: print with headless Chrome)
+Output: reports/summary/week3_implementation/week3_report_slides.html (PDF: print with headless Chrome)
 """
 
 import datetime as dt
@@ -20,8 +20,8 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-W3 = ROOT / "reports" / "summary" / "week3"
-OUT = W3 / "week3_report_slides.html"
+W3 = ROOT / "results" / "week3_implementation"
+OUT = ROOT / "reports" / "summary" / "week3_implementation" / "week3_report_slides.html"
 WEEK2 = (ROOT / "scripts" / "week2_methodology_slides.py").read_text(encoding="utf-8")
 
 
@@ -477,7 +477,7 @@ def render() -> None:
         parts.append(
             f'<section class="slide"><div class="hd"><div><div class="meta">{meta}</div><h2>{title}</h2>{subh}</div>'
             f'<div class="pg">Tuần 3 · Triển khai</div></div><div class="body">{body}</div>'
-            f'<div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ reports/summary/week3/*.json</span><span>{n} / {total}</span></div></section>'
+            f'<div class="ft"><span>Nguồn: Expedia Hotel Recommendations (Kaggle) · số liệu từ results/week3_implementation/*.json</span><span>{n} / {total}</span></div></section>'
         )
     html = f"""<!DOCTYPE html>
 <html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">

@@ -3,12 +3,12 @@
 scripts/methodology_figures.py (fig1-fig6, which the report also reuses).
 
 Reads only persisted outputs:
-- reports/summary/week1_dataset_selection/expedia_eda_detail.json
-- reports/summary/week2_methodology/expedia_history_slices.json
+- results/week1_dataset_selection/expedia_eda_detail.json
+- results/week2_methodology/expedia_history_slices.json
 Diagrams (architecture, hybrid flow) are rendered from HTML with headless Chrome.
 
 Usage: python scripts/week2_report_figures.py
-Output: reports/figures/vi/fig7_* ... fig13_*
+Output: results/figures/vi/fig7_* ... fig13_*
 """
 
 from __future__ import annotations
@@ -42,14 +42,14 @@ from methodology_figures import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "reports" / "figures" / "vi"
+OUT = ROOT / "results" / "figures" / "vi"
 EDA = json.loads(
     (
-        ROOT / "reports/summary/week1_dataset_selection/expedia_eda_detail.json"
+        ROOT / "results/week1_dataset_selection/expedia_eda_detail.json"
     ).read_text()
 )
 HS = json.loads(
-    (ROOT / "reports/summary/week2_methodology/expedia_history_slices.json").read_text()
+    (ROOT / "results/week2_methodology/expedia_history_slices.json").read_text()
 )
 CHROME = Path("C:/Program Files/Google/Chrome/Application/chrome.exe")
 TEAL = "#0f766e"

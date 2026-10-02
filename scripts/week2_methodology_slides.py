@@ -1,12 +1,12 @@
 """Build the week-2 methodology-selection slide deck (Vietnamese, HTML).
 
 Every number on the slides is read from persisted script outputs, not typed in:
-- reports/summary/week1_dataset_selection/expedia_eda_detail.json   (scripts/expedia_eda_detail.py)
-- reports/summary/week1_dataset_selection/expedia_context_signal.json (scripts/expedia_context_signal.py)
-- reports/summary/week2_methodology/expedia_history_slices.json    (scripts/expedia_history_slices.py)
+- results/week1_dataset_selection/expedia_eda_detail.json   (scripts/expedia_eda_detail.py)
+- results/week1_dataset_selection/expedia_context_signal.json (scripts/expedia_context_signal.py)
+- results/week2_methodology/expedia_history_slices.json    (scripts/expedia_history_slices.py)
 
 Usage: python scripts/week2_methodology_slides.py
-Output: reports/slides/week2/methodology_selection/methodology_slides.html
+Output: reports/summary/week2_methodology/methodology_slides.html
 PDF: print the HTML with headless Chrome (see README note in the output folder).
 """
 
@@ -14,14 +14,13 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-W1 = ROOT / "reports" / "summary" / "week1_dataset_selection"
-W2 = ROOT / "reports" / "summary" / "week2_methodology"
+W1 = ROOT / "results" / "week1_dataset_selection"
+W2 = ROOT / "results" / "week2_methodology"
 OUT = (
     ROOT
     / "reports"
-    / "slides"
-    / "week2"
-    / "methodology_selection"
+    / "summary"
+    / "week2_methodology"
     / "methodology_slides.html"
 )
 

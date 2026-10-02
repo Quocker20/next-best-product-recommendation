@@ -6,7 +6,7 @@ earlier splits): same as last booking / in older history (not last) / brand-new 
 First-ever bookings have no history and are counted separately.
 
 Input:  data/interim/recbole/expedia/expedia.inter
-Output: reports/summary/expedia_train_repeat_share.json
+Output: results/week2_methodology/expedia_train_repeat_share.json
 """
 
 import json
@@ -17,7 +17,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 INTER = ROOT / "data" / "interim" / "recbole" / "expedia" / "expedia.inter"
-OUT = ROOT / "reports" / "summary" / "expedia_train_repeat_share.json"
+OUT = ROOT / "results" / "week2_methodology" / "expedia_train_repeat_share.json"
 
 df = pd.read_csv(INTER, sep="	", names=["u", "i", "t"], header=0)
 df = df.sort_values("t", kind="stable").reset_index(drop=True)
@@ -79,5 +79,5 @@ for name in ["train", "valid", "test"]:
     by[name] = rows
     print(f"\n== {name} ==")
     print(pd.DataFrame(rows).T.to_string())
-OUT2 = ROOT / "reports" / "summary" / "expedia_repeat_share_by_history_len.json"
+OUT2 = ROOT / "results" / "week2_methodology" / "expedia_repeat_share_by_history_len.json"
 OUT2.write_text(json.dumps(by, indent=2))

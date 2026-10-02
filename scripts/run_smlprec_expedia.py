@@ -12,8 +12,8 @@ Usage (smlp4rec venv, Python 3.11):
     ... run_smlprec_expedia.py --stats-only   # recompute only the top-5 behaviour + target-mix stats from the
                                               # saved checkpoint and merge them into the JSON
 Outputs:
-    reports/summary/week3/smlprec_expedia_run.json   (config, split sizes, metrics, timings)
-    reports/summary/week3/smlprec_expedia_run.log    (RecBole log)
+    results/week3_implementation/smlprec_expedia_run.json   (config, split sizes, metrics, timings)
+    results/week3_implementation/smlprec_expedia_run.log    (RecBole log)
     data/interim/recbole/saved/                      (checkpoint, not committed)
 """
 
@@ -47,7 +47,7 @@ torch.autograd.set_detect_anomaly(False)
 
 CONFIG = ROOT / "configs" / "smlprec_expedia.yaml"
 WORK = ROOT / "data" / "interim" / "recbole"
-OUT_DIR = ROOT / "reports" / "summary" / "week3"
+OUT_DIR = ROOT / "results" / "week3_implementation"
 KS = (5, 10, 20)
 
 

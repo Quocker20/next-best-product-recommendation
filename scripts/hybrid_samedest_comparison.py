@@ -19,7 +19,7 @@ Reuses the prior, split arrays and cold-user windows of scripts/late_fusion_dest
 
 Usage (smlp4rec venv, Python 3.11):
     C:/Users/quoca/.venvs/smlp4rec/Scripts/python.exe scripts/hybrid_samedest_comparison.py
-Output: reports/summary/week3/smlprec_expedia_hybrid_samedest.json
+Output: results/week3_implementation/smlprec_expedia_hybrid_samedest.json
 """
 
 import json

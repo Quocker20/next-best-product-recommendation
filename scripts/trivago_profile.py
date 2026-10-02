@@ -7,7 +7,7 @@ user, clickouts per item) to state the right one on the slide.
 
 Input:  data/raw/hospitality/trivago_2019/train.csv (read-only)
         data/raw/hospitality/trivago_2019/item_metadata.csv
-Output: reports/summary/trivago_profile.json
+Output: results/week1_dataset_selection/trivago_profile.json
 
 Usage:
     .venv/Scripts/python.exe scripts/trivago_profile.py
@@ -22,7 +22,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "trivago_2019"
-OUT = ROOT / "reports" / "summary" / "trivago_profile.json"
+OUT = ROOT / "results" / "week1_dataset_selection" / "trivago_profile.json"
 CHUNKSIZE = 2_000_000
 
 

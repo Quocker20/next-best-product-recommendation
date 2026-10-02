@@ -19,7 +19,7 @@ Market is the train-modal hotel_market of the searched destination, never the
 event's own hotel_market (that field describes the booked hotel -> label leak).
 
 Usage: python scripts/expedia_history_slices.py
-Output: reports/summary/week2_methodology/expedia_history_slices.json
+Output: results/week2_methodology/expedia_history_slices.json
 """
 
 import json
@@ -30,7 +30,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT = ROOT / "reports" / "summary" / "week2_methodology" / "expedia_history_slices.json"
+OUT = ROOT / "results" / "week2_methodology" / "expedia_history_slices.json"
 COLS = [
     "date_time",
     "user_id",

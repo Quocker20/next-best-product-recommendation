@@ -5,12 +5,12 @@ point: one comparable row per dataset (rows, columns, users, items, history
 depth, time span, missing rate, sparsity, signal type), all measured from the
 raw files rather than copied from the data cards.
 
-Expedia numbers are read back from reports/summary/expedia_eda_detail.json
+Expedia numbers are read back from results/week1_dataset_selection/expedia_eda_detail.json
 (produced by scripts/expedia_eda_detail.py) so the two reports cannot drift.
 
-Input:  data/raw/** (read-only) + reports/summary/expedia_eda_detail.json
-Output: reports/summary/dataset_benchmark.json
-        reports/summary/dataset_benchmark.csv
+Input:  data/raw/** (read-only) + results/week1_dataset_selection/expedia_eda_detail.json
+Output: results/week1_dataset_selection/dataset_benchmark.json
+        results/week1_dataset_selection/dataset_benchmark.csv
 
 Usage:
     .venv/Scripts/python.exe scripts/dataset_benchmark.py [name ...]
@@ -27,7 +27,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
-OUT_DIR = ROOT / "reports" / "summary"
+OUT_DIR = ROOT / "results" / "week1_dataset_selection"
 
 
 def blank_row(name: str, domain: str, role: str) -> dict[str, Any]:

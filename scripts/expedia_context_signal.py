@@ -13,7 +13,7 @@ The probe is EDA evidence that context carries signal, NOT the Phase-2
 benchmark: no tuning, no model family, single seed, one metric family.
 
 Input:  data/raw/hospitality/expedia/train.csv (read-only)
-Output: reports/summary/expedia_context_signal.json
+Output: results/week1_dataset_selection/expedia_context_signal.json
 
 Usage:
     .venv/Scripts/python.exe scripts/expedia_context_signal.py
@@ -29,7 +29,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT = ROOT / "reports" / "summary" / "expedia_context_signal.json"
+OUT = ROOT / "results" / "week1_dataset_selection" / "expedia_context_signal.json"
 
 USECOLS = [
     "date_time",

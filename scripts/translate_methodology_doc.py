@@ -20,7 +20,7 @@ SRC_DOCX = ROOT / "reports" / "summary" / "week2_methodology" / "methodology_sel
 OUT_DIR = ROOT / "reports" / "summary" / "week2_methodology"
 OUT_DOCX = OUT_DIR / "methodology_selection_en.docx"
 
-FIG_EN_DIR = ROOT / "reports" / "figures" / "en"
+FIG_EN_DIR = ROOT / "results" / "figures" / "en"
 FIG5_EN = FIG_EN_DIR / "fig5_recall_by_rule.png"
 FIG3_EN = FIG_EN_DIR / "fig3_user_depth.png"
 

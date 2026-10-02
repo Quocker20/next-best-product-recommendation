@@ -2,7 +2,7 @@
 
 Goal: check that the SMLP4Rec code runs end to end on Expedia bookings and see what extra epochs do. **This is a pipeline check, not a benchmark result**: 3 epochs, untuned light config, CPU, history-only input (no search context).
 
-All numbers below are copied from `smlprec_expedia_run.json` (written by `scripts/run_smlprec_expedia.py`); the RecBole log is `smlprec_expedia_run.log`. This folder was overwritten by the 3-epoch run; the earlier 1-epoch run gave the same epoch-1 numbers (Recall@5 0.335).
+All numbers below are copied from `results/week3_implementation/smlprec_expedia_run.json` (written by `scripts/run_smlprec_expedia.py`); the RecBole log is `results/week3_implementation/smlprec_expedia_run.log`. The results were overwritten by the 3-epoch run; the earlier 1-epoch run gave the same epoch-1 numbers (Recall@5 0.335).
 
 ## What ran
 
@@ -12,7 +12,7 @@ All numbers below are copied from `smlprec_expedia_run.json` (written by `script
 | Bookings -> RecBole `.inter` (format export only: user, cluster, unix time) | `scripts/expedia_to_recbole.py` -> `data/interim/recbole/expedia/expedia.inter` |
 | Config | `configs/smlprec_expedia.yaml` |
 | Runner (train, valid + test after every epoch, heuristics on the same test rows) | `scripts/run_smlprec_expedia.py` |
-| Slides (VN) | `reports/slides/week3/pipeline_validation_slides.html` / `.pdf` (`scripts/week3_pipeline_slides.py`) |
+| Slides (VN) | `reports/summary/week3_implementation/week3_report_slides.html` / `.pdf` (`scripts/week3_report_slides.py`) |
 
 Environment: Python 3.11 venv `C:\Users\quoca\.venvs\smlp4rec` (torch CPU, numpy 1.23.5, pandas 1.5.3) with RecBole 1.0.1 installed editable from the patched `MLP4Rec` clone.
 
@@ -67,7 +67,7 @@ Best epoch on valid: 3/3. Test at the best epoch: Recall@5 / 10 / 20 = 0.3369 / 
 
 ## What the top-5 list is made of (epoch 3 checkpoint)
 
-Computed by `behavior_stats` / `target_mix` in `scripts/run_smlprec_expedia.py` (also re-runnable alone with `--stats-only`); values are in `smlprec_expedia_run.json` under `top5_behavior` and `target_mix`. "Old" = the true next cluster was booked before by the user (includes the last booking); "new" = never booked before.
+Computed by `behavior_stats` / `target_mix` in `scripts/run_smlprec_expedia.py` (also re-runnable alone with `--stats-only`); values are in `results/week3_implementation/smlprec_expedia_run.json` under `top5_behavior` and `target_mix`. "Old" = the true next cluster was booked before by the user (includes the last booking); "new" = never booked before.
 
 **What the user books next (share of target rows)**
 

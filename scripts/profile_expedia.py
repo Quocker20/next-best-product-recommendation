@@ -3,12 +3,12 @@
 Streams `data/raw/hospitality/expedia/train.csv` in chunks, keeps `is_booking == 1`
 rows only, and computes the statistics quoted on the report slides (history depth,
 repeat share, trip-context mix, check-in seasonality, temporal-split feasibility,
-cluster concentration). Every number in `reports/slides/` / the Expedia data card
+cluster concentration). Every number in the week-1 slides / the Expedia data card
 that is not already in the data card comes from this script's output, per
 CLAUDE.md §7.
 
 Input:  data/raw/hospitality/expedia/train.csv (read-only, 37.7M rows)
-Output: reports/summary/expedia_profile.json (+ the same values printed to stdout)
+Output: results/week1_dataset_selection/expedia_profile.json (+ the same values printed to stdout)
 
 Usage:
     python scripts/profile_expedia.py
@@ -22,7 +22,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT = ROOT / "reports" / "summary" / "expedia_profile.json"
+OUT = ROOT / "results" / "week1_dataset_selection" / "expedia_profile.json"
 
 USECOLS = [
     "date_time",

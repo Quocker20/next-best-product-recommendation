@@ -13,15 +13,15 @@ history (includes the last booking); "novel" = not in the history. The 5 picked 
 ordered by model score. The rule only applies to K = 5, so only @5 metrics are reported.
 
 The rule does not touch training, so the weights match the earlier run (same seed); the
-script checks this against reports/summary/week3/smlprec_expedia_run.json. Valid and test are
+script checks this against results/week3_implementation/smlprec_expedia_run.json. Valid and test are
 scored after every epoch, both unconstrained (plain top 5) and mixed; the best epoch is chosen
 on valid mixed NDCG@5.
 
 Usage (smlp4rec venv, Python 3.11):
     C:/Users/quoca/.venvs/smlp4rec/Scripts/python.exe scripts/run_smlprec_expedia_mixed.py
 Outputs (new files, the earlier run's files are not touched):
-    reports/summary/week3/smlprec_expedia_mixed_run.json
-    reports/summary/week3/smlprec_expedia_mixed_run.log
+    results/week3_implementation/smlprec_expedia_mixed_run.json
+    results/week3_implementation/smlprec_expedia_mixed_run.log
     data/interim/recbole/saved_mixed/                 (checkpoint, not committed)
 """
 

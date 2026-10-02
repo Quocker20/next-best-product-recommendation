@@ -25,7 +25,7 @@ All outputs are in `reports/summary/`. Total measured volume: 37.67M Expedia row
 
 ## 1. Mentor point 1 — Field documentation in table format
 
-Full paste-ready table: **`reports/summary/expedia_schema_table.md`** (24 rows, columns: No. / Group / Field / Description / Coverage all / Coverage bookings / Distinct / Range / Sample values).
+Full paste-ready table: **`results/week1_dataset_selection/expedia_schema_table.md`** (24 rows, columns: No. / Group / Field / Description / Coverage all / Coverage bookings / Distinct / Range / Sample values).
 
 ### 1.1 Seven feature groups
 
@@ -109,7 +109,7 @@ Source: `reports/summary/dataset_benchmark.{json,csv}` — every cell measured f
 
 ### 2.2 What Trivago still wins (the reason it stays the contingency)
 
-Source: `reports/summary/trivago_profile.json`.
+Source: `results/week1_dataset_selection/trivago_profile.json`.
 
 - 927,142 items carry text property tags (median 15 tags, max 112, 157 distinct properties) — directly usable as LLM-rerank context, which Expedia's anonymous cluster ids cannot provide.
 - Every clickout ships its impression list (median 25 items) and displayed prices (median 82, p10 29, p90 233) — a ready-made candidate set and the price field Expedia lacks.

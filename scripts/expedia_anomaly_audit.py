@@ -5,7 +5,7 @@ in the past, zero-adult parties, extreme lead times) so the report can state
 each one with a count and a share instead of a qualitative "data is clean".
 
 Input:  data/raw/hospitality/expedia/train.csv (read-only)
-Output: reports/summary/expedia_anomaly_audit.json
+Output: results/week1_dataset_selection/expedia_anomaly_audit.json
 
 Usage:
     .venv/Scripts/python.exe scripts/expedia_anomaly_audit.py
@@ -21,7 +21,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT = ROOT / "reports" / "summary" / "expedia_anomaly_audit.json"
+OUT = ROOT / "results" / "week1_dataset_selection" / "expedia_anomaly_audit.json"
 
 USECOLS = [
     "date_time",

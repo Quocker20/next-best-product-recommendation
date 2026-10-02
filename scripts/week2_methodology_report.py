@@ -4,9 +4,9 @@
 The existing .docx is used as the formatting template: its styles, page setup,
 header/footer and table-of-contents field are kept; the body is regenerated.
 Every number is read from persisted script outputs:
-- reports/summary/week1_dataset_selection/expedia_eda_detail.json
-- reports/summary/week1_dataset_selection/expedia_context_signal.json
-- reports/summary/week2_methodology/expedia_history_slices.json
+- results/week1_dataset_selection/expedia_eda_detail.json
+- results/week1_dataset_selection/expedia_context_signal.json
+- results/week2_methodology/expedia_history_slices.json
 Figures come from scripts/methodology_figures.py (fig1-fig6) and
 scripts/week2_report_figures.py (fig7-fig13). Run both first.
 
@@ -36,12 +36,12 @@ DOCX = (
     / "week2_methodology"
     / "methodology_selection_report.docx"
 )
-FIG = ROOT / "reports" / "figures" / "vi"
-W1 = ROOT / "reports" / "summary" / "week1_dataset_selection"
+FIG = ROOT / "results" / "figures" / "vi"
+W1 = ROOT / "results" / "week1_dataset_selection"
 EDA = json.loads((W1 / "expedia_eda_detail.json").read_text(encoding="utf-8"))
 CTX = json.loads((W1 / "expedia_context_signal.json").read_text(encoding="utf-8"))
 HS = json.loads(
-    (ROOT / "reports/summary/week2_methodology/expedia_history_slices.json").read_text(
+    (ROOT / "results/week2_methodology/expedia_history_slices.json").read_text(
         encoding="utf-8"
     )
 )

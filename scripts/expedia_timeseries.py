@@ -1,6 +1,6 @@
 """Time-series decomposition and anomaly detection on the Expedia daily series.
 
-Consumes reports/summary/expedia_daily_series.csv (written by
+Consumes results/week1_dataset_selection/expedia_daily_series.csv (written by
 scripts/expedia_eda_detail.py) and produces the numbers the week-1 deck needs
 for the "transaction volume over time / spikes / drops" charts:
 
@@ -10,9 +10,9 @@ for the "transaction volume over time / spikes / drops" charts:
     holidays computed programmatically (no hand-typed event labels)
   * monthly and year-over-year aggregates, conversion-rate series
 
-Input:  reports/summary/expedia_daily_series.csv
-Output: reports/summary/expedia_timeseries.json
-        reports/summary/expedia_daily_anomalies.csv (per-day expectation + z)
+Input:  results/week1_dataset_selection/expedia_daily_series.csv
+Output: results/week1_dataset_selection/expedia_timeseries.json
+        results/week1_dataset_selection/expedia_daily_anomalies.csv (per-day expectation + z)
 
 Usage:
     .venv/Scripts/python.exe scripts/expedia_timeseries.py
@@ -26,7 +26,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "reports" / "summary"
+OUT_DIR = ROOT / "results" / "week1_dataset_selection"
 SRC = OUT_DIR / "expedia_daily_series.csv"
 
 WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]

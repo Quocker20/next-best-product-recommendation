@@ -9,9 +9,9 @@ One chunked pass over the 37.7M-row file; booking rows (`is_booking == 1`)
 are retained in memory downcast, click rows only contribute to aggregates.
 
 Input:  data/raw/hospitality/expedia/train.csv (read-only)
-Output: reports/summary/expedia_eda_detail.json
-        reports/summary/expedia_daily_series.csv   (date, clicks, bookings)
-        reports/summary/expedia_field_table.csv    (schema table for slides)
+Output: results/week1_dataset_selection/expedia_eda_detail.json
+        results/week1_dataset_selection/expedia_daily_series.csv   (date, clicks, bookings)
+        results/week1_dataset_selection/expedia_field_table.csv    (schema table for slides)
 
 Usage:
     .venv/Scripts/python.exe scripts/expedia_eda_detail.py
@@ -27,7 +27,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT_DIR = ROOT / "reports" / "summary"
+OUT_DIR = ROOT / "results" / "week1_dataset_selection"
 
 CHUNKSIZE = 2_000_000
 DATE_COLS = ["date_time", "srch_ci", "srch_co"]

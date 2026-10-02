@@ -7,7 +7,7 @@ Reuses the exact split definition from scripts/expedia_context_signal.py:
 temporal cut at the 80th percentile of booking date_time, train = ts < cut.
 
 Input:  data/raw/hospitality/expedia/train.csv (read-only)
-Output: reports/summary/expedia_train_split_cluster_check.json
+Output: results/week1_dataset_selection/expedia_train_split_cluster_check.json
 
 Usage:
     python scripts/expedia_train_split_cluster_check.py
@@ -22,7 +22,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT = ROOT / "reports" / "summary" / "expedia_train_split_cluster_check.json"
+OUT = ROOT / "results" / "week1_dataset_selection" / "expedia_train_split_cluster_check.json"
 
 USECOLS = ["date_time", "is_booking", "hotel_cluster"]
 CHUNKSIZE = 2_000_000

@@ -12,15 +12,15 @@ The top 5 is the 5 best-scoring clusters subject to a cap on how many may be "pa
 "At most": the past clusters compete on score like every other candidate, so a row can end up
 with fewer past clusters than the cap; the remaining slots go to the best-scoring novel clusters.
 The rule does not touch training, so the weights equal the earlier run (same seed); the script
-checks this against reports/summary/week3/smlprec_expedia_run.json. Valid and test are scored
+checks this against results/week3_implementation/smlprec_expedia_run.json. Valid and test are scored
 after every epoch, both plain top 5 and capped top 5; the best epoch is chosen on valid capped
 NDCG@5. The rule only applies to K = 5, so only @5 metrics are reported.
 
 Usage (smlp4rec venv, Python 3.11):
     C:/Users/quoca/.venvs/smlp4rec/Scripts/python.exe scripts/run_smlprec_expedia_dynamic_cap.py
 Outputs (new files, earlier runs' files are not touched):
-    reports/summary/week3/smlprec_expedia_dynamic_cap_run.json
-    reports/summary/week3/smlprec_expedia_dynamic_cap_run.log
+    results/week3_implementation/smlprec_expedia_dynamic_cap_run.json
+    results/week3_implementation/smlprec_expedia_dynamic_cap_run.log
     data/interim/recbole/saved_dynamic_cap/          (checkpoint, not committed)
 """
 

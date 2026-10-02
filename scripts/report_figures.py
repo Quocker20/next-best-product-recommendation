@@ -5,10 +5,10 @@ emits every derived figure (hourly shares, conversion by hour, peak/trough
 ratios, concentration ratios, probe lifts) so no number in the written report
 is computed by hand.
 
-Input:  reports/summary/expedia_eda_detail.json, expedia_timeseries.json,
+Input:  results/week1_dataset_selection/expedia_eda_detail.json, expedia_timeseries.json,
         expedia_context_signal.json, expedia_anomaly_audit.json,
         dataset_benchmark.json
-Output: reports/summary/report_figures.json
+Output: results/week1_dataset_selection/report_figures.json
 
 Usage:
     .venv/Scripts/python.exe scripts/report_figures.py
@@ -20,7 +20,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SUM = ROOT / "reports" / "summary"
+SUM = ROOT / "results" / "week1_dataset_selection"
 
 
 def load(name: str) -> dict:

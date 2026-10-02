@@ -3,7 +3,7 @@
 score(cluster) = log p_model(cluster | history) + w * log p_prior(cluster | searched destination)
 
 - p_model: softmax over the 100 clusters from the saved 3-epoch plain checkpoint
-  (path recorded in reports/summary/week3/smlprec_expedia_run.json). Weights are unchanged.
+  (path recorded in results/week3_implementation/smlprec_expedia_run.json). Weights are unchanged.
 - p_prior: destination cluster counts smoothed toward the destination's market,
   p = (n_dest,k + m * p_market,k) / (n_dest + m) with m = 5; unseen destination -> global
   distribution. Market = modal hotel_market of that destination in the prior data, never the
@@ -31,7 +31,7 @@ Needs data/interim/recbole/expedia_dest/expedia_dest.inter (scripts/expedia_to_r
 
 Usage (smlp4rec venv, Python 3.11):
     C:/Users/quoca/.venvs/smlp4rec/Scripts/python.exe scripts/late_fusion_destination_prior.py
-Output: reports/summary/week3/smlprec_expedia_late_fusion.json
+Output: results/week3_implementation/smlprec_expedia_late_fusion.json
 """
 
 import functools

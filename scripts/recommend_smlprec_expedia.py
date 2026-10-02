@@ -9,7 +9,7 @@ party), and cluster ids are anonymous (no hotel names). Week-3 checkpoint, 3 epo
 Usage (smlp4rec venv, Python 3.11):
     python scripts/recommend_smlprec_expedia.py --user-id 12
     python scripts/recommend_smlprec_expedia.py --history 12,45,45,3 --top-k 10
-Options: --checkpoint PATH (default: the one recorded in reports/summary/week3/smlprec_expedia_run.json)
+Options: --checkpoint PATH (default: the one recorded in results/week3_implementation/smlprec_expedia_run.json)
 """
 
 import argparse
@@ -32,7 +32,7 @@ from recbole.utils import init_seed
 
 from src.models.smlprec import SMLPREC
 
-RESULT = ROOT / "reports" / "summary" / "week3" / "smlprec_expedia_run.json"
+RESULT = ROOT / "results" / "week3_implementation" / "smlprec_expedia_run.json"
 INTER = ROOT / "data" / "interim" / "recbole" / "expedia" / "expedia.inter"
 
 

@@ -2,7 +2,7 @@
 
 Reads only the persisted Phase-1 profiling outputs in reports/summary/ so the
 figures cannot drift from the numbers quoted in the report text. Emits one PNG
-set per language into reports/figures/<lang>/.
+set per language into results/figures/<lang>/.
 
 Usage:
     python scripts/methodology_figures.py
@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
-SUMMARY = ROOT / "reports" / "summary"
-OUTROOT = ROOT / "reports" / "figures"
+SUMMARY = ROOT / "results" / "week1_dataset_selection"
+OUTROOT = ROOT / "results" / "figures"
 
 SURFACE = "#fcfcfb"
 INK = "#0b0b0b"

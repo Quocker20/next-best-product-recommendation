@@ -9,10 +9,10 @@ A second light pass over `train.csv` adds min/max (numeric + date columns) and
 the distinct-value counts the first EDA pass skipped.
 
 Input:  data/raw/hospitality/expedia/train.csv (read-only)
-        reports/summary/expedia_field_table.csv (from expedia_eda_detail.py)
-Output: reports/summary/expedia_schema_table.csv
-        reports/summary/expedia_schema_table.json
-        reports/summary/expedia_schema_table.md (paste-ready table)
+        results/week1_dataset_selection/expedia_field_table.csv (from expedia_eda_detail.py)
+Output: results/week1_dataset_selection/expedia_schema_table.csv
+        results/week1_dataset_selection/expedia_schema_table.json
+        results/week1_dataset_selection/expedia_schema_table.md (paste-ready table)
 
 Usage:
     .venv/Scripts/python.exe scripts/expedia_schema_table.py
@@ -28,7 +28,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
-OUT_DIR = ROOT / "reports" / "summary"
+OUT_DIR = ROOT / "results" / "week1_dataset_selection"
 CHUNKSIZE = 2_000_000
 
 NUMERIC_COLS = [

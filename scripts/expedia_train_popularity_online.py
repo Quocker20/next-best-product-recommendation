@@ -20,7 +20,7 @@ Rank of the true cluster among 100 = 1 + #clusters with a strictly higher score 
 (average rank over ties, so an empty prior gives 50.5, not 1).
 
 Usage: python scripts/expedia_train_popularity_online.py
-Output: reports/summary/week2_methodology/expedia_train_popularity_online.json
+Output: results/week2_methodology/expedia_train_popularity_online.json
 """
 
 import json
@@ -33,8 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
 OUT = (
     ROOT
-    / "reports"
-    / "summary"
+    / "results"
     / "week2_methodology"
     / "expedia_train_popularity_online.json"
 )
