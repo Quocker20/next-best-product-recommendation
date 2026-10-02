@@ -218,6 +218,7 @@ EX3 = 0.7**1
 FKEY = f"fusion_global_w={LFB}"
 FUS_TEST = LF["variants"]["test"][FKEY]
 COLD_T = LF["cold_users_prior_only"]["test"]["prior_only"]
+COLD_NDCG5 = HA["cold rows only: prior"]["ndcg@5"]
 COLD_SHARE = HY["cold_rows"]["test"] / (HY["cold_rows"]["test"] + HY["rows"]["test"])
 TT = TB["test"]
 RATIO = T["recall@5"] / POP["recall@5"]
@@ -348,7 +349,7 @@ slide(
   <div class="panel side">
     <div class="th-card"><div class="lbl">SMLP4Rec plain, test</div><div class="val">Recall@5 {
         pct(T["recall@5"])
-    }</div><p>NDCG@10 {dec(T["ndcg@10"])}</p></div>
+    }</div><p>NDCG@5 {dec(T["ndcg@5"])} · NDCG@10 {dec(T["ndcg@10"])}</p></div>
     <div class="th-card"><div class="lbl">Recall@5 qua 3 epoch</div><div class="val">{
         pct(PE[0]["test"]["recall@5"])
     } → {pct(PE[-1]["test"]["recall@5"])}</div><p>thêm epoch gần như không giúp ({
@@ -409,10 +410,10 @@ slide(
   <div class="panel grow"><div class="ph">Recall@5 theo w (w = 0 là plain)</div>
     {line_chart([w.replace(".", ",") for w in wgrid], [("Valid", [LF["sweep"]["valid"][w]["all"]["recall@5"] for w in wgrid], BLUE), ("Test", [LF["sweep"]["test"][w]["all"]["recall@5"] for w in wgrid], TEAL)], 0.30, 0.65)}</div>
   <div class="panel side2">
-    {table(["Test", "Recall@5", "Recall@10", "NDCG@10"], [["Plain", pct(HW[K_PLAIN]["all"]["recall@5"]), pct(HW[K_PLAIN]["all"]["recall@10"]), dec(HW[K_PLAIN]["all"]["ndcg@10"])], ["Prior một mình", pct(HW[K_PRIOR]["all"]["recall@5"]), pct(HW[K_PRIOR]["all"]["recall@10"]), dec(HW[K_PRIOR]["all"]["ndcg@10"])], [f"SMLP4Rec + prior (w = {dec(LFB, 1)})", pct(HW[K_FUSION]["all"]["recall@5"]), pct(HW[K_FUSION]["all"]["recall@10"]), dec(HW[K_FUSION]["all"]["ndcg@10"])]], hl=(2,))}
+    {table(["Test", "Recall@5", "NDCG@5"], [[name, pct(HW[k]["all"]["recall@5"]), dec(HW[k]["all"]["ndcg@5"])] for name, k in (("Plain", K_PLAIN), ("Prior một mình", K_PRIOR), (f"SMLP4Rec + prior (w = {dec(LFB, 1)})", K_FUSION))], hl=(2,))}
   </div>
 </div>
-<div class="note">Rút ra: prior là đòn bẩy lớn nhất ({pp(HW[K_FUSION]["all"]["recall@5"] - HW[K_PLAIN]["all"]["recall@5"], 1)} Recall@5), chủ yếu ở cụm mới ({pct(HW[K_PLAIN]["new_target_rows"]["recall@5"], 0)} → {pct(FUS_TEST["new_target_rows"]["recall@5"], 0)}). Người dùng mới ({pct(COLD_SHARE, 0)} sự kiện test) chỉ dùng prior: Recall@5 {pct(COLD_T["recall@5"], 1)}.</div>""",
+<div class="note">Rút ra: prior là đòn bẩy lớn nhất ({pp(HW[K_FUSION]["all"]["recall@5"] - HW[K_PLAIN]["all"]["recall@5"], 1)} Recall@5; NDCG@5 {dec(HW[K_PLAIN]["all"]["ndcg@5"])} → {dec(HW[K_FUSION]["all"]["ndcg@5"])}), chủ yếu ở cụm mới ({pct(HW[K_PLAIN]["new_target_rows"]["recall@5"], 0)} → {pct(FUS_TEST["new_target_rows"]["recall@5"], 0)}). Người dùng mới ({pct(COLD_SHARE, 0)} sự kiện test) chỉ dùng prior: Recall@5 {pct(COLD_T["recall@5"], 1)}, NDCG@5 {dec(COLD_NDCG5)}.</div>""",
     sub="Giả thuyết: điểm đến đang tìm quyết định cụm được đặt. Không huấn luyện lại; w chọn trên valid",
 )
 
@@ -425,14 +426,16 @@ slide(
     }; đặt ở điểm đến khác → 0.</p>
 {
         table(
-            ["Cách (test)", "Recall@5", "Recall@10", "NDCG@10", "Recall@5, gồm người dùng mới"],
+            ["Cách (test)", "Recall@5", "NDCG@5", "Recall@10", "NDCG@10", "R@5 gồm người dùng mới", "NDCG@5 gồm người dùng mới"],
             [
                 [
                     name,
                     pct(HW[k]["all"]["recall@5"]),
+                    dec(HW[k]["all"]["ndcg@5"]),
                     pct(HW[k]["all"]["recall@10"]),
                     dec(HW[k]["all"]["ndcg@10"]),
                     pct(HA[k]["recall@5"]),
+                    dec(HA[k]["ndcg@5"]),
                 ]
                 for name, k in (
                     ("1. Plain SMLP4Rec", K_PLAIN),
@@ -458,7 +461,7 @@ slide(
     "Kết luận",
     f"""<div class="grid3">
   <div class="card good"><h3>Đã làm</h3><p>Chạy SMLP4Rec gốc trên Expedia (plain), rút ra điểm yếu, thử hai hướng: chỉnh top 5 và thêm thông tin điểm đến.</p></div>
-  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: Recall@5 {pct(HW[K_PLAIN]["all"]["recall@5"], 0)} → {pct(HW[K_HYBRID]["all"]["recall@5"], 0)}.</p></div>
+  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: Recall@5 {pct(HW[K_PLAIN]["all"]["recall@5"], 0)} → {pct(HW[K_HYBRID]["all"]["recall@5"], 0)}, NDCG@5 {dec(HW[K_PLAIN]["all"]["ndcg@5"], 2)} → {dec(HW[K_HYBRID]["all"]["ndcg@5"], 2)}.</p></div>
   <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh, w<sub>s</sub> ở mép lưới, chưa so với mô hình đếm lịch sử. Tiếp: đưa điểm đến vào trong mô hình, chạy lại trên chia theo sự kiện (gồm người dùng mới).</p></div>
 </div>
 <div class="note">Quyết định: SMLP4Rec + prior điểm đến + sameDest, trọng số theo nhóm số booking trước đó.</div>""",

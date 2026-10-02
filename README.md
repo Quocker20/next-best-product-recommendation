@@ -13,7 +13,7 @@ Dự án nghiên cứu và benchmark các họ mô hình Next-Best-Product Recom
 | Thư mục | Chứa gì | Không chứa |
 |---|---|---|
 | `docs/` | Tài liệu tham chiếu không gắn tuần: data card, rubric, checklist, protocol, đề bài; `plans/` cho kế hoạch theo ngày, `explainers/` cho giải thích kỹ thuật | Kết quả chạy, báo cáo tuần |
-| `reports/summary/<tuần>/` | **Chỉ báo cáo và slide** giao cho người đọc: docx, pdf, slide html, báo cáo md | json, csv, log, hình sinh tự động |
+| `reports/summary/<tuần>/` | **Chỉ báo cáo và slide** giao cho người đọc: docx, pdf, slide html, báo cáo md | json, csv, log, hình sinh tự động, **README.md (không bao giờ thêm)** |
 | `results/<tuần>/` | **Output tính toán của script** (được commit): json, csv, log, bảng sinh tự động; `results/figures/{en,vi}` cho hình sinh tự động | Báo cáo viết tay, checkpoint |
 | `experiments/` | Output lần chạy huấn luyện (config, metrics, log, checkpoint) | Code (gitignored) |
 | `scripts/` | Script phân tích, chạy thử, sinh báo cáo/slide | Output |
@@ -42,7 +42,7 @@ next-best-product-recommendation/
 ├── reports/summary/           # chỉ báo cáo + slide
 │   ├── week1_dataset_selection/   # eda_summary.md, week1_review_additions.md, week1_report_v3.html
 │   ├── week2_methodology/         # methodology_selection_report.docx, methodology_slides.html/.pdf
-│   └── week3_implementation/      # README.md, week3_report_slides.html/.pdf
+│   └── week3_implementation/      # week3_report_slides.html/.pdf
 ├── results/                   # output của script (json, csv, log, hình)
 │   ├── figures/{en,vi}/
 │   ├── week1_dataset_selection/
