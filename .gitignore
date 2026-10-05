@@ -68,3 +68,7 @@ experiments/*
 
 # CodeGraph index
 .codegraph/
+
+# superseded week-3 v1 deck (local copy only)
+reports/summary/week3_implementation/week3_report_slides.html
+reports/summary/week3_implementation/week3_report_slides.pdf
