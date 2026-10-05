@@ -38,7 +38,7 @@ next-best-product-recommendation/
 ├── docs_vi/                   # bản tiếng Việt của docs/ (local, gitignore)
 ├── notebooks/
 │   ├── <domain>/<dataset>_eda.ipynb
-│   └── hospitality/smlp4rec/  # 01 train+test, 02 luật top-5, 03 prior + hybrid
+│   └── hospitality/smlp4rec/  # 01 train+test, 02 luật top-5, 03 prior, 04 hybrid sameDest, 05 tách theo thói quen
 ├── reports/summary/           # chỉ báo cáo + slide
 │   ├── week1_dataset_selection/   # eda_summary.md, week1_review_additions.md, week1_report_v3.html
 │   ├── week2_methodology/         # methodology_selection_report.docx, methodology_slides.html/.pdf

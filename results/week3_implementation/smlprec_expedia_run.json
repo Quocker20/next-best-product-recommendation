@@ -195,14 +195,22 @@
   },
   "heuristics_same_test_rows": {
     "global_popularity": {
+      "n": 218670,
       "recall@5": 0.1478,
       "recall@10": 0.2476,
-      "recall@20": 0.3925
+      "recall@20": 0.3925,
+      "ndcg@5": 0.0938,
+      "ndcg@10": 0.1256,
+      "ndcg@20": 0.1619
     },
     "repeat_last_then_popularity": {
+      "n": 218670,
       "recall@5": 0.257,
       "recall@10": 0.3439,
-      "recall@20": 0.4762
+      "recall@20": 0.4762,
+      "ndcg@5": 0.2031,
+      "ndcg@10": 0.2309,
+      "ndcg@20": 0.2641
     }
   },
   "top5_behavior": {

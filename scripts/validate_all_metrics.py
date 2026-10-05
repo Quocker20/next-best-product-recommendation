@@ -4,7 +4,7 @@ This script manually loads the checkpoints, datasets, and decision rules for:
 1. Plain SMLP4Rec (master)
 2. Fixed Quota 2past-3novel (exp/fixed-quota-2past-3novel)
 3. Dynamic Cap L<5 vs L>=5 (exp/dynamic-past-cap-by-history-length)
-And verifies the mathematical consistency and data integrity of Late Fusion and Hybrid sameDest.
+And prints the reported Late Fusion (SMLP4Rec + prior) and sameDest hybrid summaries next to them.
 """
 
 import functools
@@ -318,20 +318,14 @@ def run_manual_validation():
     print("  Late fusion best global weight on valid: w = 1.5")
     lf_test = lf_info["variants"]["test"]["fusion_global_w=1.5"]["all"]
     print(
-        f"  Fusion test: Recall@5={lf_test['recall@5']}, Recall@10={lf_test['recall@10']}, NDCG@10={lf_test['ndcg@10']}, MAP@5={lf_test['map@5']}"
+        f"  Fusion test: Recall@5={lf_test['recall@5']}, Recall@10={lf_test['recall@10']}, NDCG@5={lf_test['ndcg@5']}, NDCG@10={lf_test['ndcg@10']}"
     )
 
-    hy_warm = hy_info["warm"]["test"]
-    print("  Hybrid summary comparison on test (warm rows = 218,670):")
-    for name, key in [
-        ("1. Plain SMLP4Rec", "1. plain SMLP4Rec"),
-        ("2. Regional prior only", "2. regional prior only"),
-        ("3. SMLP4Rec + prior", "3. SMLP4Rec + prior (w_p)"),
-        ("4. Hybrid (+ sameDest)", "4. hybrid: + sameDest (per bucket, by Recall@5)"),
-    ]:
-        m = hy_warm[key]["all"]
+    hy_warm = hy_info["benchmark"]["test"]["warm"]
+    print("  Hybrid summary on test (warm rows = 218,670):")
+    for name, m in hy_warm.items():
         print(
-            f"    {name:25s}: Recall@5={m['recall@5']:.4f} | Recall@10={m['recall@10']:.4f} | NDCG@10={m['ndcg@10']:.4f} | MAP@5={m['map@5']:.4f}"
+            f"    {name:45s}: Recall@5={m['recall@5']:.4f} | NDCG@5={m['ndcg@5']:.4f} | Recall@10={m['recall@10']:.4f} | NDCG@10={m['ndcg@10']:.4f}"
         )
 
     print("\nALL RE-COMPUTED VALUES MATCH THE REPORTED METRICS EXACTLY TO 4 DECIMAL PLACES!")

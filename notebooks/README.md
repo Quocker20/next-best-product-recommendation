@@ -8,4 +8,6 @@ Run in order with the `smlp4rec` kernel (Python 3.11 venv with RecBole 1.0.1). E
 
 1. `01_train_test_smlp4rec.ipynb` — explicit training loop, per-epoch valid/test, best epoch, heuristics.
 2. `02_top5_rerank_rules.ipynb` — past/novel rules on the top 5 (fixed quota, L-dependent cap).
-3. `03_destination_prior_hybrid.ipynb` — destination prior, late fusion, cold users, sameDest hybrid, bootstrap.
+3. `03_destination_prior.ipynb` — destination prior, late fusion, cold users, bootstrap.
+4. `04_samedest_hybrid.ipynb` — SMLP4Rec + prior + sameDest hybrid, weights and cohorts chosen on valid (current best).
+5. `05_behaviour_split.ipynb` — behaviour split of the hybrid weights (not adopted).

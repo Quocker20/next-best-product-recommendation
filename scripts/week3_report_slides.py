@@ -5,13 +5,17 @@ Sections: (1) design recap from week 2 (SMLP4Rec architecture + hybrid flow slid
 experiments and their findings, (5) conclusion. CSS, JS and the architecture diagram are read
 from scripts/week2_methodology_slides.py so the style stays identical.
 
-Every number on the slides is read from persisted outputs in reports/summary/week3_implementation/:
+Experiment chain: plain -> top-5 rules (dropped) -> + destination prior -> + sameDest (hybrid)
+-> behaviour split of the hybrid weights.
+
+Every number on the slides is read from persisted outputs in results/week3_implementation/:
 smlprec_expedia_run.json (plain run), smlprec_expedia_mixed_run.json (fixed quota),
 smlprec_expedia_dynamic_cap_run.json (dynamic cap), smlprec_expedia_late_fusion.json (prior
-fusion + cold users), smlprec_expedia_hybrid_samedest.json (hybrid with sameDest + bootstrap).
+fusion + cold users, notebook 03), smlprec_expedia_hybrid_samedest.json (hybrid with sameDest,
+notebook 04), smlprec_expedia_hybrid_behaviour_split.json (behaviour split, notebook 05).
 
 Usage: python scripts/week3_report_slides.py
-Output: reports/summary/week3_implementation/week3_report_slides.html (PDF: print with headless Chrome)
+Output: reports/summary/week3_implementation/week3_report_slides_v2.html (PDF: print with headless Chrome)
 """
 
 import datetime as dt
@@ -21,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 W3 = ROOT / "results" / "week3_implementation"
-OUT = ROOT / "reports" / "summary" / "week3_implementation" / "week3_report_slides.html"
+OUT = ROOT / "reports" / "summary" / "week3_implementation" / "week3_report_slides_v2.html"
 WEEK2 = (ROOT / "scripts" / "week2_methodology_slides.py").read_text(encoding="utf-8")
 
 
@@ -34,6 +38,7 @@ MIX = load("smlprec_expedia_mixed_run.json")
 CAP = load("smlprec_expedia_dynamic_cap_run.json")
 LF = load("smlprec_expedia_late_fusion.json")
 HY = load("smlprec_expedia_hybrid_samedest.json")
+BS = load("smlprec_expedia_hybrid_behaviour_split.json")
 
 # ---- style, JS and the architecture diagram come from the week-2 generator
 CSS = re.search(r'\nCSS = """(.*?)"""', WEEK2, re.DOTALL).group(1)
@@ -110,7 +115,7 @@ def table(head, rows, hl=(), cls="dense", right_from=1) -> str:
     return f'<table class="tbl {cls}"><tr>{th}</tr>{trs}</table>'
 
 
-def grouped_bars(series, groups, ymax=0.7, w=640, h=300) -> str:
+def grouped_bars(series, groups, ymax=0.7, w=640, h=300, as_pct=True) -> str:
     """series: [(label, values, color)], groups: category labels (inline SVG)."""
     top, bottom, left = 24, 30, 6
     ph, gw = h - top - bottom, (w - left) / len(groups)
@@ -120,7 +125,7 @@ def grouped_bars(series, groups, ymax=0.7, w=640, h=300) -> str:
         y = top + ph * (1 - g / ymax)
         out.append(f'<line x1="{left}" x2="{w}" y1="{y:.1f}" y2="{y:.1f}" stroke="#e2e8f0"/>')
         out.append(
-            f'<text x="{left}" y="{y - 4:.1f}" font-size="11" fill="#94a3b8">{int(g * 100)}%</text>'
+            f'<text x="{left}" y="{y - 4:.1f}" font-size="11" fill="#94a3b8">{f"{int(g * 100)}%" if as_pct else dec(g, 1)}</text>'
         )
     for gi, g in enumerate(groups):
         x0 = left + gi * gw + gw * 0.14
@@ -132,7 +137,7 @@ def grouped_bars(series, groups, ymax=0.7, w=640, h=300) -> str:
             out.append(
                 f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="4" fill="{col}"/>'
             )
-            out.append(f'<text x="{x + bw / 2:.1f}" y="{y - 5:.1f}" class="cv">{pct(v, 1)}</text>')
+            out.append(f'<text x="{x + bw / 2:.1f}" y="{y - 5:.1f}" class="cv">{pct(v, 1) if as_pct else dec(v, 3)}</text>')
         out.append(
             f'<text x="{x0 + (len(series) * bw + 6 * (len(series) - 1)) / 2:.1f}" y="{h - 8}" class="cl">{g}</text>'
         )
@@ -141,7 +146,7 @@ def grouped_bars(series, groups, ymax=0.7, w=640, h=300) -> str:
     return "".join(out) + f'<div class="legend">{legend}</div>'
 
 
-def line_chart(xs, series, ymin, ymax, w=640, h=300) -> str:
+def line_chart(xs, series, ymin, ymax, w=640, h=300, as_pct=True) -> str:
     """Categorical x axis. series: [(label, values, color)]."""
     left, right, top, bottom = 44, 14, 20, 34
     pw, ph = w - left - right, h - top - bottom
@@ -161,7 +166,7 @@ def line_chart(xs, series, ymin, ymax, w=640, h=300) -> str:
             f'<line x1="{left}" x2="{w - right}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" stroke="#e2e8f0"/>'
         )
         out.append(
-            f'<text x="{left - 6}" y="{Y(v) + 4:.1f}" font-size="11" fill="#94a3b8" text-anchor="end">{round(v * 100)}%</text>'
+            f'<text x="{left - 6}" y="{Y(v) + 4:.1f}" font-size="11" fill="#94a3b8" text-anchor="end">{f"{round(v * 100)}%" if as_pct else dec(v, 2)}</text>'
         )
     for i, xv in enumerate(xs):
         out.append(f'<text x="{X(i):.1f}" y="{h - 10}" class="cl">{xv}</text>')
@@ -172,7 +177,7 @@ def line_chart(xs, series, ymin, ymax, w=640, h=300) -> str:
             out.append(f'<circle cx="{X(i):.1f}" cy="{Y(v):.1f}" r="3.5" fill="{col}"/>')
         bi = max(range(len(vals)), key=lambda k: vals[k])
         out.append(
-            f'<text x="{X(bi):.1f}" y="{Y(vals[bi]) - 9:.1f}" class="cv">{pct(vals[bi], 1)}</text>'
+            f'<text x="{X(bi):.1f}" y="{Y(vals[bi]) - 9:.1f}" class="cv">{pct(vals[bi], 1) if as_pct else dec(vals[bi], 3)}</text>'
         )
     out.append("</svg>")
     legend = "".join(f'<span class="lg" style="--c:{c}">{n}</span>' for n, _, c in series)
@@ -195,33 +200,44 @@ MIXT = {k: MIX["final_test_at_best_mixed_epoch"][k] for k in ("plain", "mixed")}
 CAPT = {k: CAP["final_test_at_best_capped_epoch"][k] for k in ("plain", "capped")}
 TB = RUN["top5_behavior"]
 MX = RUN["target_mix"]
-HW = HY["warm"]["test"]
-HA = HY["all_events"]["test"]
-K_PLAIN, K_PRIOR, K_FUSION = (
-    "1. plain SMLP4Rec",
-    "2. regional prior only",
-    "3. SMLP4Rec + prior (w_p)",
-)
-K_HYBRID = "4. hybrid: + sameDest (per bucket, by Recall@5)"
-CW = HY["chosen_weights_on_valid"]["hybrid_per_bucket"]
 LFB = LF["best_global_w_on_valid"]
-EX_LIST = [
-    0.7**2 + 1.0,
-    0.7,
-]  # worked sameDest example below: cluster 12 (ages 3,0 -> 0.343 + 1) and cluster 3 (age 1)
-EX12 = 0.7**3 + 0.7**0
-EX3 = 0.7**1
+FKEY = f"fusion_global_w={LFB}"
+# warm test rows (users with history): plain / prior alone / SMLP4Rec + prior from notebook 03
+LV = LF["variants"]["test"]
+LC = LF["combined_warm_plus_cold"]["test"]
+K_PLAIN, K_PRIOR, K_FUSION = "plain_model (w=0)", "destination_prior_only", FKEY
+WARM = {k: LV[k]["all"] for k in (K_PLAIN, K_PRIOR, K_FUSION)}
+ALLEV = {
+    K_PLAIN: LC["plain SMLP4Rec on warm + global popularity on cold"],
+    K_PRIOR: LC["prior-only for everyone"],
+    K_FUSION: LC["hybrid: fusion on warm + prior-only on cold"],
+}
+# hybrid with sameDest from notebook 04
+K_HYBRID = "SMLP4Rec + prior + sameDest (this notebook)"
+WARM[K_HYBRID] = HY["benchmark"]["test"]["warm"][K_HYBRID]
+ALLEV[K_HYBRID] = HY["benchmark"]["test"]["all_events"][K_HYBRID]
+HB = HY["bootstrap_test_95ci"]["hybrid minus SMLP4Rec + prior"]["warm"]
+HW_CELLS = HY["cohorts"]["final_weights_per_cell"]  # "0" = destination new to the user, "1" = known
+H_ALPHA = HY["selection"]["one_se_pick"][0]
+H_SLICE = HY["test_slices_recall@5_ndcg@5"]
+H_REF = next(k for k in HY["benchmark"]["test"]["warm"] if k != K_HYBRID)
+EX12 = 0.7**3 + 0.7**0  # worked sameDest example: cluster 12 booked at the destination at ages 0 and 3
+# behaviour split from notebook 05
+BW, BA = BS["benchmark_test"]["warm"], BS["benchmark_test"]["all_events"]
+BB = BS["bootstrap_test_95ci"]["best behaviour scheme minus reference"]["warm"]
+B_CUT = BS["cut"]["chosen_on_train"]
+B_BEST = BS["best_behaviour_scheme"]
+B_CELLS = BS["final_weights_per_cell"]
 
 # ================================================================== slides
 # Flow: lý thuyết -> chạy plain -> rút ra gì -> thử nghiệm theo hướng nào -> kết luận.
-# Only Recall@K and NDCG@K are reported (CLAUDE.md section 8, decision 2026-10-02).
-FKEY = f"fusion_global_w={LFB}"
-FUS_TEST = LF["variants"]["test"][FKEY]
+# Only Recall@K and NDCG@K are reported (CLAUDE.md section 8, decision 2026-10-02); NDCG leads (user preference 2026-10-05).
+FUS_TEST = LV[FKEY]
 COLD_T = LF["cold_users_prior_only"]["test"]["prior_only"]
-COLD_NDCG5 = HA["cold rows only: prior"]["ndcg@5"]
-COLD_SHARE = HY["cold_rows"]["test"] / (HY["cold_rows"]["test"] + HY["rows"]["test"])
+COLD_NDCG5 = COLD_T["ndcg@5"]
+COLD_SHARE = LC["cold_share_of_events"]
 TT = TB["test"]
-RATIO = T["recall@5"] / POP["recall@5"]
+RATIO = T["ndcg@5"] / POP["ndcg@5"]
 mp, mm = MIXT["plain"], MIXT["mixed"]
 cp, cc = CAPT["plain"], CAPT["capped"]
 exch_fixed = (mp["old_target_hit_of_all_rows"] - mm["old_target_hit_of_all_rows"]) / (
@@ -332,28 +348,29 @@ slide(
     "3 · Chạy plain",
     "Chạy plain: chỉ dùng lịch sử booking",
     f"""<div class="row">
-  <div class="panel grow"><div class="ph">Recall@K, tập test, xếp hạng đầy đủ 100 cụm</div>
+  <div class="panel grow"><div class="ph">NDCG@K, tập test, xếp hạng đầy đủ 100 cụm</div>
     {
         grouped_bars(
             [
-                ("Popularity toàn cục", [POP[f"recall@{k}"] for k in (5, 10, 20)], GRAY),
+                ("Popularity toàn cục", [POP[f"ndcg@{k}"] for k in (5, 10, 20)], GRAY),
                 (
                     f"SMLP4Rec plain (epoch {RUN['best_epoch_by_valid']})",
-                    [T[f"recall@{k}"] for k in (5, 10, 20)],
+                    [T[f"ndcg@{k}"] for k in (5, 10, 20)],
                     BLUE,
                 ),
             ],
-            ["Recall@5", "Recall@10", "Recall@20"],
+            ["NDCG@5", "NDCG@10", "NDCG@20"],
+            as_pct=False,
         )
     }</div>
   <div class="panel side">
-    <div class="th-card"><div class="lbl">SMLP4Rec plain, test</div><div class="val">Recall@5 {
-        pct(T["recall@5"])
-    }</div><p>NDCG@5 {dec(T["ndcg@5"])} · NDCG@10 {dec(T["ndcg@10"])}</p></div>
-    <div class="th-card"><div class="lbl">Recall@5 qua 3 epoch</div><div class="val">{
-        pct(PE[0]["test"]["recall@5"])
-    } → {pct(PE[-1]["test"]["recall@5"])}</div><p>thêm epoch gần như không giúp ({
-        pp(PE[-1]["test"]["recall@5"] - PE[0]["test"]["recall@5"])
+    <div class="th-card"><div class="lbl">SMLP4Rec plain, test</div><div class="val">NDCG@5 {
+        dec(T["ndcg@5"])
+    }</div><p>Recall@5 {pct(T["recall@5"])} · NDCG@10 {dec(T["ndcg@10"])}</p></div>
+    <div class="th-card"><div class="lbl">NDCG@5 qua 3 epoch</div><div class="val">{
+        dec(PE[0]["test"]["ndcg@5"])
+    } → {dec(PE[-1]["test"]["ndcg@5"])}</div><p>thêm epoch gần như không giúp ({
+        pp(PE[-1]["test"]["ndcg@5"] - PE[0]["test"]["ndcg@5"])
     })</p></div>
   </div>
 </div>
@@ -384,14 +401,14 @@ slide(
     "4 · Thử nghiệm",
     "Hướng A: ép tỉ lệ cụm cũ / cụm mới trong top 5",
     table(
-        ["Cách", "Recall@5", "NDCG@5", "Cụm cũ trúng", "Cụm mới trúng"],
+        ["Cách", "NDCG@5", "Recall@5", "Cụm cũ trúng", "Cụm mới trúng"],
         [
-            ["Plain: 5 điểm cao nhất", pct(mp["recall@5"]), dec(mp["ndcg@5"]), *hits(mp)],
-            ["Cố định 2 cũ + 3 mới", pct(mm["recall@5"]), dec(mm["ndcg@5"]), *hits(mm)],
+            ["Plain: 5 điểm cao nhất", dec(mp["ndcg@5"]), pct(mp["recall@5"]), *hits(mp)],
+            ["Cố định 2 cũ + 3 mới", dec(mm["ndcg@5"]), pct(mm["recall@5"]), *hits(mm)],
             [
                 "Tối đa 1 cũ nếu L &lt; 5, 2 nếu L ≥ 5",
-                pct(cc["recall@5"]),
                 dec(cc["ndcg@5"]),
+                pct(cc["recall@5"]),
                 *hits(cc),
             ],
         ],
@@ -407,35 +424,49 @@ slide(
     "Hướng B1: thêm prior điểm đến",
     f"""<div class="eq">điểm = log p<sub>SMLP4Rec</sub> + w · log p<sub>prior</sub>(cụm | điểm đến)</div>
 <div class="row">
-  <div class="panel grow"><div class="ph">Recall@5 theo w (w = 0 là plain)</div>
-    {line_chart([w.replace(".", ",") for w in wgrid], [("Valid", [LF["sweep"]["valid"][w]["all"]["recall@5"] for w in wgrid], BLUE), ("Test", [LF["sweep"]["test"][w]["all"]["recall@5"] for w in wgrid], TEAL)], 0.30, 0.65)}</div>
+  <div class="panel grow"><div class="ph">NDCG@5 theo w (w = 0 là plain)</div>
+    {line_chart([w.replace(".", ",") for w in wgrid], [("Valid", [LF["sweep"]["valid"][w]["all"]["ndcg@5"] for w in wgrid], BLUE), ("Test", [LF["sweep"]["test"][w]["all"]["ndcg@5"] for w in wgrid], TEAL)], 0.20, 0.50, as_pct=False)}</div>
   <div class="panel side2">
-    {table(["Test", "Recall@5", "NDCG@5"], [[name, pct(HW[k]["all"]["recall@5"]), dec(HW[k]["all"]["ndcg@5"])] for name, k in (("Plain", K_PLAIN), ("Prior một mình", K_PRIOR), (f"SMLP4Rec + prior (w = {dec(LFB, 1)})", K_FUSION))], hl=(2,))}
+    {table(["Test", "NDCG@5", "Recall@5"], [[name, dec(WARM[k]["ndcg@5"]), pct(WARM[k]["recall@5"])] for name, k in (("Plain", K_PLAIN), ("Prior một mình", K_PRIOR), (f"SMLP4Rec + prior (w = {dec(LFB, 1)})", K_FUSION))], hl=(2,))}
   </div>
 </div>
-<div class="note">Rút ra: prior là đòn bẩy lớn nhất ({pp(HW[K_FUSION]["all"]["recall@5"] - HW[K_PLAIN]["all"]["recall@5"], 1)} Recall@5; NDCG@5 {dec(HW[K_PLAIN]["all"]["ndcg@5"])} → {dec(HW[K_FUSION]["all"]["ndcg@5"])}), chủ yếu ở cụm mới ({pct(HW[K_PLAIN]["new_target_rows"]["recall@5"], 0)} → {pct(FUS_TEST["new_target_rows"]["recall@5"], 0)}). Người dùng mới ({pct(COLD_SHARE, 0)} sự kiện test) chỉ dùng prior: Recall@5 {pct(COLD_T["recall@5"], 1)}, NDCG@5 {dec(COLD_NDCG5)}.</div>""",
+<div class="note">Rút ra: prior là đòn bẩy lớn nhất (NDCG@5 {dec(WARM[K_PLAIN]["ndcg@5"])} → {dec(WARM[K_FUSION]["ndcg@5"])}; {pp(WARM[K_FUSION]["recall@5"] - WARM[K_PLAIN]["recall@5"], 1)} Recall@5), chủ yếu ở cụm mới (NDCG@5 {dec(LV[K_PLAIN]["new_target_rows"]["ndcg@5"], 3)} → {dec(FUS_TEST["new_target_rows"]["ndcg@5"], 3)}; Recall@5 {pct(LV[K_PLAIN]["new_target_rows"]["recall@5"], 0)} → {pct(FUS_TEST["new_target_rows"]["recall@5"], 0)}). Người dùng mới ({pct(COLD_SHARE, 0)} sự kiện test) chỉ dùng prior: NDCG@5 {dec(COLD_NDCG5)}, Recall@5 {pct(COLD_T["recall@5"], 1)}.</div>""",
     sub="Giả thuyết: điểm đến đang tìm quyết định cụm được đặt. Không huấn luyện lại; w chọn trên valid",
 )
+
+def slice_pair(name: str, key: str) -> tuple:
+    r, n = H_SLICE[name][key].split(" / ")
+    return float(r), float(n)
+
+
+def ci(d: dict, m: str) -> str:
+    lo, hi = d[m]["ci95"]
+    return f"{pp(d[m]['diff'])} [{dec(lo * 100, 2)}; {dec(hi * 100, 2)}]"
+
+
+KD_REF, KD_HYB = slice_pair("known destination", H_REF), slice_pair("known destination", K_HYBRID)
+ND_REF, ND_HYB = slice_pair("new destination", H_REF), slice_pair("new destination", K_HYBRID)
+W_NEW, W_KNOWN = HW_CELLS["0"], HW_CELLS["1"]
 
 slide(
     "4 · Thử nghiệm",
     "Hướng B2: thêm sameDest, hybrid ba tín hiệu",
-    f"""<div class="eq">điểm = log p<sub>SMLP4Rec</sub> + w<sub>p</sub> · log p<sub>prior</sub> + w<sub>s</sub> · sameDest</div>
-<p class="muted">sameDest(cụm) = tổng 0,7<sup>tuổi</sup> các lần người dùng đặt cụm đó <b>tại đúng điểm đến đang tìm</b> (tuổi 0 = lần gần nhất). Ví dụ: cụm 12 đặt tại Cancún ở tuổi 0 và 3 → {
+    f"""<div class="eq">điểm = log q<sub>SMLP4Rec</sub> + w<sub>p</sub> · log q<sub>prior</sub> + w<sub>s</sub> · log q<sub>sameDest</sub> &nbsp;·&nbsp; log q = log((1 − α)·p + α/100)</div>
+<p class="muted">sameDest(cụm) = tổng 0,7<sup>tuổi</sup> các lần người dùng đặt cụm đó <b>tại đúng điểm đến đang tìm</b> (tuổi 0 = lần gần nhất), chia cho tổng để thành phân bố. Ví dụ: cụm 12 đặt tại Cancún ở tuổi 0 và 3 → {
         dec(EX12, 3)
-    }; đặt ở điểm đến khác → 0.</p>
+    }; đặt ở điểm đến khác → 0. Ba thành phần cùng một thang nên trọng số đọc được như mức tin cậy; chưa từng đặt tại điểm đến này → sameDest không tác động.</p>
 {
         table(
-            ["Cách (test)", "Recall@5", "NDCG@5", "Recall@10", "NDCG@10", "R@5 gồm người dùng mới", "NDCG@5 gồm người dùng mới"],
+            ["Cách (test)", "NDCG@5", "Recall@5", "NDCG@10", "Recall@10", "NDCG@5 gồm người dùng mới", "R@5 gồm người dùng mới"],
             [
                 [
                     name,
-                    pct(HW[k]["all"]["recall@5"]),
-                    dec(HW[k]["all"]["ndcg@5"]),
-                    pct(HW[k]["all"]["recall@10"]),
-                    dec(HW[k]["all"]["ndcg@10"]),
-                    pct(HA[k]["recall@5"]),
-                    dec(HA[k]["ndcg@5"]),
+                    dec(WARM[k]["ndcg@5"]),
+                    pct(WARM[k]["recall@5"]),
+                    dec(WARM[k]["ndcg@10"]),
+                    pct(WARM[k]["recall@10"]),
+                    dec(ALLEV[k]["ndcg@5"]),
+                    pct(ALLEV[k]["recall@5"]),
                 ]
                 for name, k in (
                     ("1. Plain SMLP4Rec", K_PLAIN),
@@ -447,12 +478,41 @@ slide(
             hl=(3,),
         )
     }
-<div class="note">Rút ra: hybrid cao nhất ở mọi cột. Trọng số tốt nhất: w<sub>p</sub> {
-        dec(min(v[0] for v in CW.values()), 1)
-    }–{dec(max(v[0] for v in CW.values()), 1)}, w<sub>s</sub> = {
-        dec(max(v[1] for v in CW.values()), 0)
-    } (mép lưới).</div>""",
+<div class="note">Rút ra: hybrid cao nhất ở mọi cột; so với SMLP4Rec + prior: NDCG@5 {ci(HB, "ndcg@5")}, Recall@5 {ci(HB, "recall@5")} (bootstrap 95%). Tăng ở điểm đến đã đặt (NDCG@5 {dec(KD_REF[1])} → {dec(KD_HYB[1])}; Recall@5 {pct(KD_REF[0], 1)} → {pct(KD_HYB[0], 1)}), điểm đến mới gần như giữ nguyên (NDCG@5 {dec(ND_REF[1])} → {dec(ND_HYB[1])}; Recall@5 {pct(ND_REF[0], 1)} → {pct(ND_HYB[0], 1)}). Trọng số chọn trên valid (quy tắc 1-SE), α = {dec(H_ALPHA, 1)}, 2 bộ: điểm đến mới w<sub>p</sub> {dec(W_NEW[1], 2)}; đã đặt w<sub>p</sub> {dec(W_KNOWN[1], 2)}, w<sub>s</sub> {dec(W_KNOWN[2], 2)}.</div>""",
     sub="Giả thuyết: người dùng hay đặt lại cụm đã ở tại điểm đến này. Cột cuối: người dùng mới dùng prior",
+)
+
+slide(
+    "4 · Thử nghiệm",
+    "Hướng B3: tách trọng số theo thói quen đặt lại",
+    f"""<div class="kpis three">
+  <div class="kpi"><b class="s">old_share</b><span>tỉ lệ booking trong lịch sử là <b>cụm đã đặt trước đó</b> (chỉ dùng lịch sử, không dùng mục tiêu)</span></div>
+  <div class="kpi"><b class="s">{dec(B_CUT, 2)}</b><span>ngưỡng chọn trên train: <b>thiên cũ</b> nếu old_share ≥ ngưỡng, còn lại <b>thiên mới</b>; L = 1 là nhóm riêng</span></div>
+  <div class="kpi"><b class="s">≥ 10%</b><span>mỗi bộ trọng số phải phủ ít nhất 10% dòng, không tạo nhóm nhỏ</span></div>
+</div>
+{
+        table(
+            ["Cách chia trọng số (test)", "NDCG@5", "Recall@5", "NDCG@10", "Recall@10", "NDCG@5 gồm người dùng mới", "R@5 gồm người dùng mới"],
+            [
+                [
+                    name,
+                    dec(BW[k]["ndcg@5"]),
+                    pct(BW[k]["recall@5"]),
+                    dec(BW[k]["ndcg@10"]),
+                    pct(BW[k]["recall@10"]),
+                    dec(BA[k]["ndcg@5"]),
+                    pct(BA[k]["recall@5"]),
+                ]
+                for name, k in (
+                    ("Hybrid B2: điểm đến mới / đã đặt (2 bộ)", "reference (notebook 04)"),
+                    (f"Thêm thói quen: điểm đến × thiên cũ / còn lại ({len(B_CELLS[B_BEST])} bộ)", "best behaviour scheme"),
+                )
+            ],
+            hl=(0,),
+        )
+    }
+<div class="note">Rút ra: tách theo thói quen <b>không</b> cải thiện: NDCG@5 {ci(BB, "ndcg@5")}, Recall@5 {ci(BB, "recall@5")} (bootstrap 95%); quy tắc 1-SE trên valid vẫn chọn 2 bộ của B2. Thói quen đặt lại đã nằm sẵn trong sameDest, nên không cần trọng số riêng.</div>""",
+    sub="Giả thuyết: người hay đặt lại cụm cũ cần trọng số khác người hay đặt cụm mới. Công thức B2 giữ nguyên, chỉ đổi cách chia nhóm",
 )
 
 # ---- 5. kết luận
@@ -460,11 +520,60 @@ slide(
     "5 · Kết luận",
     "Kết luận",
     f"""<div class="grid3">
-  <div class="card good"><h3>Đã làm</h3><p>Chạy SMLP4Rec gốc trên Expedia (plain), rút ra điểm yếu, thử hai hướng: chỉnh top 5 và thêm thông tin điểm đến.</p></div>
-  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: Recall@5 {pct(HW[K_PLAIN]["all"]["recall@5"], 0)} → {pct(HW[K_HYBRID]["all"]["recall@5"], 0)}, NDCG@5 {dec(HW[K_PLAIN]["all"]["ndcg@5"], 2)} → {dec(HW[K_HYBRID]["all"]["ndcg@5"], 2)}.</p></div>
-  <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh, w<sub>s</sub> ở mép lưới, chưa so với mô hình đếm lịch sử. Tiếp: đưa điểm đến vào trong mô hình, chạy lại trên chia theo sự kiện (gồm người dùng mới).</p></div>
+  <div class="card good"><h3>Đã làm</h3><p>Chạy SMLP4Rec gốc trên Expedia (plain), rút ra điểm yếu, thử hai hướng: chỉnh top 5 và thêm thông tin điểm đến (prior, rồi sameDest); cuối cùng thử tách trọng số theo thói quen.</p></div>
+  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: NDCG@5 {dec(WARM[K_PLAIN]["ndcg@5"], 2)} → {dec(WARM[K_HYBRID]["ndcg@5"], 2)}, Recall@5 {pct(WARM[K_PLAIN]["recall@5"], 0)} → {pct(WARM[K_HYBRID]["recall@5"], 0)}. Tách theo thói quen không thêm gì.</p></div>
+  <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh, chưa so với mô hình đếm lịch sử. Tiếp: đưa điểm đến vào trong mô hình, chạy lại trên chia theo sự kiện (gồm người dùng mới).</p></div>
 </div>
-<div class="note">Quyết định: SMLP4Rec + prior điểm đến + sameDest, trọng số theo nhóm số booking trước đó.</div>""",
+<div class="note">Quyết định: SMLP4Rec + prior điểm đến + sameDest, 2 bộ trọng số (điểm đến mới / đã đặt); không tách theo thói quen.</div>""",
+)
+
+
+# ---- phụ lục: lưới trọng số
+GRID = HY["selection"]["grid"]
+CELL_VI = {
+    "destination new to the user": "Điểm đến mới với người dùng",
+    "destination already in history": "Điểm đến đã đặt trước đó",
+    "new dest, rest": "Điểm đến mới · còn lại",
+    "new dest, old-leaning": "Điểm đến mới · thiên cũ",
+    "known dest, rest": "Đã đặt · còn lại",
+    "known dest, old-leaning": "Đã đặt · thiên cũ",
+}
+
+
+def gl(vals) -> str:
+    return " · ".join(dec(v, 2).rstrip("0").rstrip(",") if v % 1 else str(int(v)) for v in vals)
+
+
+def ws_cell(label: str, w: float) -> str:
+    """w_s is constant (no effect) when the query destination is new to the user."""
+    return "— (hằng số)" if "new" in label.split(",")[0].lower() or label.startswith("destination new") else dec(w, 2)
+
+
+b2_rows = [
+    [CELL_VI[lab], dec(HW_CELLS[c][1], 2), dec(HW_CELLS[c][2], 2) if c == "1" else "— (hằng số)"]
+    for c, lab in (("0", "destination new to the user"), ("1", "destination already in history"))
+]
+b3_rows = [
+    [CELL_VI[lab], dec(w[0], 2), ws_cell(lab, w[1])] for lab, w in B_CELLS[B_BEST].items()
+]
+N_PAIRS = len(GRID["w_p"]) * len(GRID["w_s"])
+slide(
+    "Phụ lục",
+    "Lưới trọng số của hai bản hybrid (B2 và B3)",
+    f"""<div class="cmp2">
+  <div class="panel"><div class="ph">B2: 2 bộ trọng số (điểm đến mới / đã đặt)</div>
+    <p class="sm">α ∈ {{{gl(GRID["alpha"])}}} · w<sub>p</sub> ∈ {{{gl(GRID["w_p"])}}} · w<sub>s</sub> ∈ {{{gl(GRID["w_s"])}}} · w<sub>SMLP4Rec</sub> = {dec(GRID["w_SMLP4Rec"], 0)} → {len(GRID["alpha"]) * N_PAIRS} cấu hình, chấm trên valid.</p>
+    {table(["Bộ trọng số (α = " + dec(H_ALPHA, 1) + ")", "w<sub>p</sub>", "w<sub>s</sub>"], b2_rows, hl=(1,))}
+    <p class="sm">α = {dec(H_ALPHA, 1)} được chọn cùng lúc: {HY["selection"]["n_within_one_se"]} cấu hình nằm trong một sai số chuẩn của cấu hình tốt nhất.</p>
+  </div>
+  <div class="panel"><div class="ph">B3: {len(B_CELLS[B_BEST])} bộ trọng số (điểm đến × thói quen)</div>
+    <p class="sm">Cùng lưới w<sub>p</sub> × w<sub>s</sub> ({N_PAIRS} cặp) cho từng bộ, α cố định {dec(H_ALPHA, 1)}, ngưỡng old_share {dec(B_CUT, 2)}.</p>
+    {table(["Bộ trọng số (α = " + dec(H_ALPHA, 1) + ")", "w<sub>p</sub>", "w<sub>s</sub>"], b3_rows, hl=())}
+    <p class="sm">Trọng số mỗi bộ chọn bằng cùng quy tắc; quy tắc 1-SE ở mức lược đồ vẫn giữ 2 bộ của B2.</p>
+  </div>
+</div>
+<div class="note">Quy tắc chọn (chỉ dùng valid): điểm mỗi dòng = Recall@5 + NDCG@5; trong các cấu hình nằm trong một sai số chuẩn (gom theo người dùng) của cấu hình tốt nhất, lấy cấu hình đơn giản nhất = w lớn nhất nhỏ nhất, rồi tổng w nhỏ nhất, rồi α lớn nhất. w<sub>s</sub> “hằng số”: điểm đến chưa từng đặt thì sameDest không tác động xếp hạng.</div>""",
+    sub="Không gian tìm kiếm, quy tắc chọn và trọng số cuối cùng",
 )
 
 

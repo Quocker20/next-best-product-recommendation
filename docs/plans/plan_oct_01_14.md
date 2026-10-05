@@ -28,7 +28,7 @@ Decision record: `PROGRESS.md` (Decision 2026-09-30). Success bar: beat the no-l
 | Same-destination history rule | 0.5888 | 0.3880 |
 | Late fusion (model + prior, w = 1.5) | 0.5919 | 0.3669 |
 
-Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5772, rule 0.5747. Source: `results/week3_implementation/smlprec_expedia_late_fusion.json` (merged to master 2026-10-02; re-run in `notebooks/hospitality/smlp4rec/03_destination_prior_hybrid.ipynb`). These numbers change under the new split; the new baselines on the new split replace them.
+Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5772, rule 0.5747. Source: `results/week3_implementation/smlprec_expedia_late_fusion.json` (merged to master 2026-10-02; re-run in `notebooks/hospitality/smlp4rec/03_destination_prior.ipynb`). These numbers change under the new split; the new baselines on the new split replace them.
 
 ## To confirm before Day 1
 

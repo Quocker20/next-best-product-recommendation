@@ -1,0 +1,400 @@
+{
+  "formula": "notebook 04 sameDest hybrid, only the cell definition (which (w_p, w_s) applies) changes; alpha fixed at 0.2; cold rows prior only",
+  "behaviour_feature": "old_share = share of past bookings (positions 2..L) whose cluster was already booked earlier in the history (nbp.hybrid.behaviour.history_behaviour cluster_repeat); L=1 has no value and forms its own group",
+  "cut": {
+    "chosen_on_train": 0.25,
+    "rule": "old-leaning = L >= 2 and old_share >= cut; best stump gain on 'target already booked' among cuts whose cells all reach the floor",
+    "floor_share_of_warm_rows": 0.1,
+    "stump_on_train": {
+      "0.25": {
+        "gain": 10263.1,
+        "old_leaning_share_of_warm": 0.3464,
+        "new_leaning_share_of_warm": 0.4139,
+        "tgt_old_if_below": 0.2452,
+        "tgt_old_if_at_or_above": 0.4215,
+        "meets_floor": true
+      },
+      "0.3333": {
+        "gain": 8324.4,
+        "old_leaning_share_of_warm": 0.2707,
+        "new_leaning_share_of_warm": 0.4896,
+        "tgt_old_if_below": 0.2667,
+        "tgt_old_if_at_or_above": 0.4319,
+        "meets_floor": true
+      },
+      "0.4": {
+        "gain": 7302.6,
+        "old_leaning_share_of_warm": 0.1989,
+        "new_leaning_share_of_warm": 0.5614,
+        "tgt_old_if_below": 0.2814,
+        "tgt_old_if_at_or_above": 0.45,
+        "meets_floor": true
+      },
+      "0.5": {
+        "gain": 3977.1,
+        "old_leaning_share_of_warm": 0.1457,
+        "new_leaning_share_of_warm": 0.6146,
+        "tgt_old_if_below": 0.2989,
+        "tgt_old_if_at_or_above": 0.4378,
+        "meets_floor": true
+      },
+      "0.6": {
+        "gain": 2691.9,
+        "old_leaning_share_of_warm": 0.0714,
+        "new_leaning_share_of_warm": 0.6889,
+        "tgt_old_if_below": 0.311,
+        "tgt_old_if_at_or_above": 0.4653,
+        "meets_floor": false
+      }
+    },
+    "bootstrap_stability": {
+      "0.25": 1.0
+    },
+    "profile_train": {
+      "0": {
+        "share_of_warm_rows": 0.3171,
+        "tgt_old": 0.2119,
+        "known_dest": 0.2141
+      },
+      "(0,0.25)": {
+        "share_of_warm_rows": 0.0967,
+        "tgt_old": 0.3543,
+        "known_dest": 0.2905
+      },
+      "[0.25,0.33)": {
+        "share_of_warm_rows": 0.0757,
+        "tgt_old": 0.3844,
+        "known_dest": 0.3289
+      },
+      "[0.33,0.5)": {
+        "share_of_warm_rows": 0.125,
+        "tgt_old": 0.425,
+        "known_dest": 0.3812
+      },
+      "[0.5,0.6)": {
+        "share_of_warm_rows": 0.0743,
+        "tgt_old": 0.4115,
+        "known_dest": 0.404
+      },
+      "[0.6,0.8)": {
+        "share_of_warm_rows": 0.0376,
+        "tgt_old": 0.5461,
+        "known_dest": 0.5515
+      },
+      "[0.8,1)": {
+        "share_of_warm_rows": 0.0057,
+        "tgt_old": 0.7069,
+        "known_dest": 0.7479
+      },
+      "1": {
+        "share_of_warm_rows": 0.0281,
+        "tgt_old": 0.3077,
+        "known_dest": 0.3432
+      },
+      "L=1 (no history to measure)": {
+        "share_of_warm_rows": 0.2397,
+        "tgt_old": 0.1355,
+        "known_dest": 0.1617
+      }
+    },
+    "cv_varying_cut": {
+      "0.25": {
+        "old_leaning_share": 0.4037,
+        "meets_floor": true,
+        "oof_joint": 1.07623,
+        "gain_vs_global": "-0.00031 (SE 0.00032)",
+        "gain_vs_reference": "-0.00060 (SE 0.00034)"
+      },
+      "0.3333": {
+        "old_leaning_share": 0.3065,
+        "meets_floor": true,
+        "oof_joint": 1.07655,
+        "gain_vs_global": "+0.00001 (SE 0.00027)",
+        "gain_vs_reference": "-0.00027 (SE 0.00031)"
+      },
+      "0.4": {
+        "old_leaning_share": 0.2218,
+        "meets_floor": true,
+        "oof_joint": 1.07649,
+        "gain_vs_global": "-0.00005 (SE 0.00020)",
+        "gain_vs_reference": "-0.00033 (SE 0.00027)"
+      },
+      "0.5": {
+        "old_leaning_share": 0.1519,
+        "meets_floor": true,
+        "oof_joint": 1.07639,
+        "gain_vs_global": "-0.00015 (SE 0.00022)",
+        "gain_vs_reference": "-0.00043 (SE 0.00030)"
+      },
+      "0.6": {
+        "old_leaning_share": 0.0717,
+        "meets_floor": false,
+        "oof_joint": 1.07633,
+        "gain_vs_global": "-0.00021 (SE 0.00011)",
+        "gain_vs_reference": "-0.00049 (SE 0.00025)"
+      }
+    }
+  },
+  "schemes": {
+    "global (1 set)": {
+      "cells": 1,
+      "min_cell_share": 1.0,
+      "eligible": true,
+      "oof_joint": 1.07654,
+      "gain_vs_global": "+0.00000 (SE 0.00000)",
+      "gain_vs_reference": "-0.00029 (SE 0.00024)",
+      "within_one_se_of_best_eligible": false
+    },
+    "known vs new destination (2) [notebook 04]": {
+      "cells": 2,
+      "min_cell_share": 0.2999,
+      "eligible": true,
+      "oof_joint": 1.07683,
+      "gain_vs_global": "+0.00029 (SE 0.00024)",
+      "gain_vs_reference": "+0.00000 (SE 0.00000)",
+      "within_one_se_of_best_eligible": true
+    },
+    "old-leaning vs rest (2)": {
+      "cells": 2,
+      "min_cell_share": 0.4037,
+      "eligible": true,
+      "oof_joint": 1.07623,
+      "gain_vs_global": "-0.00031 (SE 0.00032)",
+      "gain_vs_reference": "-0.00060 (SE 0.00034)",
+      "within_one_se_of_best_eligible": false
+    },
+    "L=1 | new-leaning | old-leaning (3)": {
+      "cells": 3,
+      "min_cell_share": 0.1783,
+      "eligible": true,
+      "oof_joint": 1.0757,
+      "gain_vs_global": "-0.00084 (SE 0.00037)",
+      "gain_vs_reference": "-0.00112 (SE 0.00037)",
+      "within_one_se_of_best_eligible": false
+    },
+    "known/new destination x old-leaning/rest (4)": {
+      "cells": 4,
+      "min_cell_share": 0.1313,
+      "eligible": true,
+      "oof_joint": 1.07646,
+      "gain_vs_global": "-0.00008 (SE 0.00033)",
+      "gain_vs_reference": "-0.00036 (SE 0.00021)",
+      "within_one_se_of_best_eligible": false
+    },
+    "known/new destination x (L=1 | new | old) (6)": {
+      "cells": 6,
+      "min_cell_share": 0.0276,
+      "eligible": false,
+      "oof_joint": 1.07625,
+      "gain_vs_global": "-0.00029 (SE 0.00035)",
+      "gain_vs_reference": "-0.00058 (SE 0.00024)",
+      "within_one_se_of_best_eligible": false
+    }
+  },
+  "chosen_scheme_fewest_cells_within_one_se": "known vs new destination (2) [notebook 04]",
+  "best_behaviour_scheme": "known/new destination x old-leaning/rest (4)",
+  "final_weights_per_cell": {
+    "known vs new destination (2) [notebook 04]": {
+      "destination new to the user": [
+        2.0,
+        0.0
+      ],
+      "destination already in history": [
+        1.25,
+        1.0
+      ]
+    },
+    "known/new destination x old-leaning/rest (4)": {
+      "new dest, rest": [
+        2.0,
+        0.0
+      ],
+      "new dest, old-leaning": [
+        1.5,
+        0.0
+      ],
+      "known dest, rest": [
+        1.25,
+        1.25
+      ],
+      "known dest, old-leaning": [
+        1.25,
+        1.0
+      ]
+    }
+  },
+  "benchmark_test": {
+    "warm": {
+      "reference (notebook 04)": {
+        "n": 218670,
+        "recall@5": 0.6106,
+        "recall@10": 0.7741,
+        "recall@20": 0.909,
+        "ndcg@5": 0.4539,
+        "ndcg@10": 0.507,
+        "ndcg@20": 0.5413
+      },
+      "chosen by the rule": {
+        "n": 218670,
+        "recall@5": 0.6106,
+        "recall@10": 0.7741,
+        "recall@20": 0.909,
+        "ndcg@5": 0.4539,
+        "ndcg@10": 0.507,
+        "ndcg@20": 0.5413
+      },
+      "best behaviour scheme": {
+        "n": 218670,
+        "recall@5": 0.611,
+        "recall@10": 0.7745,
+        "recall@20": 0.9089,
+        "ndcg@5": 0.4539,
+        "ndcg@10": 0.5069,
+        "ndcg@20": 0.5412
+      }
+    },
+    "all_events": {
+      "reference (notebook 04)": {
+        "n": 268113,
+        "recall@5": 0.5925,
+        "recall@10": 0.7608,
+        "recall@20": 0.9027,
+        "ndcg@5": 0.4349,
+        "ndcg@10": 0.4894,
+        "ndcg@20": 0.5255
+      },
+      "chosen by the rule": {
+        "n": 268113,
+        "recall@5": 0.5925,
+        "recall@10": 0.7608,
+        "recall@20": 0.9027,
+        "ndcg@5": 0.4349,
+        "ndcg@10": 0.4894,
+        "ndcg@20": 0.5255
+      },
+      "best behaviour scheme": {
+        "n": 268113,
+        "recall@5": 0.5927,
+        "recall@10": 0.761,
+        "recall@20": 0.9026,
+        "ndcg@5": 0.4349,
+        "ndcg@10": 0.4894,
+        "ndcg@20": 0.5254
+      }
+    }
+  },
+  "test_slices_recall@5_ndcg@5": {
+    "L=1": {
+      "reference (notebook 04)": "0.5659 / 0.4082",
+      "chosen by the rule": "0.5659 / 0.4082",
+      "best behaviour scheme": "0.5659 / 0.4082",
+      "rows": 39993
+    },
+    "new-leaning (L>=2)": {
+      "reference (notebook 04)": "0.5845 / 0.4236",
+      "chosen by the rule": "0.5845 / 0.4236",
+      "best behaviour scheme": "0.5845 / 0.4237",
+      "rows": 92367
+    },
+    "old-leaning (L>=2)": {
+      "reference (notebook 04)": "0.6593 / 0.5076",
+      "chosen by the rule": "0.6593 / 0.5076",
+      "best behaviour scheme": "0.6601 / 0.5075",
+      "rows": 86310
+    },
+    "known destination": {
+      "reference (notebook 04)": "0.7401 / 0.6175",
+      "chosen by the rule": "0.7401 / 0.6175",
+      "best behaviour scheme": "0.7401 / 0.6176",
+      "rows": 65407
+    },
+    "new destination": {
+      "reference (notebook 04)": "0.5554 / 0.3842",
+      "chosen by the rule": "0.5554 / 0.3842",
+      "best behaviour scheme": "0.5559 / 0.3841",
+      "rows": 153263
+    },
+    "target already booked": {
+      "reference (notebook 04)": "0.8757 / 0.7572",
+      "chosen by the rule": "0.8757 / 0.7572",
+      "best behaviour scheme": "0.8809 / 0.7631",
+      "rows": 67216
+    },
+    "target new to the user": {
+      "reference (notebook 04)": "0.4930 / 0.3194",
+      "chosen by the rule": "0.4930 / 0.3194",
+      "best behaviour scheme": "0.4912 / 0.3167",
+      "rows": 151454
+    }
+  },
+  "bootstrap_test_95ci": {
+    "chosen by the rule minus reference": {
+      "warm": {
+        "recall@5": {
+          "diff": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "all_events": {
+        "recall@5": {
+          "diff": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "best behaviour scheme minus reference": {
+      "warm": {
+        "recall@5": {
+          "diff": 0.0003,
+          "ci95": [
+            -0.0,
+            0.0007
+          ]
+        },
+        "ndcg@5": {
+          "diff": -0.0,
+          "ci95": [
+            -0.0002,
+            0.0002
+          ]
+        }
+      },
+      "all_events": {
+        "recall@5": {
+          "diff": 0.0003,
+          "ci95": [
+            -0.0,
+            0.0006
+          ]
+        },
+        "ndcg@5": {
+          "diff": -0.0,
+          "ci95": [
+            -0.0002,
+            0.0002
+          ]
+        }
+      }
+    }
+  }
+}
