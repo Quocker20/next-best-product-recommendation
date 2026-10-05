@@ -1,0 +1,72 @@
+{
+  "generated_by": "scripts/expedia_build_bookings.py",
+  "raw_csv_rows": 37670293,
+  "cleaning_steps": {
+    "rows_in": 3000693,
+    "duplicate_keys_dropped": 8,
+    "srch_ci_missing": 0,
+    "srch_co_missing": 0,
+    "co_equals_ci": 1,
+    "flag_ci_before_search": 617,
+    "flag_co_before_ci": 3,
+    "flag_zero_adults": 5239,
+    "flag_zero_rooms": 250,
+    "flag_burst_repeat": 48010,
+    "rows_out": 3000685
+  },
+  "raw_bookings_stats": {
+    "raw_booking_rows": 3000693,
+    "users": 813985,
+    "unique_user_item_pairs": 2360713,
+    "single_booking_users": 315679,
+    "items": 100
+  },
+  "clean_stats": {
+    "rows": 3000685,
+    "users": 813985,
+    "items": 100,
+    "unique_user_item_pairs": 2360713,
+    "single_booking_users": 315683,
+    "single_booking_user_share": 0.38782409995270184,
+    "timestamp_min": "2013-01-07 00:00:50",
+    "timestamp_max": "2014-12-31 23:59:30",
+    "timestamp_dtype": "datetime64[ns]",
+    "ci_min": "2012-09-03 00:00:00",
+    "ci_max": "2016-05-06 00:00:00",
+    "party_type_counts": {
+      "couple": 1319836,
+      "solo": 867632,
+      "family": 564579,
+      "group": 243562,
+      "unknown": 5076
+    },
+    "burst_repeat_share": 0.01599968007304999
+  },
+  "data_card_check": {
+    "raw_booking_rows": {
+      "data_card": 3000693,
+      "computed": 3000693,
+      "match": true
+    },
+    "users": {
+      "data_card": 813985,
+      "computed": 813985,
+      "match": true
+    },
+    "unique_user_item_pairs": {
+      "data_card": 2360713,
+      "computed": 2360713,
+      "match": true
+    },
+    "single_booking_users": {
+      "data_card": 315679,
+      "computed": 315679,
+      "match": true
+    },
+    "items": {
+      "data_card": 100,
+      "computed": 100,
+      "match": true
+    }
+  }
+}

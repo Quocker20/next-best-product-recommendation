@@ -56,10 +56,11 @@ Cold users (prior only): 0.5123 Recall@5. Combined all events: fusion hybrid 0.5
 - Done 2026-10-02: torch 2.14.1+cpu installed, `pip install -e ".[dev]"`, ruff check/format clean, 3 smoke tests pass. `resolve_device()` lives in `nbp.config` (no training config yet; `device: auto` in `configs/data.yaml`).
 
 ### Day 2 (Fri 2 Oct): data
-- [ ] `src/nbp/data/load.py`: one chunked pass over `train.csv`, bookings with all context columns, unit-safe timestamps. Output `data/interim/expedia_bookings.parquet`.
-- [ ] `src/nbp/data/clean.py`: drop duplicate keys and rows with `srch_co < srch_ci`, handle missing dates, standard schema (`user_id, item_id, timestamp, event_type, ctx_*`).
-- [ ] Script prints the counts that go into the data card.
+- [x] `src/nbp/data/load.py`: one chunked pass over `train.csv`, bookings with all context columns, unit-safe timestamps. Output `data/interim/expedia_bookings.parquet`.
+- [x] `src/nbp/data/clean.py`: drop duplicate keys only; rows with context defects are kept, the value is nulled and a `flag_*` set (decided 2026-10-05); bookings have no missing dates; standard schema (`user_id, item_id, timestamp, event_type, ctx_*`).
+- [x] Script prints the counts that go into the data card (`scripts/expedia_build_bookings.py` -> `results/week4_rebuild/bookings_counts.json`).
 - Output: cleaned bookings parquet + printed counts.
+- Done 2026-10-05: 3,000,693 booking rows -> 3,000,685 after 8 duplicate keys dropped; 813,985 users, 2,360,713 (user, cluster) pairs, all matching the data card; 30 tests pass. Burst repeats flagged (48,010), collapse decision left to Day 3.
 
 ### Day 3 (Mon 5 Oct): split, sequences, protocol
 - [ ] `src/nbp/data/split.py`: event-level time cut, validation carve-out, `L` per row.
@@ -151,3 +152,4 @@ reports/benchmark_results.csv  reports/summary/week4/
 | 2026-09-30 | Plan created | Hybrid decision locked (SMLP4Rec + weighted prior + sameDest) |
 | 2026-10-02 | Day 1 done | Deps installed, skeleton committed, pytest green; Day 2 data audit run in scratchpad, open data decisions listed in `PROGRESS.md` |
 | 2026-10-02 | exp branches merged to master; week-3 runs re-done as notebooks (`notebooks/hospitality/smlp4rec/`), all numbers reproduced; metrics = Recall@K and NDCG@K only; `nbp.eval.metrics` / `bootstrap` added early | User request |
+| 2026-10-05 | Day 2 done | Defect rows kept with nulled value + flag (not dropped); burst repeats flagged only; `.gitignore` `data/` anchored to `/data/` so `src/nbp/data/` is tracked |

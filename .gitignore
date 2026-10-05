@@ -50,7 +50,7 @@ Thumbs.db
 .DS_Store
 
 # Data directory
-data/
+/data/
 
 # Agent context (local only)
 CLAUDE.md
@@ -72,3 +72,6 @@ experiments/*
 # superseded week-3 v1 deck (local copy only)
 reports/summary/week3_implementation/week3_report_slides.html
 reports/summary/week3_implementation/week3_report_slides.pdf
+
+# local helper, not part of the project
+scripts/shutdown.bat

@@ -1,0 +1,77 @@
+"""Build the cleaned Expedia bookings table and print the data-card counts.
+
+Input:  data/raw/hospitality/expedia/train.csv (read-only)
+Output: data/interim/expedia_bookings_raw.parquet   (bookings, raw columns)
+        data/interim/expedia_bookings.parquet       (cleaned, standard schema)
+        results/week4_rebuild/bookings_counts.json  (every number for the data card)
+
+Usage:
+    .venv/Scripts/python.exe scripts/expedia_build_bookings.py
+"""
+
+from __future__ import annotations
+
+import json
+
+import pandas as pd
+
+from nbp.config import DataConfig, load_config
+from nbp.data.clean import clean_bookings, summarize
+from nbp.data.load import RAW_BOOKINGS, load_bookings
+from nbp.paths import CONFIGS, INTERIM, ROOT
+
+CLEAN = INTERIM / "expedia_bookings.parquet"
+OUT = ROOT / "results" / "week4_rebuild" / "bookings_counts.json"
+
+# Figures in docs/data_cards/expedia.md from the Week-1 pass. A mismatch is reported, not hidden.
+DATA_CARD = {
+    "raw_booking_rows": 3_000_693,
+    "users": 813_985,
+    "unique_user_item_pairs": 2_360_713,
+    "single_booking_users": 315_679,
+    "items": 100,
+}
+
+
+def main() -> None:
+    cfg = load_config(DataConfig, CONFIGS / "data.yaml")
+    raw = load_bookings(chunk_size=cfg.chunk_size)
+    raw_rows = raw.attrs["raw_rows"]
+    RAW_BOOKINGS.parent.mkdir(parents=True, exist_ok=True)
+    raw.to_parquet(RAW_BOOKINGS, index=False)
+
+    clean, steps = clean_bookings(raw)
+    clean.to_parquet(CLEAN, index=False)
+
+    # Round-trip check: what is on disk is what we counted.
+    disk = pd.read_parquet(CLEAN)
+    assert len(disk) == len(clean) and str(disk["timestamp"].dtype) == "datetime64[ns]"
+
+    stats = summarize(disk)
+    # Users/pairs of the raw (pre-dedup) table are comparable to the data card; dedup only drops a few rows.
+    raw_stats = {
+        "raw_booking_rows": len(raw),
+        "users": int(raw["user_id"].nunique()),
+        "unique_user_item_pairs": int(raw[["user_id", "hotel_cluster"]].drop_duplicates().shape[0]),
+        "single_booking_users": int((raw.groupby("user_id").size() == 1).sum()),
+        "items": int(raw["hotel_cluster"].nunique()),
+    }
+    check = {
+        k: {"data_card": v, "computed": raw_stats[k], "match": v == raw_stats[k]}
+        for k, v in DATA_CARD.items()
+    }
+    out = {
+        "generated_by": "scripts/expedia_build_bookings.py",
+        "raw_csv_rows": raw_rows,
+        "cleaning_steps": steps,
+        "raw_bookings_stats": raw_stats,
+        "clean_stats": stats,
+        "data_card_check": check,
+    }
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(json.dumps(out, indent=2))
+
+
+if __name__ == "__main__":
+    main()
