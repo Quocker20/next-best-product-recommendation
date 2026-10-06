@@ -5,9 +5,11 @@ Reads only persisted outputs in results/week3_implementation/:
 - smlprec_expedia_run.json (plain run + heuristics on the same test rows, notebook 01)
 - smlprec_expedia_late_fusion.json (destination prior fusion, notebook 03)
 - smlprec_expedia_hybrid_samedest.json (sameDest hybrid, notebook 04)
+- smlprec_expedia_seen_unseen_users.json (seen vs unseen users, notebook 06)
+and results/week4_rebuild/basic_baselines.json (ItemKNN + logistic regression, notebook 07)
 
 Usage: python scripts/week3_report_figures.py
-Output: results/figures/vi/week3_fig1_* ... week3_fig4_*
+Output: results/figures/vi/week3_fig1_* ... week3_fig7_*
 """
 
 from __future__ import annotations
@@ -41,6 +43,10 @@ W3 = ROOT / "results" / "week3_implementation"
 RUN = json.loads((W3 / "smlprec_expedia_run.json").read_text(encoding="utf-8"))
 LF = json.loads((W3 / "smlprec_expedia_late_fusion.json").read_text(encoding="utf-8"))
 HY = json.loads((W3 / "smlprec_expedia_hybrid_samedest.json").read_text(encoding="utf-8"))
+SU = json.loads((W3 / "smlprec_expedia_seen_unseen_users.json").read_text(encoding="utf-8"))
+BB = json.loads(
+    (ROOT / "results" / "week4_rebuild" / "basic_baselines.json").read_text(encoding="utf-8")
+)
 TEAL = "#0f766e"
 NAVY = "#1e3a8a"
 GRAY = "#a8a79f"
@@ -274,13 +280,161 @@ def fig4_slices() -> None:
     )
 
 
+def fig5_seen_unseen_share() -> None:
+    """Share of users and of events whose user is present / absent in the train split."""
+    pres = SU["presence"]
+    groups = [
+        ("Người dùng", "valid", "seen_users_pct", "unseen_users_pct"),
+        ("Người dùng", "test", "seen_users_pct", "unseen_users_pct"),
+        ("Sự kiện", "valid", "seen_events_pct", "unseen_events_pct"),
+        ("Sự kiện", "test", "seen_events_pct", "unseen_events_pct"),
+    ]
+    fig, ax = plt.subplots(figsize=(6.6, 2.9), facecolor=SURFACE)
+    base_axes(ax)
+    w = 0.34
+    for i, (lab, key, col) in enumerate(
+        (("Đã có trong train", 2, BLUE), ("Chưa có trong train (cold-start)", 3, AMBER))
+    ):
+        xs = [j + (i - 0.5) * w for j in range(len(groups))]
+        vals = [pres[g[1]][g[key]] / 100 for g in groups]
+        bars = ax.bar(xs, vals, width=w * 0.92, color=col, label=lab, linewidth=0)
+        bar_labels(ax, bars, vals, lambda v: pct(v, 1))
+    ax.set_xticks(range(len(groups)))
+    ax.set_xticklabels([f"{g[0]}\n{g[1].capitalize()}" for g in groups], fontsize=8)
+    ax.set_ylim(0, 0.75)
+    ax.yaxis.set_major_formatter(fmt_pct(LANG))
+    ax.grid(axis="y", color=GRID, linewidth=0.7)
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, fontsize=7.4, loc="upper right", ncol=1)
+    t = pres["test"]
+    finish(
+        fig,
+        ax,
+        "Người dùng đã thấy và chưa thấy trong train, tập valid và test",
+        f"Test: {thousands(t['users'])} người dùng, {thousands(t['events'])} sự kiện. 'Đã thấy' = có ít nhất một dòng trong tập train "
+        "của RecBole.",
+        OUT / "week3_fig5_seen_unseen_share.png",
+        -0.2,
+    )
+
+
+SU_SUBSETS = [
+    ("seen users", "Đã thấy"),
+    ("unseen users", "Chưa thấy (tất cả)"),
+    ("unseen, L>=1", "Chưa thấy, L ≥ 1"),
+    ("unseen, L=0 (first booking)", "Chưa thấy, L = 0*"),
+]
+
+
+def fig6_seen_unseen_results() -> None:
+    """Plain SMLP4Rec vs hybrid, NDCG@5 and Recall@5 on the seen / unseen test subsets."""
+    res = SU["results"]["test"]
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.0), facecolor=SURFACE)
+    for ax, m, name in zip(axes, ("ndcg@5", "recall@5"), ("NDCG@5", "Recall@5")):
+        base_axes(ax)
+        w = 0.34
+        for i, (lab, key, col) in enumerate(
+            (("SMLP4Rec plain", "plain SMLP4Rec", NAVY), ("Hybrid: + prior + sameDest", "hybrid (SMLP4Rec + prior + sameDest)", TEAL))
+        ):
+            xs = [j + (i - 0.5) * w for j in range(len(SU_SUBSETS))]
+            vals = [res[s][key][m] for s, _ in SU_SUBSETS]
+            bars = ax.bar(xs, vals, width=w * 0.92, color=col, label=lab, linewidth=0)
+            if key == "plain SMLP4Rec":
+                bars[-1].set_hatch("////")
+                bars[-1].set_edgecolor(SURFACE)
+            bar_labels(ax, bars, vals, (lambda v: dec(v, 3)) if m == "ndcg@5" else (lambda v: pct(v, 1)))
+        ax.set_xticks(range(len(SU_SUBSETS)))
+        ax.set_xticklabels([lab for _, lab in SU_SUBSETS], fontsize=6.4, rotation=12)
+        ax.set_title(name, color=INK2, fontsize=9, loc="left")
+        ax.set_ylim(0, 0.75)
+        ax.grid(axis="y", color=GRID, linewidth=0.7)
+        ax.set_axisbelow(True)
+        ax.yaxis.set_major_formatter(fmt_pct(LANG) if m == "recall@5" else fmt_dec(1))
+        if m == "ndcg@5":
+            ax.legend(frameon=False, fontsize=7, loc="upper left")
+    fig.suptitle(
+        "Plain và hybrid trên người dùng đã thấy và chưa thấy, tập test",
+        x=0.02,
+        ha="left",
+        fontsize=11,
+        fontweight="bold",
+    )
+    fig.text(
+        0.02,
+        -0.05,
+        "* L = 0 là lần đặt đầu tiên: plain không có lịch sử để chấm nên dùng popularity toàn cục (cột gạch chéo); hybrid dùng prior điểm đến.",
+        fontsize=7.4,
+        color="#898781",
+    )
+    fig.tight_layout()
+    fig.savefig(
+        OUT / "week3_fig6_seen_unseen_results.png",
+        dpi=220,
+        facecolor=SURFACE,
+        bbox_inches="tight",
+        pad_inches=0.18,
+    )
+    plt.close(fig)
+
+
+def fig7_basic_baselines() -> None:
+    """Two basic baselines next to global popularity, plain SMLP4Rec and the hybrid; all test events."""
+    knn = next(k for k in BB["results"]["test"] if k.startswith("ItemKNN"))
+    lr = next(k for k in BB["results"]["test"] if k.startswith("Logistic"))
+    pl, hy = "plain SMLP4Rec", "hybrid (SMLP4Rec + prior + sameDest)"
+    bb, su = BB["results"]["test"], SU["results"]["test"]["all events"]
+    rows = [  # top to bottom
+        ("Popularity toàn cục (không học)", bb["global popularity"]["all events"], GRAY),
+        ("ItemKNN: chỉ lịch sử", bb[knn]["all events"], AMBER),
+        ("SMLP4Rec plain: chỉ lịch sử", su[pl], NAVY),
+        ("Hồi quy logistic: điểm đến + ngữ cảnh", bb[lr]["all events"], BLUE),
+        ("Hybrid: lịch sử + prior + sameDest", su[hy], TEAL),
+    ][::-1]
+    fig, axes = plt.subplots(1, 2, figsize=(7.4, 2.9), facecolor=SURFACE)
+    for ax, m, name in zip(axes, ("ndcg@5", "recall@5"), ("NDCG@5", "Recall@5")):
+        base_axes(ax)
+        vals = [r[1][m] for r in rows]
+        bars = ax.barh(range(len(rows)), vals, height=0.62, color=[r[2] for r in rows], linewidth=0)
+        for yv, v in zip(range(len(rows)), vals):
+            ax.text(
+                v + 0.008, yv, dec(v, 3) if m == "ndcg@5" else pct(v, 1),
+                va="center", fontsize=7, color=INK2,
+            )
+        ax.set_yticks(range(len(rows)))
+        ax.set_yticklabels([r[0] for r in rows] if m == "ndcg@5" else [], fontsize=7.4)
+        ax.set_xlim(0, max(vals) * 1.22)
+        ax.set_title(name, color=INK2, fontsize=9, loc="left")
+        ax.grid(axis="x", color=GRID, linewidth=0.7)
+        ax.set_axisbelow(True)
+        ax.xaxis.set_major_formatter(fmt_pct(LANG) if m == "recall@5" else fmt_dec(1))
+    fig.suptitle(
+        "Hai baseline cơ bản so với plain và hybrid, mọi sự kiện test",
+        x=0.02, ha="left", fontsize=11, fontweight="bold",
+    )
+    fig.text(
+        0.02, -0.04,
+        f"{thousands(bb[knn]['all events']['n'])} sự kiện test (gồm lần đặt đầu, L = 0). "
+        "ItemKNN và plain không có đầu vào cho L = 0 nên dùng popularity toàn cục; hồi quy logistic và hybrid dùng điểm đến.",
+        fontsize=7.0, color="#898781",
+    )
+    fig.tight_layout()
+    fig.savefig(
+        OUT / "week3_fig7_basic_baselines.png",
+        dpi=220, facecolor=SURFACE, bbox_inches="tight", pad_inches=0.18,
+    )
+    plt.close(fig)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     fig1_plain_vs_heuristics()
     fig2_prior_sweep()
     fig3_chain()
     fig4_slices()
-    print(f"wrote 4 figures to {OUT}")
+    fig5_seen_unseen_share()
+    fig6_seen_unseen_results()
+    fig7_basic_baselines()
+    print(f"wrote 7 figures to {OUT}")
 
 
 if __name__ == "__main__":

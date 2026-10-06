@@ -12,7 +12,10 @@ Every number on the slides is read from persisted outputs in results/week3_imple
 smlprec_expedia_run.json (plain run), smlprec_expedia_mixed_run.json (fixed quota),
 smlprec_expedia_dynamic_cap_run.json (dynamic cap), smlprec_expedia_late_fusion.json (prior
 fusion + cold users, notebook 03), smlprec_expedia_hybrid_samedest.json (hybrid with sameDest,
-notebook 04), smlprec_expedia_hybrid_behaviour_split.json (behaviour split, notebook 05).
+notebook 04), smlprec_expedia_hybrid_behaviour_split.json (behaviour split, notebook 05),
+smlprec_expedia_seen_unseen_users.json (seen vs unseen users, notebook 06); and from
+results/week4_rebuild/: basic_baselines.json (ItemKNN + logistic regression, notebook 07) and
+basic_baselines_verify.json (independent check, scripts/verify_basic_baselines.py).
 
 Usage: python scripts/week3_report_slides.py
 Output: reports/summary/week3_implementation/week3_report_slides_v2.html (PDF: print with headless Chrome)
@@ -39,6 +42,10 @@ CAP = load("smlprec_expedia_dynamic_cap_run.json")
 LF = load("smlprec_expedia_late_fusion.json")
 HY = load("smlprec_expedia_hybrid_samedest.json")
 BS = load("smlprec_expedia_hybrid_behaviour_split.json")
+SU = load("smlprec_expedia_seen_unseen_users.json")
+W4 = ROOT / "results" / "week4_rebuild"
+BL = json.loads((W4 / "basic_baselines.json").read_text(encoding="utf-8"))
+BV = json.loads((W4 / "basic_baselines_verify.json").read_text(encoding="utf-8"))
 
 # ---- style, JS and the architecture diagram come from the week-2 generator
 CSS = re.search(r'\nCSS = """(.*?)"""', WEEK2, re.DOTALL).group(1)
@@ -515,14 +522,172 @@ slide(
     sub="Giả thuyết: người hay đặt lại cụm cũ cần trọng số khác người hay đặt cụm mới. Công thức B2 giữ nguyên, chỉ đổi cách chia nhóm",
 )
 
+# ---- 4b. người dùng đã thấy / chưa thấy trong train (notebook 06)
+PR = SU["presence"]
+SR = SU["results"]["test"]
+PL, HYK = "plain SMLP4Rec", "hybrid (SMLP4Rec + prior + sameDest)"
+slide(
+    "4 · Thử nghiệm",
+    "Đánh giá theo người dùng đã thấy và chưa thấy trong train",
+    f"""<div class="row">
+  <div class="panel grow"><div class="ph">Tỉ lệ người dùng và sự kiện theo việc có mặt trong train</div>
+    {
+        grouped_bars(
+            [
+                ("Đã có trong train", [PR[s][k] / 100 for s, k in (("valid", "seen_users_pct"), ("test", "seen_users_pct"), ("valid", "seen_events_pct"), ("test", "seen_events_pct"))], BLUE),
+                ("Chưa có (cold-start)", [PR[s][k] / 100 for s, k in (("valid", "unseen_users_pct"), ("test", "unseen_users_pct"), ("valid", "unseen_events_pct"), ("test", "unseen_events_pct"))], AMBER),
+            ],
+            ["Người dùng · valid", "Người dùng · test", "Sự kiện · valid", "Sự kiện · test"],
+        )
+    }</div>
+  <div class="panel side">
+    <div class="th-card"><div class="lbl">Test: người dùng chưa thấy</div><div class="val">{pct(PR["test"]["unseen_users_pct"] / 100, 1)}</div><p>{num(PR["test"]["unseen_users"])} / {num(PR["test"]["users"])} người dùng</p></div>
+    <div class="th-card"><div class="lbl">Trong đó đã có lịch sử (L ≥ 1)</div><div class="val">{num(PR["test"]["unseen_users_with_history_(L>=1)"])}</div><p>còn lại {num(PR["test"]["unseen_users_first_booking_only_(L=0)"])} chỉ có lần đặt đầu (L = 0)</p></div>
+    <div class="th-card"><div class="lbl">Độ dài lịch sử trung bình, test</div><div class="val">{dec(PR["test"]["mean_history_len_seen"], 1)} vs {dec(PR["test"]["mean_history_len_unseen_L>=1"], 1)}</div><p>đã thấy vs chưa thấy (L ≥ 1)</p></div>
+  </div>
+</div>
+<div class="note">Đã thấy = có ít nhất một dòng trong tập train của RecBole. Chưa thấy gồm người có lịch sử nhưng toàn bộ booking nằm sau cửa sổ train, và người đặt lần đầu (L = 0). Số sự kiện test: {num(PR["test"]["events"])}.</div>""",
+    sub="Chia tập valid và test thành hai tập con không giao nhau theo việc người dùng có mặt trong train",
+)
+
+SUBS = [("seen users", "Đã thấy"), ("unseen users", "Chưa thấy (tất cả)"), ("unseen, L>=1", "Chưa thấy, L ≥ 1"), ("unseen, L=0 (first booking)", "Chưa thấy, L = 0*")]
+su_gain = {s: SR[s][HYK]["ndcg@5"] - SR[s][PL]["ndcg@5"] for s, _ in SUBS}
+slide(
+    "4 · Thử nghiệm",
+    "Plain và hybrid trên người dùng đã thấy và chưa thấy",
+    f"""<div class="cmp2">
+  <div class="panel"><div class="ph">NDCG@5, tập test</div>
+    {grouped_bars([("SMLP4Rec plain", [SR[s][PL]["ndcg@5"] for s, _ in SUBS], BLUE), ("Hybrid", [SR[s][HYK]["ndcg@5"] for s, _ in SUBS], TEAL)], [n for _, n in SUBS], as_pct=False, w=520)}</div>
+  <div class="panel"><div class="ph">Recall@5, tập test</div>
+    {grouped_bars([("SMLP4Rec plain", [SR[s][PL]["recall@5"] for s, _ in SUBS], BLUE), ("Hybrid", [SR[s][HYK]["recall@5"] for s, _ in SUBS], TEAL)], [n for _, n in SUBS], w=520)}</div>
+</div>
+<div class="note">Rút ra: hybrid cao hơn plain ở mọi tập con (NDCG@5 đã thấy {dec(SR["seen users"][PL]["ndcg@5"], 3)} → {dec(SR["seen users"][HYK]["ndcg@5"], 3)}; chưa thấy {dec(SR["unseen users"][PL]["ndcg@5"], 3)} → {dec(SR["unseen users"][HYK]["ndcg@5"], 3)}). Plain gần như không phụ thuộc việc “đã thấy”: người chưa thấy nhưng có lịch sử đạt NDCG@5 {dec(SR["unseen, L>=1"][PL]["ndcg@5"], 3)} so với {dec(SR["seen users"][PL]["ndcg@5"], 3)}, vì mô hình chỉ đọc chuỗi booking. Chênh lệch chính là độ dài lịch sử. * L = 0 (lần đặt đầu): plain không có đầu vào nên dùng popularity toàn cục; hybrid dùng prior điểm đến.</div>""",
+    sub="Cùng checkpoint và trọng số của notebook 04, không huấn luyện lại; chấm riêng từng tập con",
+)
+
+# ---- 4c. hai baseline cơ bản (notebook 07)
+BR = BL["results"]["test"]
+KNN_K = next(k for k in BR if k.startswith("ItemKNN"))
+LR_K = next(k for k in BR if k.startswith("Logistic"))
+GLOB_K = "global popularity"
+KM, LM = BL["models"][KNN_K], BL["models"][LR_K]
+BSP = BL["split"]
+CTRL = BL["verification"]["controls_test_warm"]
+VER_MISMATCH = (
+    sum(v["rank_mismatches"] for v in BV["logreg"].values() if isinstance(v, dict))
+    + BV["itemknn"]["test_sample_rank_mismatches"]
+    + len(BV["metrics_recomputed_from_saved_ranks"]["mismatches"])
+)
+BL_ALL = BSP["slice_sizes_vs_reference"]["test"]["all events"]
+slide(
+    "4 · Thử nghiệm",
+    "Hai baseline cơ bản trên cùng phép chia 8/1/1",
+    f"""{
+        table(
+            ["Baseline", "Thư viện", "Thấy", "Không thấy", "Chọn trên valid"],
+            [
+                [
+                    "ItemKNN (cosine, Sarwar 2001)",
+                    "implicit · CosineRecommender",
+                    f"{CFG['MAX_ITEM_LIST_LENGTH']} booking gần nhất của người dùng",
+                    "điểm đến, mọi ngữ cảnh",
+                    f"K = {KM['K_pick']} trong {{{', '.join(str(k) for k in sorted(int(k) for k in KM['K_grid_valid']))}}}",
+                ],
+                [
+                    "Hồi quy logistic đa lớp",
+                    "scikit-learn · saga",
+                    "điểm đến + ngữ cảnh lượt tìm (one-hot)",
+                    "lịch sử, mọi trường của khách sạn đã đặt",
+                    f"C = {dec(LM['C_pick'], 0)} trong {{{'; '.join(dec(c, 1).rstrip('0').rstrip(',') if c % 1 else dec(c, 0) for c in sorted(float(k) for k in LM['C_grid_valid']))}}}; {LM['epochs']} epoch",
+                ],
+            ],
+            right_from=9,
+        )
+    }
+<div class="kpis three">
+  <div class="kpi"><b class="s">{num(BSP["counts"]["train"] + BSP["counts"]["valid"] + BSP["counts"]["test"])}</b><span>mục tiêu “đặt tiếp theo”, chia theo thời gian 80/10/10 như bản plain</span></div>
+  <div class="kpi"><b class="s">{num(BL_ALL["here"])}</b><span>sự kiện test, bản plain có {num(BL_ALL["reference"])} (chênh {BL_ALL["diff"]})</span></div>
+  <div class="kpi"><b class="s">{num(BL["verification"]["eval_rows_in_training_data"])}</b><span>dòng valid/test nằm trong dữ liệu huấn luyện của hai baseline</span></div>
+</div>
+<div class="note">Mục đích: kiểm tra điểm cao của hybrid đến từ dữ liệu chứ không từ rò rỉ hay lỗi chia tập, bằng hai mô hình có sẵn trong thư viện, không dùng code của hybrid. Dữ liệu huấn luyện của cả hai: booking trước mốc cắt (cùng mốc cắt của prior). ItemKNN không có epoch, tính một lần theo công thức. K và C chọn trên valid theo Recall@5 + NDCG@5; test chấm một lần.</div>""",
+    sub="Một mô hình chỉ đọc lịch sử, một mô hình chỉ đọc điểm đến và ngữ cảnh; mỗi mô hình bị chặn đúng một nguồn tín hiệu",
+)
+
+ROWS_BB = [
+    ("Popularity toàn cục (không học)", BR[GLOB_K]),
+    (f"ItemKNN (K = {KM['K_pick']}): chỉ lịch sử", BR[KNN_K]),
+    ("SMLP4Rec plain: chỉ lịch sử", SU["results"]["test"]),
+    (f"Hồi quy logistic (C = {dec(LM['C_pick'], 0)}): điểm đến + ngữ cảnh", BR[LR_K]),
+    ("Hybrid: lịch sử + prior + sameDest", SU["results"]["test"]),
+]
+SL_BB = ["all events", "seen users", "unseen, L>=1", "unseen, L=0 (first booking)"]
+
+
+def bb_cell(i: int, sl: str, m: str) -> float:
+    d = ROWS_BB[i][1]
+    if i == 2:
+        return d[sl][PL][m]
+    if i == 4:
+        return d[sl][HYK][m]
+    return d[sl][m]
+
+
+bb_rows = [
+    [ROWS_BB[i][0], dec(bb_cell(i, "all events", "ndcg@5"), 3), pct(bb_cell(i, "all events", "recall@5"), 1)]
+    + [dec(bb_cell(i, sl, "ndcg@5"), 3) for sl in SL_BB[1:]]
+    for i in range(len(ROWS_BB))
+]
+L0 = "unseen, L=0 (first booking)"
+slide(
+    "4 · Thử nghiệm",
+    "Hai baseline so với plain và hybrid, tập test",
+    f"""{
+        table(
+            ["Cách", "NDCG@5 (mọi sự kiện)", "Recall@5 (mọi sự kiện)", "NDCG@5 đã thấy", "NDCG@5 chưa thấy, L ≥ 1", "NDCG@5 L = 0*"],
+            bb_rows,
+            hl=(4,),
+        )
+    }
+<div class="note">Rút ra: (1) ItemKNN, chỉ đọc lịch sử, nằm sát SMLP4Rec plain (NDCG@5 {dec(bb_cell(1, "all events", "ndcg@5"), 3)} so với {dec(bb_cell(2, "all events", "ndcg@5"), 3)}), nên plain không bị thổi phồng. (2) Hồi quy logistic, chỉ có điểm đến và ngữ cảnh, đạt {dec(bb_cell(3, "all events", "ndcg@5"), 3)}; ở lần đặt đầu (L = 0) chỉ kém hybrid {dec(bb_cell(4, L0, "ndcg@5") - bb_cell(3, L0, "ndcg@5"), 3)} điểm NDCG@5. (3) Hybrid cao hơn hồi quy logistic ở mọi cột. * L = 0: ItemKNN và plain dùng popularity toàn cục (cùng số). Số dòng mỗi tập con lệch bản plain tối đa 4 dòng.</div>""",
+    sub="Cùng dòng test, cùng Recall@K và NDCG@K; hàng plain và hybrid lấy từ notebook 06",
+)
+
+d_dest = bb_cell(3, "all events", "ndcg@5") - bb_cell(0, "all events", "ndcg@5")
+d_hist = bb_cell(4, "all events", "ndcg@5") - bb_cell(3, "all events", "ndcg@5")
+slide(
+    "4 · Thử nghiệm",
+    "Điểm cao đến từ đâu: điểm đến trước, lịch sử sau",
+    f"""<div class="kpis three">
+  <div class="kpi"><b>{dec(bb_cell(0, "all events", "ndcg@5"), 3)}</b><span>popularity toàn cục: không dùng thông tin gì</span></div>
+  <div class="kpi"><b>{dec(bb_cell(3, "all events", "ndcg@5"), 3)}</b><span>thêm điểm đến và ngữ cảnh (hồi quy logistic): <b>+{dec(d_dest, 3)}</b></span></div>
+  <div class="kpi"><b>{dec(bb_cell(4, "all events", "ndcg@5"), 3)}</b><span>thêm lịch sử cùng điểm đến và SMLP4Rec (hybrid): <b>+{dec(d_hist, 3)}</b></span></div>
+</div>
+<div class="cmp2">
+  <div class="panel"><div class="ph">Đối chứng, test, người dùng có lịch sử (NDCG@5)</div>
+    {table(["Phép thử", "Thật", "Xáo trộn"], [
+        ["Hồi quy logistic: xáo trộn đặc trưng lượt tìm", dec(CTRL["LR real"]["ndcg@5"], 3), dec(CTRL["LR shuffled query features"]["ndcg@5"], 3)],
+        ["ItemKNN: xáo trộn lịch sử giữa các dòng", dec(CTRL["ItemKNN real"]["ndcg@5"], 3), dec(CTRL["ItemKNN shuffled histories"]["ndcg@5"], 3)],
+    ])}
+    <p class="sm">Mốc popularity toàn cục cùng tập: {dec(CTRL["global popularity"]["ndcg@5"], 3)}. Xáo trộn đưa cả hai về mức popularity, nên tín hiệu là thật.</p>
+  </div>
+  <div class="panel"><div class="ph">Kiểm tra độc lập (scripts/verify_basic_baselines.py)</div>
+    <p class="sm">Dựng lại phép chia, lịch sử, độ tương tự cosine và đặc trưng bằng code riêng; chấm lại ItemKNN và hồi quy logistic; so với kết quả đã lưu: <b>{VER_MISMATCH}</b> sai khác về hạng.</p>
+    <p class="sm">Hồi quy logistic không dùng trường nào của khách sạn đã đặt, thành phố hay vùng của khách ({len(BV["logreg"]["forbidden_features"])} đặc trưng vi phạm). Huấn luyện kết thúc trước mục tiêu valid đầu tiên {abs(BL["verification"]["training_max_ts_minus_first_valid_target_ts"])} giây.</p>
+  </div>
+</div>
+<div class="note">Kết luận: phần lớn điểm của hybrid giải thích được bằng điểm đến của lượt tìm, thông tin có sẵn trước khi đặt; lịch sử thêm phần còn lại. Không thấy dấu hiệu rò rỉ hay lỗi chia tập. Giới hạn: một seed; C = {dec(LM["C_pick"], 0)} là giá trị lớn nhất trong lưới nên có thể còn tăng nhẹ; hồi quy logistic chỉ chạy {LM["epochs"]} epoch.</div>""",
+    sub="Mỗi baseline chặn một nguồn tín hiệu; hybrid cộng cả hai",
+)
+
+
 # ---- 5. kết luận
 slide(
     "5 · Kết luận",
     "Kết luận",
     f"""<div class="grid3">
   <div class="card good"><h3>Đã làm</h3><p>Chạy SMLP4Rec gốc trên Expedia (plain), rút ra điểm yếu, thử hai hướng: chỉnh top 5 và thêm thông tin điểm đến (prior, rồi sameDest); cuối cùng thử tách trọng số theo thói quen.</p></div>
-  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: NDCG@5 {dec(WARM[K_PLAIN]["ndcg@5"], 2)} → {dec(WARM[K_HYBRID]["ndcg@5"], 2)}, Recall@5 {pct(WARM[K_PLAIN]["recall@5"], 0)} → {pct(WARM[K_HYBRID]["recall@5"], 0)}. Tách theo thói quen không thêm gì.</p></div>
-  <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh, chưa so với mô hình đếm lịch sử. Tiếp: đưa điểm đến vào trong mô hình, chạy lại trên chia theo sự kiện (gồm người dùng mới).</p></div>
+  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: NDCG@5 {dec(WARM[K_PLAIN]["ndcg@5"], 2)} → {dec(WARM[K_HYBRID]["ndcg@5"], 2)}, Recall@5 {pct(WARM[K_PLAIN]["recall@5"], 0)} → {pct(WARM[K_HYBRID]["recall@5"], 0)}. Tách theo thói quen không thêm gì. Hồi quy logistic chỉ dùng điểm đến đạt NDCG@5 {dec(BL["results"]["test"][LR_K]["all events"]["ndcg@5"], 2)} (mọi sự kiện test), ItemKNN chỉ dùng lịch sử đạt {dec(BL["results"]["test"][KNN_K]["all events"]["ndcg@5"], 2)}: điểm cao chủ yếu do điểm đến; hai baseline không cho thấy dấu hiệu rò rỉ.</p></div>
+  <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh; hai baseline cơ bản (ItemKNN, hồi quy logistic) đã chạy, chưa có MF, item2vec, AdaGIN, LightGBM. Tiếp: đưa điểm đến vào trong mô hình, chạy lại trên chia theo sự kiện (gồm người dùng mới).</p></div>
 </div>
 <div class="note">Quyết định: SMLP4Rec + prior điểm đến + sameDest, 2 bộ trọng số (điểm đến mới / đã đặt); không tách theo thói quen.</div>""",
 )

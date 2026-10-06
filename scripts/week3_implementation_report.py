@@ -11,8 +11,11 @@ Every number is read from persisted outputs in results/week3_implementation/:
 smlprec_expedia_run.json (notebook 01), smlprec_expedia_mixed_run.json and
 smlprec_expedia_dynamic_cap_run.json (notebook 02), smlprec_expedia_late_fusion.json
 (notebook 03), smlprec_expedia_hybrid_samedest.json (notebook 04),
-smlprec_expedia_hybrid_behaviour_split.json (notebook 05).
-Figures: results/figures/vi/week3_fig1-4 (scripts/week3_report_figures.py, run it first) and
+smlprec_expedia_hybrid_behaviour_split.json (notebook 05),
+smlprec_expedia_seen_unseen_users.json (notebook 06); and from results/week4_rebuild/:
+basic_baselines.json (ItemKNN + logistic regression, notebook 07), basic_baselines_verify.json
+(independent check, scripts/verify_basic_baselines.py).
+Figures: results/figures/vi/week3_fig1-7 (scripts/week3_report_figures.py, run it first) and
 fig12_smlp4rec_architecture.png from the week-2 report.
 
 Usage: python scripts/week3_implementation_report.py [--no-word]
@@ -57,6 +60,10 @@ CAP = load("smlprec_expedia_dynamic_cap_run.json")
 LF = load("smlprec_expedia_late_fusion.json")
 HY = load("smlprec_expedia_hybrid_samedest.json")
 BS = load("smlprec_expedia_hybrid_behaviour_split.json")
+SU = load("smlprec_expedia_seen_unseen_users.json")
+W4 = ROOT / "results" / "week4_rebuild"
+BL = json.loads((W4 / "basic_baselines.json").read_text(encoding="utf-8"))
+BV = json.loads((W4 / "basic_baselines_verify.json").read_text(encoding="utf-8"))
 
 
 # ---------------------------------------------------------------- number formatting
@@ -229,6 +236,16 @@ def metric_row(name, d, bold: bool = False):
     return [name] + cells
 
 
+HYB_K = "hybrid (SMLP4Rec + prior + sameDest)"
+PLN_K = "plain SMLP4Rec"
+_bt = BL["results"]["test"]
+BL_R = {
+    "pop": _bt["global popularity"],
+    "knn": _bt[next(k for k in _bt if k.startswith("ItemKNN"))],
+    "lr": _bt[next(k for k in _bt if k.startswith("Logistic"))],
+}
+BL_KNN = next(k for k in BL["models"] if k.startswith("ItemKNN"))
+BL_LR = next(k for k in BL["models"] if k.startswith("Logistic"))
 METRIC_HEAD = ["Cách", "NDCG@5", "Recall@5", "NDCG@10", "Recall@10", "NDCG@20", "Recall@20"]
 METRIC_W = [3238, 1050, 1100, 1050, 1100, 1050, 1050]
 
@@ -442,7 +459,7 @@ def build() -> Builder:
             [
                 [("Phiên bản", True)],
                 (
-                    "05/10/2026 — đi kèm slide week3_report_slides_v2; notebook 01–05 trong "
+                    "06/10/2026 — đi kèm slide week3_report_slides_v2; notebook 01–07 trong "
                     "notebooks/hospitality/smlp4rec/"
                 ),
             ],
@@ -528,6 +545,17 @@ def build() -> Builder:
                 ("Tách trọng số theo thói quen đặt lại không thêm gì. ", True),
                 (
                     f"NDCG@5 {ci_ndcg(BB['warm'])}, Recall@5 {ci_recall(BB['warm'])}; giữ 2 bộ trọng số.",
+                    False,
+                ),
+            ],
+            [
+                ("Hai baseline cơ bản giải thích điểm cao của hybrid. ", True),
+                (
+                    f"Trên mọi sự kiện test, hồi quy logistic chỉ dùng điểm đến và ngữ cảnh đạt NDCG@5 "
+                    f"{dec(BL_R['lr']['all events']['ndcg@5'])}, ItemKNN chỉ dùng lịch sử đạt "
+                    f"{dec(BL_R['knn']['all events']['ndcg@5'])}, hybrid đạt "
+                    f"{dec(SU['results']['test']['all events'][HYB_K]['ndcg@5'])}; không thấy dấu hiệu rò rỉ hay lỗi "
+                    "chia tập (mục 6.3).",
                     False,
                 ),
             ],
@@ -1017,6 +1045,7 @@ def build() -> Builder:
 
     # ------------------------------------------------------------ 6. summary of results
     b.h1("6. Tổng hợp kết quả")
+    b.h2("6.1 Mọi sự kiện test")
     b.p(
         "Bảng dưới gộp user có lịch sử và user mới (mọi sự kiện test). User mới dùng prior cho mọi cách có prior; "
         "với plain, user mới dùng popularity toàn cục."
@@ -1047,6 +1076,196 @@ def build() -> Builder:
         f"{ci_ndcg(HB['all_events'])}, Recall@5 {ci_recall(HB['all_events'])}."
     )
 
+    # 6.2 seen vs unseen users (notebook 06)
+    PR, SR = SU["presence"], SU["results"]["test"]
+    PL, HYK = "plain SMLP4Rec", "hybrid (SMLP4Rec + prior + sameDest)"
+    b.h2("6.2 Người dùng đã thấy và chưa thấy trong train")
+    b.p(
+        "Tập valid và test được chia thành hai tập con không giao nhau theo việc người dùng có mặt trong tập train "
+        "hay không. Đã thấy: có ít nhất một dòng trong tập train của RecBole. Chưa thấy (cold-start): không có dòng "
+        "nào trong train, gồm hai loại sự kiện: người đã có lịch sử (L ≥ 1) nhưng toàn bộ booking nằm sau cửa sổ "
+        "train, và lần đặt đầu tiên của người dùng (L = 0)."
+    )
+    b.figure(
+        "week3_fig5_seen_unseen_share.png",
+        "Tỉ lệ người dùng và sự kiện đã thấy và chưa thấy trong train, tập valid và test.",
+    )
+    b.p(
+        f"Trên test, {pct(PR['test']['unseen_users_pct'] / 100, 1)} người dùng "
+        f"({num(PR['test']['unseen_users'])} / {num(PR['test']['users'])}) chưa có trong train, tương ứng "
+        f"{pct(PR['test']['unseen_events_pct'] / 100, 1)} sự kiện ({num(PR['test']['unseen_events'])} / "
+        f"{num(PR['test']['events'])}); trên valid là {pct(PR['valid']['unseen_users_pct'] / 100, 1)} người dùng và "
+        f"{pct(PR['valid']['unseen_events_pct'] / 100, 1)} sự kiện. Trong số người dùng chưa thấy ở test, "
+        f"{num(PR['test']['unseen_users_with_history_(L>=1)'])} người đã có lịch sử và "
+        f"{num(PR['test']['unseen_users_first_booking_only_(L=0)'])} người chỉ có lần đặt đầu. Độ dài lịch sử trung "
+        f"bình trên test: {dec(PR['test']['mean_history_len_seen'], 1)} (đã thấy) so với "
+        f"{dec(PR['test']['mean_history_len_unseen_L>=1'], 1)} (chưa thấy, L ≥ 1)."
+    )
+    b.figure(
+        "week3_fig6_seen_unseen_results.png",
+        "NDCG@5 và Recall@5 của SMLP4Rec plain và hybrid trên người dùng đã thấy và chưa thấy, tập test.",
+    )
+    b.p(
+        f"Hybrid cao hơn plain ở mọi tập con: NDCG@5 {dec(SR['seen users'][PL]['ndcg@5'], 3)} → "
+        f"{dec(SR['seen users'][HYK]['ndcg@5'], 3)} ở người đã thấy, {dec(SR['unseen users'][PL]['ndcg@5'], 3)} → "
+        f"{dec(SR['unseen users'][HYK]['ndcg@5'], 3)} ở người chưa thấy; Recall@5 "
+        f"{pct(SR['seen users'][PL]['recall@5'], 1)} → {pct(SR['seen users'][HYK]['recall@5'], 1)} và "
+        f"{pct(SR['unseen users'][PL]['recall@5'], 1)} → {pct(SR['unseen users'][HYK]['recall@5'], 1)}. "
+        f"Chênh lệch NDCG@5 có khoảng tin cậy bootstrap 95% hẹp ở mọi tập con "
+        f"(chưa thấy: {ci_ndcg(SU['bootstrap_test_95ci_hybrid_minus_plain']['unseen users'])})."
+    )
+    b.p(
+        [
+            ("Lưu ý về plain ở L = 0. ", True),
+            (
+                "SMLP4Rec chỉ đọc chuỗi booking nên không chấm được lần đặt đầu tiên; ở cột này plain dùng popularity "
+                f"toàn cục (NDCG@5 {dec(SR['unseen, L=0 (first booking)'][PL]['ndcg@5'], 3)}, Recall@5 "
+                f"{pct(SR['unseen, L=0 (first booking)'][PL]['recall@5'], 1)}), nên đây là điểm của popularity, không "
+                "phải của mô hình. Với người chưa thấy nhưng có lịch sử (L ≥ 1), plain đạt NDCG@5 "
+                f"{dec(SR['unseen, L>=1'][PL]['ndcg@5'], 3)}, gần với người đã thấy "
+                f"({dec(SR['seen users'][PL]['ndcg@5'], 3)}): mô hình không có tham số theo từng người dùng, nên việc "
+                "người đó có mặt trong train không quyết định; độ dài lịch sử mới quyết định."
+            , False),
+        ]
+    )
+
+    # 6.3 two basic baselines (notebook 07)
+    KM, LM = BL["models"][BL_KNN], BL["models"][BL_LR]
+    SPL = BL["split"]
+    all_sz = SPL["slice_sizes_vs_reference"]["test"]["all events"]
+    CT = BL["verification"]["controls_test_warm"]
+    ver_mismatch = (
+        sum(v["rank_mismatches"] for v in BV["logreg"].values() if isinstance(v, dict))
+        + BV["itemknn"]["test_sample_rank_mismatches"]
+        + len(BV["metrics_recomputed_from_saved_ranks"]["mismatches"])
+    )
+
+    def bl_row(name, d):
+        return [name] + [
+            dec(d[sl]["ndcg@5"], 3) if m == "n" else pct(d[sl]["recall@5"], 1)
+            for sl, m in (("all events", "n"), ("all events", "r"))
+        ] + [dec(d[sl]["ndcg@5"], 3) for sl in ("seen users", "unseen, L>=1", "unseen, L=0 (first booking)")]
+
+    k_grid = ", ".join(str(k) for k in sorted(int(k) for k in KM["K_grid_valid"]))
+    c_grid = "; ".join(
+        dec(c, 1).rstrip("0").rstrip(",") if c % 1 else dec(c, 0) for c in sorted(float(k) for k in LM["C_grid_valid"])
+    )
+    b.h2("6.3 Hai baseline cơ bản trên cùng phép chia")
+    b.p(
+        "Để kiểm tra điểm cao của hybrid đến từ dữ liệu chứ không từ rò rỉ hay lỗi chia tập, chạy thêm hai mô hình "
+        "có sẵn trong thư viện, không dùng code của hybrid, mỗi mô hình bị chặn đúng một nguồn tín hiệu "
+        "(notebook 07_basic_baselines)."
+    )
+    b.table(
+        [
+            ["Baseline", "Thư viện", "Thấy", "Không thấy", "Chọn trên valid"],
+            [
+                "ItemKNN (cosine, Sarwar 2001)",
+                "implicit, CosineRecommender",
+                f"{CFG['MAX_ITEM_LIST_LENGTH']} booking gần nhất của người dùng",
+                "điểm đến, mọi ngữ cảnh",
+                f"K = {KM['K_pick']} trong {{{k_grid}}}",
+            ],
+            [
+                "Hồi quy logistic đa lớp",
+                "scikit-learn, saga",
+                "điểm đến + ngữ cảnh lượt tìm (one-hot)",
+                "lịch sử, mọi trường của khách sạn đã đặt, thành phố và vùng của khách",
+                f"C = {dec(LM['C_pick'], 0)} trong {{{c_grid}}}; {LM['epochs']} epoch",
+            ],
+        ],
+        [2100, 1700, 2100, 2200, 1538],
+    )
+    b.p(
+        f"Phép chia giống bản plain: chia theo thời gian 80/10/10 trên {num(sum(SPL['counts'][k] for k in ('train', 'valid', 'test')))} "
+        f"mục tiêu “đặt tiếp theo”, lần đặt đầu của mỗi người dùng (L = 0) chấm riêng trong cùng cửa sổ thời gian. "
+        f"Tập test có {num(all_sz['here'])} sự kiện, bản plain có {num(all_sz['reference'])} (chênh {all_sz['diff']}); "
+        "số dòng ở từng tập con (đã thấy, chưa thấy) lệch tối đa 4 dòng. Cả hai mô hình huấn luyện trên booking trước "
+        "mốc cắt của prior; K và C chọn trên valid theo Recall@5 + NDCG@5, test chấm một lần. ItemKNN không có epoch: "
+        "độ tương tự cosine tính một lần; hồi quy logistic chạy đúng "
+        f"{LM['epochs']} epoch, không dừng sớm. Dòng không có lịch sử (L = 0) dùng popularity toàn cục ở ItemKNN."
+    )
+    b.table(
+        [["Cách (test)", "NDCG@5 mọi sự kiện", "Recall@5 mọi sự kiện", "NDCG@5 đã thấy", "NDCG@5 chưa thấy, L ≥ 1", "NDCG@5 L = 0*"]]
+        + [
+            bl_row("Popularity toàn cục (không học)", BL_R["pop"]),
+            bl_row(f"ItemKNN (K = {KM['K_pick']}): chỉ lịch sử", BL_R["knn"]),
+            bl_row("SMLP4Rec plain: chỉ lịch sử", {k: v[PLN_K] for k, v in SU["results"]["test"].items()}),
+            bl_row(f"Hồi quy logistic (C = {dec(LM['C_pick'], 0)}): điểm đến + ngữ cảnh", BL_R["lr"]),
+            [
+                [(c, True)]
+                for c in bl_row("Hybrid: lịch sử + prior + sameDest", {k: v[HYB_K] for k, v in SU["results"]["test"].items()})
+            ],
+        ],
+        [3000, 1300, 1300, 1300, 1438, 1300],
+    )
+    b.p(
+        "* L = 0 là lần đặt đầu tiên: ItemKNN và plain không có đầu vào nên dùng popularity toàn cục (cùng số); hồi quy "
+        "logistic và hybrid dùng điểm đến. Hàng plain và hybrid lấy từ notebook 06 (mục 6.2).",
+        "ref",
+    )
+    b.figure(
+        "week3_fig7_basic_baselines.png",
+        "NDCG@5 và Recall@5 của hai baseline, SMLP4Rec plain và hybrid trên mọi sự kiện test.",
+    )
+    d_dest = BL_R["lr"]["all events"]["ndcg@5"] - BL_R["pop"]["all events"]["ndcg@5"]
+    d_hist = SU["results"]["test"]["all events"][HYB_K]["ndcg@5"] - BL_R["lr"]["all events"]["ndcg@5"]
+    l0 = "unseen, L=0 (first booking)"
+    b.p(
+        [
+            ("Đọc kết quả. ", True),
+            (
+                f"ItemKNN, chỉ đọc lịch sử, nằm sát SMLP4Rec plain (NDCG@5 {dec(BL_R['knn']['all events']['ndcg@5'], 3)} so "
+                f"với {dec(SU['results']['test']['all events'][PLN_K]['ndcg@5'], 3)}), nên bản plain không bị thổi phồng. "
+                f"Hồi quy logistic, chỉ có điểm đến và ngữ cảnh, đạt {dec(BL_R['lr']['all events']['ndcg@5'], 3)}, cao hơn "
+                f"popularity {dec(d_dest, 3)} điểm NDCG@5; hybrid cộng thêm {dec(d_hist, 3)} điểm nhờ lịch sử cùng điểm "
+                f"đến và SMLP4Rec. Ở lần đặt đầu (L = 0), hồi quy logistic ({dec(BL_R['lr'][l0]['ndcg@5'], 3)}) chỉ kém hybrid "
+                f"({dec(SU['results']['test'][l0][HYB_K]['ndcg@5'], 3)}) {dec(SU['results']['test'][l0][HYB_K]['ndcg@5'] - BL_R['lr'][l0]['ndcg@5'], 3)} điểm. "
+                "Phần lớn điểm của hybrid giải thích được bằng điểm đến của lượt tìm, thông tin có sẵn trước khi đặt.",
+                False,
+            ),
+        ]
+    )
+    b.table(
+        [["Đối chứng (test, user có lịch sử, NDCG@5)", "Thật", "Xáo trộn"]]
+        + [
+            ["Hồi quy logistic: xáo trộn đặc trưng lượt tìm", dec(CT["LR real"]["ndcg@5"], 3), dec(CT["LR shuffled query features"]["ndcg@5"], 3)],
+            ["ItemKNN: xáo trộn lịch sử giữa các dòng", dec(CT["ItemKNN real"]["ndcg@5"], 3), dec(CT["ItemKNN shuffled histories"]["ndcg@5"], 3)],
+        ],
+        [6038, 1800, 1800],
+    )
+    b.p(
+        f"Mốc popularity toàn cục trên cùng tập là {dec(CT['global popularity']['ndcg@5'], 3)}; xáo trộn đưa cả hai mô hình "
+        "về mức đó, nên tín hiệu của chúng là thật."
+    )
+    b.p(
+        [
+            ("Kiểm tra. ", True),
+            (
+                f"Trong notebook: không dòng valid hoặc test nào nằm trong dữ liệu huấn luyện "
+                f"({num(BL['verification']['eval_rows_in_training_data'])} dòng); huấn luyện kết thúc "
+                f"{abs(BL['verification']['training_max_ts_minus_first_valid_target_ts'])} giây trước mục tiêu valid đầu tiên; "
+                "điểm ItemKNN khớp hàm recommend() của thư viện; Recall@5 và NDCG@5 tính lại bằng vòng lặp Python thuần "
+                "khớp; không có hạng hòa ở mục tiêu. Kiểm tra độc lập (scripts/verify_basic_baselines.py, không dùng code "
+                "của notebook): dựng lại phép chia, lịch sử, độ tương tự cosine và đặc trưng, chấm lại hai mô hình và "
+                f"so với kết quả đã lưu, được {ver_mismatch} sai khác về hạng; hồi quy logistic không dùng "
+                "trường nào của khách sạn đã đặt, thành phố hay vùng của khách; không có số kết quả viết cứng trong code notebook.",
+                False,
+            ),
+        ]
+    )
+    b.p(
+        [
+            ("Giới hạn. ", True),
+            (
+                f"Một seed; C = {dec(LM['C_pick'], 0)} là giá trị lớn nhất trong lưới nên có thể còn tăng nhẹ; hồi quy "
+                f"logistic chỉ chạy {LM['epochs']} epoch; lưới K và C nhỏ. Đây là kiểm tra tính hợp lý, không phải bảng so "
+                "sánh mô hình cuối cùng.",
+                False,
+            ),
+        ]
+    )
+
     # ------------------------------------------------------------ 7. conclusion
     b.h1("7. Kết luận và bước tiếp theo")
     b.h2("7.1 Kết luận")
@@ -1059,7 +1278,15 @@ def build() -> Builder:
                 f"{pct(WARM['plain']['recall@5'])} lên {pct(WARM['hybrid']['recall@5'])}."
             ),
             "Hybrid vượt luật đếm tuần 2, mốc mà SMLP4Rec + prior chưa vượt được ở NDCG@5.",
+            (
+                "Hybrid cao hơn plain cả với người dùng đã thấy lẫn chưa thấy trong train; plain không chấm được "
+                "lần đặt đầu (L = 0), chỉ có popularity thay thế."
+            ),
             "Tách trọng số theo thói quen không thêm gì; giữ 2 bộ trọng số (điểm đến mới / đã đặt).",
+            (
+                "Hai baseline cơ bản (ItemKNN chỉ dùng lịch sử, hồi quy logistic chỉ dùng điểm đến) cho thấy điểm cao "
+                "của hybrid chủ yếu do điểm đến của lượt tìm; không thấy dấu hiệu rò rỉ hay lỗi chia tập."
+            ),
         ]
     )
     b.p(
@@ -1077,7 +1304,7 @@ def build() -> Builder:
             "Chạy nhiều seed và báo cáo trung bình ± độ lệch chuẩn.",
             "Đưa điểm đến vào trong mô hình (query token) và so với cách trộn sau.",
             "Chạy lại trên phép chia theo sự kiện, gồm cả user mới, trong cùng một bảng.",
-            "Thêm các mô hình so sánh: ItemKNN, MF, item2vec, AdaGIN, LightGBM, cùng phép chia và tập ứng viên.",
+            "Thêm các mô hình so sánh còn lại: MF, item2vec, AdaGIN, LightGBM (ItemKNN và hồi quy logistic đã chạy ở mục 6.3), cùng phép chia và tập ứng viên.",
             "Bổ sung chỉ số ngoài độ chính xác: độ đa dạng trong danh sách, thiên lệch popularity.",
         ]
     )
@@ -1089,6 +1316,7 @@ def build() -> Builder:
             "Hotel cluster là đại diện ẩn danh cho hạng phòng hoặc gói; kết luận kinh doanh kế thừa giới hạn này.",
             f"Một seed ({CFG['seed']}), {CFG['epochs']} epoch, cấu hình nhẹ trên CPU; chưa tinh chỉnh siêu tham số của SMLP4Rec.",
             "Prior tĩnh, đếm đến cuối train; không cập nhật trong cửa sổ valid/test.",
+            "Hai baseline cơ bản: một seed, lưới K và C nhỏ, hồi quy logistic chỉ 3 epoch và C chọn ở biên lưới; dùng để kiểm tra tính hợp lý, chưa phải bảng so sánh cuối.",
             "Phép chia 80/10/10 của RecBole tính trên mục tiêu có lịch sử; user mới được chấm riêng cùng cửa sổ thời gian.",
             "Mọi kết quả là offline trên dữ liệu công khai; không có dữ liệu Vinpearl.",
             "Điều khoản dữ liệu Expedia chỉ cho phép dùng cho nghiên cứu; không phân phối lại dữ liệu thô.",
@@ -1131,14 +1359,21 @@ def build() -> Builder:
                 "smlprec_expedia_mixed_run.json, smlprec_expedia_dynamic_cap_run.json",
             ],
             ["5.1", "03_destination_prior", "smlprec_expedia_late_fusion.json"],
-            ["5.2, 6", "04_samedest_hybrid", "smlprec_expedia_hybrid_samedest.json"],
+            ["5.2, 6.1", "04_samedest_hybrid", "smlprec_expedia_hybrid_samedest.json"],
             ["5.3", "05_behaviour_split", "smlprec_expedia_hybrid_behaviour_split.json"],
+            ["6.2", "06_seen_vs_unseen_users", "smlprec_expedia_seen_unseen_users.json"],
+            [
+                "6.3",
+                "07_basic_baselines",
+                "results/week4_rebuild/basic_baselines.json, basic_baselines_verify.json",
+            ],
         ],
         [1200, 3000, 5438],
     )
     b.p(
         "Notebook nằm trong notebooks/hospitality/smlp4rec/, file kết quả trong results/week3_implementation/. "
-        "Hình được vẽ bởi scripts/week3_report_figures.py; báo cáo được dựng bởi scripts/week3_implementation_report.py.",
+        "Hình được vẽ bởi scripts/week3_report_figures.py; báo cáo được dựng bởi scripts/week3_implementation_report.py. "
+        "Kiểm tra độc lập của mục 6.3: scripts/verify_basic_baselines.py.",
     )
 
     # ------------------------------------------------------------ references
