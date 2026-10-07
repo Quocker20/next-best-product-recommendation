@@ -1,0 +1,459 @@
+{
+  "run": "SMLP4Rec + query token (context-aware, no hybrid), 3 epochs, notebook 01c",
+  "dataset": "expedia (train.csv, is_booking == 1; item = hotel_cluster)",
+  "git_commit": "6706ac5",
+  "query_fields": [
+    "dest",
+    "dest_type",
+    "ci_month",
+    "lead",
+    "stay",
+    "adults",
+    "children",
+    "rooms",
+    "package",
+    "mobile",
+    "channel",
+    "site",
+    "posa",
+    "country"
+  ],
+  "query_vocab_min_count": {
+    "dest": 5,
+    "dest_type": 1,
+    "ci_month": 1,
+    "lead": 1,
+    "stay": 1,
+    "adults": 1,
+    "children": 1,
+    "rooms": 1,
+    "package": 1,
+    "mobile": 1,
+    "channel": 1,
+    "site": 1,
+    "posa": 1,
+    "country": 5
+  },
+  "excluded_inputs": "destinations.csv latent features, hotel_*, orig_destination_distance, user_location_region/city, cnt",
+  "config": {
+    "MAX_ITEM_LIST_LENGTH": 20,
+    "n_layers": 2,
+    "hidden_size": 64,
+    "hidden_dropout_prob": 0.0,
+    "loss_type": "CE",
+    "epochs": 3,
+    "train_batch_size": 1024,
+    "learning_rate": 0.001,
+    "seed": 2022,
+    "eval_args": {
+      "split": {
+        "RS": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "order": "TO",
+      "group_by": null,
+      "mode": "full"
+    },
+    "topk": [
+      5,
+      10,
+      20
+    ],
+    "valid_metric": "NDCG@10"
+  },
+  "n_parameters": 938012,
+  "n_query_parameters": 904064,
+  "n_parameters_history_only": 33702,
+  "splits": {
+    "train": {
+      "targets": 1749368,
+      "first_target_unix": 1357518976,
+      "last_target_unix": 1412776704,
+      "mean_history_len": 5.853
+    },
+    "valid": {
+      "targets": 218670,
+      "first_target_unix": 1412776704,
+      "last_target_unix": 1416398080,
+      "mean_history_len": 7.391
+    },
+    "test": {
+      "targets": 218670,
+      "first_target_unix": 1416398080,
+      "last_target_unix": 1420070400,
+      "mean_history_len": 7.255
+    }
+  },
+  "query_coverage": {
+    "dest": {
+      "vocab_size": 13766,
+      "oov_valid_targets": 0.0227,
+      "oov_test_targets": 0.0243
+    },
+    "dest_type": {
+      "vocab_size": 8,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "ci_month": {
+      "vocab_size": 12,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "lead": {
+      "vocab_size": 11,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "stay": {
+      "vocab_size": 14,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "adults": {
+      "vocab_size": 10,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "children": {
+      "vocab_size": 10,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "rooms": {
+      "vocab_size": 9,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "package": {
+      "vocab_size": 2,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "mobile": {
+      "vocab_size": 2,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "channel": {
+      "vocab_size": 11,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "site": {
+      "vocab_size": 39,
+      "oov_valid_targets": 0.0003,
+      "oov_test_targets": 0.0003
+    },
+    "posa": {
+      "vocab_size": 5,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "country": {
+      "vocab_size": 212,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    }
+  },
+  "timing_seconds": {
+    "data_build": 66.6,
+    "train_and_eval": 729.1,
+    "test": 21.0
+  },
+  "best_epoch_by_valid": 3,
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-07_expedia_smlp4rec_query-1c\\best.pth",
+  "per_epoch": [
+    {
+      "epoch": 1,
+      "train_loss": 5183.8896,
+      "train_seconds": 198.7,
+      "valid": {
+        "n": 218670,
+        "recall@5": 0.5832,
+        "recall@10": 0.7559,
+        "recall@20": 0.8955,
+        "ndcg@5": 0.4157,
+        "ndcg@10": 0.4716,
+        "ndcg@20": 0.5072
+      },
+      "test": {
+        "n": 218670,
+        "recall@5": 0.5731,
+        "recall@10": 0.7461,
+        "recall@20": 0.888,
+        "ndcg@5": 0.4086,
+        "ndcg@10": 0.4647,
+        "ndcg@20": 0.5008
+      },
+      "eval_seconds": 15.2
+    },
+    {
+      "epoch": 2,
+      "train_loss": 4631.6362,
+      "train_seconds": 223.4,
+      "valid": {
+        "n": 218670,
+        "recall@5": 0.5965,
+        "recall@10": 0.7698,
+        "recall@20": 0.9063,
+        "ndcg@5": 0.4266,
+        "ndcg@10": 0.4828,
+        "ndcg@20": 0.5176
+      },
+      "test": {
+        "n": 218670,
+        "recall@5": 0.588,
+        "recall@10": 0.7601,
+        "recall@20": 0.8996,
+        "ndcg@5": 0.4206,
+        "ndcg@10": 0.4764,
+        "ndcg@20": 0.5119
+      },
+      "eval_seconds": 14.7
+    },
+    {
+      "epoch": 3,
+      "train_loss": 4522.59,
+      "train_seconds": 253.6,
+      "valid": {
+        "n": 218670,
+        "recall@5": 0.5981,
+        "recall@10": 0.7725,
+        "recall@20": 0.9094,
+        "ndcg@5": 0.4266,
+        "ndcg@10": 0.4832,
+        "ndcg@20": 0.5181
+      },
+      "test": {
+        "n": 218670,
+        "recall@5": 0.5898,
+        "recall@10": 0.7636,
+        "recall@20": 0.9029,
+        "ndcg@5": 0.4209,
+        "ndcg@10": 0.4772,
+        "ndcg@20": 0.5127
+      },
+      "eval_seconds": 23.3
+    }
+  ],
+  "valid": {
+    "n": 218670,
+    "recall@5": 0.5981,
+    "recall@10": 0.7725,
+    "recall@20": 0.9094,
+    "ndcg@5": 0.4266,
+    "ndcg@10": 0.4832,
+    "ndcg@20": 0.5181
+  },
+  "test": {
+    "n": 218670,
+    "recall@5": 0.5898,
+    "recall@10": 0.7636,
+    "recall@20": 0.9029,
+    "ndcg@5": 0.4209,
+    "ndcg@10": 0.4772,
+    "ndcg@20": 0.5127
+  },
+  "plain_rescored_valid": {
+    "n": 218670,
+    "recall@5": 0.3352,
+    "recall@10": 0.4623,
+    "recall@20": 0.6309,
+    "ndcg@5": 0.2429,
+    "ndcg@10": 0.2838,
+    "ndcg@20": 0.3263
+  },
+  "plain_rescored_test": {
+    "n": 218670,
+    "recall@5": 0.3369,
+    "recall@10": 0.4645,
+    "recall@20": 0.6309,
+    "ndcg@5": 0.2439,
+    "ndcg@10": 0.285,
+    "ndcg@20": 0.3269
+  },
+  "heuristics_test": {
+    "global_popularity": {
+      "n": 218670,
+      "recall@5": 0.1478,
+      "recall@10": 0.2476,
+      "recall@20": 0.3925,
+      "ndcg@5": 0.0938,
+      "ndcg@10": 0.1256,
+      "ndcg@20": 0.1619
+    },
+    "repeat_last_then_popularity": {
+      "n": 218670,
+      "recall@5": 0.257,
+      "recall@10": 0.3439,
+      "recall@20": 0.4762,
+      "ndcg@5": 0.2031,
+      "ndcg@10": 0.2309,
+      "ndcg@20": 0.2641
+    }
+  },
+  "slices_test": {
+    "all warm rows | plain": {
+      "n": 218670,
+      "recall@5": 0.3369,
+      "ndcg@5": 0.2439
+    },
+    "all warm rows | query token": {
+      "n": 218670,
+      "recall@5": 0.5898,
+      "ndcg@5": 0.4209
+    },
+    "seen users | plain": {
+      "n": 143025,
+      "recall@5": 0.3406,
+      "ndcg@5": 0.2433
+    },
+    "seen users | query token": {
+      "n": 143025,
+      "recall@5": 0.5997,
+      "ndcg@5": 0.4282
+    },
+    "unseen users (L>=1) | plain": {
+      "n": 75645,
+      "recall@5": 0.3299,
+      "ndcg@5": 0.2451
+    },
+    "unseen users (L>=1) | query token": {
+      "n": 75645,
+      "recall@5": 0.571,
+      "ndcg@5": 0.4071
+    },
+    "L=1 | plain": {
+      "n": 39993,
+      "recall@5": 0.2691,
+      "ndcg@5": 0.1971
+    },
+    "L=1 | query token": {
+      "n": 39993,
+      "recall@5": 0.5549,
+      "ndcg@5": 0.3891
+    },
+    "L=2-4 | plain": {
+      "n": 68253,
+      "recall@5": 0.3155,
+      "ndcg@5": 0.2275
+    },
+    "L=2-4 | query token": {
+      "n": 68253,
+      "recall@5": 0.5771,
+      "ndcg@5": 0.4097
+    },
+    "L=5-9 | plain": {
+      "n": 47412,
+      "recall@5": 0.3551,
+      "ndcg@5": 0.2556
+    },
+    "L=5-9 | query token": {
+      "n": 47412,
+      "recall@5": 0.5997,
+      "ndcg@5": 0.4293
+    },
+    "L>=10 | plain": {
+      "n": 63012,
+      "recall@5": 0.3893,
+      "ndcg@5": 0.2826
+    },
+    "L>=10 | query token": {
+      "n": 63012,
+      "recall@5": 0.6182,
+      "ndcg@5": 0.4467
+    }
+  },
+  "bootstrap_query_minus_plain_test": {
+    "all warm rows": {
+      "recall@5": {
+        "diff": 0.2529,
+        "ci95": [
+          0.2504,
+          0.2551
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.177,
+        "ci95": [
+          0.1752,
+          0.1785
+        ]
+      }
+    },
+    "seen users": {
+      "recall@5": {
+        "diff": 0.2591,
+        "ci95": [
+          0.2561,
+          0.2621
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.1849,
+        "ci95": [
+          0.1827,
+          0.187
+        ]
+      }
+    },
+    "unseen users (L>=1)": {
+      "recall@5": {
+        "diff": 0.2412,
+        "ci95": [
+          0.2374,
+          0.245
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.1619,
+        "ci95": [
+          0.1593,
+          0.1647
+        ]
+      }
+    }
+  },
+  "diagnostics_test": {
+    "real": {
+      "n": 218670,
+      "recall@5": 0.5898,
+      "recall@10": 0.7636,
+      "recall@20": 0.9029,
+      "ndcg@5": 0.4209,
+      "ndcg@10": 0.4772,
+      "ndcg@20": 0.5127
+    },
+    "query shuffled": {
+      "n": 218670,
+      "recall@5": 0.1315,
+      "recall@10": 0.2203,
+      "recall@20": 0.3699,
+      "ndcg@5": 0.0864,
+      "ndcg@10": 0.1148,
+      "ndcg@20": 0.1523
+    },
+    "history masked": {
+      "n": 218670,
+      "recall@5": 0.5165,
+      "recall@10": 0.709,
+      "recall@20": 0.8741,
+      "ndcg@5": 0.3496,
+      "ndcg@10": 0.412,
+      "ndcg@20": 0.454
+    },
+    "both (shuffled + masked)": {
+      "n": 218670,
+      "recall@5": 0.0774,
+      "recall@10": 0.1476,
+      "recall@20": 0.2772,
+      "ndcg@5": 0.0462,
+      "ndcg@10": 0.0686,
+      "ndcg@20": 0.1011
+    }
+  }
+}
