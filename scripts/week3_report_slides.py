@@ -458,7 +458,7 @@ W_NEW, W_KNOWN = HW_CELLS["0"], HW_CELLS["1"]
 slide(
     "4 · Thử nghiệm",
     "Hướng B2: thêm sameDest, hybrid ba tín hiệu",
-    f"""<div class="eq">điểm = log q<sub>SMLP4Rec</sub> + w<sub>p</sub> · log q<sub>prior</sub> + w<sub>s</sub> · log q<sub>sameDest</sub> &nbsp;·&nbsp; log q = log((1 − α)·p + α/100)</div>
+    f"""<div class="eq">điểm = log q<sub>SMLP4Rec</sub> + w<sub>p</sub> · log q<sub>prior</sub> + w<sub>s</sub> · log q<sub>sameDest</sub><br><span class="sm">trong đó mỗi q là xác suất p đã trộn với phân bố đều: log q = log((1 − α)·p + α/100)</span></div>
 <p class="muted">sameDest(cụm) = tổng 0,7<sup>tuổi</sup> các lần người dùng đặt cụm đó <b>tại đúng điểm đến đang tìm</b> (tuổi 0 = lần gần nhất), chia cho tổng để thành phân bố. Ví dụ: cụm 12 đặt tại Cancún ở tuổi 0 và 3 → {
         dec(EX12, 3)
     }; đặt ở điểm đến khác → 0. Ba thành phần cùng một thang nên trọng số đọc được như mức tin cậy; chưa từng đặt tại điểm đến này → sameDest không tác động.</p>
