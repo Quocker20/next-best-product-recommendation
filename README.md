@@ -42,7 +42,7 @@ next-best-product-recommendation/
 ├── reports/summary/           # chỉ báo cáo + slide
 │   ├── week1_dataset_selection/   # eda_summary.md, week1_review_additions.md, week1_report_v3.html
 │   ├── week2_methodology/         # methodology_selection_report.docx, methodology_slides.html/.pdf
-│   └── week3_implementation/      # week3_report_slides.html/.pdf
+│   └── week3_implementation/      # week3_report_slides_v2.html/.pdf, week3_implementation_report.docx
 ├── results/                   # output của script (json, csv, log, hình)
 │   ├── figures/{en,vi}/
 │   ├── week1_dataset_selection/
