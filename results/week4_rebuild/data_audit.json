@@ -1,0 +1,124 @@
+{
+  "rows": 3000685,
+  "burst_gap_seconds": {
+    "n": 48010,
+    "le_0s": 0,
+    "le_128s": 3026,
+    "le_1h": 24912,
+    "le_1d": 33792,
+    "gt_1d": 14218,
+    "median_s": 2635.5
+  },
+  "gap_le_128s_any_pair": {
+    "n": 16378,
+    "of_which_burst": 3026
+  },
+  "same_timestamp_pairs_same_user": 4,
+  "vs_previous_booking": {
+    "same_trip_same_cluster (= burst rule)": 48010,
+    "same_trip_other_cluster": 31155,
+    "same_dest_same_cluster_other_dates": 172258
+  },
+  "targets_approx_split": {
+    "train": {
+      "targets": 1749360,
+      "burst_target": {
+        "n": 38496,
+        "share": 0.02200576210728495
+      },
+      "sameDest_ceiling (target cluster booked earlier at query destination)": {
+        "n": 274869,
+        "share": 0.15712546302647826
+      },
+      "ceiling_rows_that_are_burst": {
+        "n": 38496,
+        "share": 0.02200576210728495
+      },
+      "ceiling_rows_where_burst_previous_is_the_only_hit": {
+        "n": 31179,
+        "share": 0.01782308958704898
+      },
+      "ceiling_without_burst_only_rows": 0.13930237343942928
+    },
+    "valid": {
+      "targets": 218670,
+      "burst_target": {
+        "n": 4605,
+        "share": 0.021059130196186035
+      },
+      "sameDest_ceiling (target cluster booked earlier at query destination)": {
+        "n": 37028,
+        "share": 0.16933278456121095
+      },
+      "ceiling_rows_that_are_burst": {
+        "n": 4605,
+        "share": 0.021059130196186035
+      },
+      "ceiling_rows_where_burst_previous_is_the_only_hit": {
+        "n": 3625,
+        "share": 0.016577491196780536
+      },
+      "ceiling_without_burst_only_rows": 0.15275529336443042
+    },
+    "test": {
+      "targets": 218670,
+      "burst_target": {
+        "n": 4909,
+        "share": 0.0224493529062057
+      },
+      "sameDest_ceiling (target cluster booked earlier at query destination)": {
+        "n": 36879,
+        "share": 0.16865139250926053
+      },
+      "ceiling_rows_that_are_burst": {
+        "n": 4909,
+        "share": 0.0224493529062057
+      },
+      "ceiling_rows_where_burst_previous_is_the_only_hit": {
+        "n": 3812,
+        "share": 0.017432661087483422
+      },
+      "ceiling_without_burst_only_rows": 0.1512187314217771
+    }
+  },
+  "missing": {
+    "orig_destination_distance_null": {
+      "n": 1015177,
+      "share": 0.33831508472232175
+    },
+    "user_country_null": {
+      "n": 0,
+      "share": 0.0
+    }
+  },
+  "profile": {
+    "bookings_per_user": {
+      "max": 100,
+      "users_at_max": 9,
+      "users_ge_95": 56,
+      "users_ge_50": 1685,
+      "rows_share_users_ge_50": 0.03673127969113719
+    },
+    "family_share_by_year": {
+      "2013": 0.2610910340438077,
+      "2014": 0.1503421294045081
+    },
+    "rows_by_month_2013_vs_2014": {
+      "2013": 1024386,
+      "2014": 1976299
+    },
+    "destinations_csv_row_coverage": 0.9958289523892044,
+    "sameDest_cluster_hit_age": {
+      "rows_with_earlier_same_dest_and_cluster": 348776,
+      "<=128s": 11716,
+      "<=1h": 89242,
+      "<=1d": 27241,
+      "<=7d": 48864,
+      "<=30d": 56462,
+      ">30d": 115251
+    },
+    "session_repeat_non_burst_le_3600s": 76046,
+    "session_repeat_non_burst_le_21600s": 83576,
+    "session_repeat_non_burst_le_86400s": 94407
+  }
+}

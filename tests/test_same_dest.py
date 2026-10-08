@@ -41,3 +41,11 @@ def test_padding_and_other_rows_are_ignored():
     assert s[0, 0] == 0.0  # padding id never scores although its destination field equals the query
     assert s[0, 5] == pytest.approx(1.0)
     assert s[1, 8] == pytest.approx(0.7) and s[1, 9] == 0.0
+
+
+def test_values_beyond_the_history_length_never_change_the_score():
+    """Future-proofing: whatever sits in padded positions (even a query-destination match) is ignored."""
+    base = same_dest_scores(SEQ, LEN, H_DEST, Q, n_items=10, base=0.7)
+    seq2 = np.array([[5, 6, 7, 9]])  # a "future" booking of cluster 9 after the history
+    h2 = np.array([[100, 200, 100, 100]])  # at the query destination
+    assert np.array_equal(base, same_dest_scores(seq2, LEN, h2, Q, n_items=10, base=0.7))

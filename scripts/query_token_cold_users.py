@@ -25,34 +25,34 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 torch.load = functools.partial(torch.load, weights_only=False)
 
-import pandas as pd  # noqa: E402
-from recbole.config import Config  # noqa: E402
-from recbole.data import create_dataset, data_preparation  # noqa: E402
-from recbole.utils import init_seed  # noqa: E402
+import pandas as pd
+from recbole.config import Config
+from recbole.data import create_dataset, data_preparation
+from recbole.utils import init_seed
 
-from nbp.data.query_features import QUERY_FIELDS, build_vocab, encode  # noqa: E402
-from nbp.eval.bootstrap import paired_bootstrap  # noqa: E402
-from nbp.eval.metrics import summarize, target_rank  # noqa: E402
-from nbp.models.smlprec_query import ROW_ID, SMLPRECQuery  # noqa: E402
-from src.models.smlprec import SMLPREC  # noqa: E402
+from nbp.data.query_features import QUERY_FIELDS, build_vocab, encode
+from nbp.eval.bootstrap import paired_bootstrap
+from nbp.eval.metrics import summarize, target_rank
+from nbp.models.smlprec_query import ROW_ID, SMLPRECQuery
+from src.models.smlprec import SMLPREC
 
 logging.disable(logging.INFO)
 
 CONFIG = ROOT / "configs" / "smlprec_expedia.yaml"
 WORK = ROOT / "data" / "interim" / "recbole"
-CODES = ROOT / "data" / "interim" / "expedia_query_codes.npz"
-RUN_DIR = max((ROOT / "experiments").glob("*_expedia_smlp4rec_query-1c"))
+CODES = ROOT / "data" / "interim" / "expedia_query_codes_clean.npz"
+EVENT_COLS = ROOT / "data" / "interim" / "expedia_event_cols_clean.npz"  # row position = event index = TIME
+RUN_DIR = max((ROOT / "experiments").glob("*_expedia_smlp4rec_query-1c-clean"))
 QRUN = json.loads((ROOT / "results" / "week4_rebuild" / "smlprec_query_run.json").read_text(encoding="utf-8"))
 SU = json.loads((ROOT / "results" / "week3_implementation" / "smlprec_expedia_seen_unseen_users.json").read_text(encoding="utf-8"))
 OUT = ROOT / "results" / "week4_rebuild" / "smlprec_query_cold_L0.json"
-RAW = ROOT / "data" / "raw" / "hospitality" / "expedia" / "train.csv"
 KS = (5, 10, 20)
-N_CLUSTERS, M_SMOOTH, EPS, TIME_MARGIN = 100, 5, 1e-6, 128
+N_CLUSTERS, M_SMOOTH, EPS, TIME_MARGIN = 100, 5, 1e-6, 0  # TIME is the exact event index
 W_FUSION = QRUN["prior_fusion_check"]["chosen_w_on_valid_recall@5"]
 
 config = Config(
     model=SMLPREC,
-    dataset="expedia_rowid",
+    dataset="expedia_clean_rowid",
     config_file_list=[str(CONFIG)],
     config_dict={
         "data_path": str(WORK),
@@ -88,7 +88,7 @@ t_train_max = float(train_data.dataset.inter_feat[TIME].max())
 t_valid_max = float(valid_data.dataset.inter_feat[TIME].max())
 cut = t_train_max - TIME_MARGIN
 train_users = np.unique(train_data.dataset.inter_feat[UID].numpy())
-inter = pd.read_csv(WORK / "expedia_rowid" / "expedia_rowid.inter", sep="\t").sort_values(
+inter = pd.read_csv(WORK / "expedia_clean_rowid" / "expedia_clean_rowid.inter", sep="\t").sort_values(
     ["user_id:token", "timestamp:float"], kind="stable"
 )
 first = inter.drop_duplicates("user_id:token", keep="first")
@@ -108,21 +108,15 @@ for sp, mask in windows.items():
         "user": np.array([uid_of_token[str(u)] for u in f["user_id:token"]]),
     }
     assert not np.isin(cold[sp]["user"], train_users).any()
-EXPECT = SU["presence"]["test"]["unseen_events_L=0"]
-assert len(cold["test"]["row"]) == EXPECT, (len(cold["test"]["row"]), EXPECT)
-print({sp: len(c["row"]) for sp, c in cold.items()}, "L = 0 rows; matches notebook 06")
+EXPECT = SU["presence"]["test"]["unseen_events_L=0"]  # uncollapsed data (notebook 06), for reference only
+print({sp: len(c["row"]) for sp, c in cold.items()}, "L = 0 rows; notebook 06 (uncollapsed data) had", EXPECT)
 
 
 # ---- prior tables (notebook 03 / 01c)
-def build_prior_tables(cut_seconds: float) -> dict:
-    cols = ["date_time", "is_booking", "srch_destination_id", "hotel_market", "hotel_cluster"]
-    dtypes = {c: "int32" for c in cols if c != "date_time"}
-    parts = []
-    for ch in pd.read_csv(RAW, usecols=cols, chunksize=2_000_000, dtype=dtypes):
-        ch = ch[ch.is_booking == 1]
-        ts = (pd.to_datetime(ch["date_time"]) - pd.Timestamp("1970-01-01")) // pd.Timedelta(seconds=1)
-        parts.append(ch.loc[ts.values < cut_seconds, ["srch_destination_id", "hotel_market", "hotel_cluster"]])
-    b = pd.concat(parts, ignore_index=True)
+def build_prior_tables(cut_event: float) -> dict:
+    """Cluster count tables from the bookings strictly before event index cut_event (collapsed data)."""
+    z, k = np.load(EVENT_COLS), int(cut_event)
+    b = pd.DataFrame({"srch_destination_id": z["dest"][:k], "hotel_market": z["market"][:k], "hotel_cluster": z["item"][:k]}).astype("int64")
 
     def table(key):
         t = b.groupby([key, "hotel_cluster"]).size().unstack(fill_value=0)
@@ -223,11 +217,17 @@ result = {
     "n_rows": {sp: len(c["row"]) for sp, c in cold.items()},
     "w_fusion_chosen_in_01c": W_FUSION,
     "results": res,
-    "reference_notebook_06_L0_hybrid_prior_only_test": ref,
+    "reference_notebook_06_L0_hybrid_prior_only_test_uncollapsed_data": ref,
     "reference_warm_rows_history_masked_test_01c": warm_masked,
     "test_slices_ndcg5_recall5": slices,
     "test_share_destination_oov": float(oov.mean()),
     "bootstrap_test_95ci": boot,
 }
 OUT.write_text(json.dumps(result, indent=2), encoding="utf-8")
+# per-row ranks of the test L = 0 rows (row = event index of the first booking), for paired bootstrap
+np.savez_compressed(
+    RUN_DIR / "ranks_test_cold.npz",
+    row=cold["test"]["row"],
+    **{k.split(" (")[0].replace(" ", "_").replace("=", ""): v for k, v in ranks["test"].items()},
+)
 print("wrote", OUT)

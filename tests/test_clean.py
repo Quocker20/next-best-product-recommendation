@@ -1,6 +1,13 @@
 import pandas as pd
 
-from nbp.data.clean import clean_bookings, flag_burst_repeats, party_type, summarize
+from nbp.data.clean import (
+    clean_bookings,
+    collapse_bursts,
+    flag_burst_repeats,
+    flag_session_repeats,
+    party_type,
+    summarize,
+)
 from nbp.data.load import DATE_COLS, filter_bookings
 
 
@@ -139,3 +146,76 @@ def test_summarize_counts():
     assert s["rows"] == 4 and s["users"] == 2 and s["items"] == 2
     assert s["unique_user_item_pairs"] == 3
     assert s["single_booking_users"] == 1 and s["single_booking_user_share"] == 0.5
+
+
+def test_collapse_bursts_keeps_first_of_chain_and_is_idempotent():
+    raw = _raw(
+        [
+            {"user_id": 1, "date_time": "2014-03-01 10:00:00"},
+            {"user_id": 1, "date_time": "2014-03-01 10:05:00"},  # burst
+            {"user_id": 1, "date_time": "2014-03-01 10:09:00"},  # burst (chain A, A, A)
+            {"user_id": 1, "date_time": "2014-03-05 10:00:00", "hotel_cluster": 8},
+            {"user_id": 2, "date_time": "2014-03-01 10:06:00"},
+        ]
+    )
+    flagged, _ = clean_bookings(raw)
+    out, counts = collapse_bursts(flagged)
+    assert counts == {"rows_in": 5, "burst_dropped": 2, "rows_out": 3}
+    first = out[out["user_id"] == 1].sort_values("timestamp")
+    assert list(first["timestamp"].dt.minute) == [0, 0]  # earliest record kept
+    assert list(first["item_id"]) == [7, 8]
+    again, c2 = collapse_bursts(out)
+    assert c2["burst_dropped"] == 0 and len(again) == len(out)
+
+
+def test_session_repeat_window_and_burst_exclusion():
+    raw = _raw(
+        [
+            {"user_id": 1, "date_time": "2014-03-01 10:00:00"},
+            # same dest + cluster 30 min later, other dates -> session repeat (not burst)
+            {"user_id": 1, "date_time": "2014-03-01 10:30:00", "srch_co": "2014-04-09"},
+            # same dest + cluster 3 h after the previous one -> outside the window
+            {"user_id": 1, "date_time": "2014-03-01 13:30:00", "srch_co": "2014-04-10"},
+            # other cluster inside the window -> not a repeat
+            {"user_id": 1, "date_time": "2014-03-01 13:40:00", "hotel_cluster": 9},
+            # identical trip -> burst, so not counted as a session repeat
+            {"user_id": 2, "date_time": "2014-03-01 10:00:00"},
+            {"user_id": 2, "date_time": "2014-03-01 10:10:00"},
+        ]
+    )
+    flags = flag_session_repeats(raw)
+    assert list(flags) == [False, True, False, False, False, True]
+    _, counts = clean_bookings(raw)
+    assert counts["flag_session_repeat"] == 1  # the user-1 pair; user 2 is a burst
+    assert counts["flag_burst_repeat"] == 1
+
+
+def test_ts_unix_is_exact_int_seconds_and_heavy_user_flag():
+    raw = _raw([{"user_id": 1}, {"user_id": 2, "date_time": "2014-03-01 10:00:01"}])
+    clean, counts = clean_bookings(raw)
+    assert str(clean["ts_unix"].dtype) == "int64"
+    assert list(clean["ts_unix"]) == [1393668000, 1393668001]
+    assert counts["flag_heavy_user"] == 0
+
+
+def test_analysis_flags_do_not_change_rows_or_context():
+    raw = _raw(
+        [
+            {"user_id": 1},
+            {"user_id": 2, "srch_adults_cnt": 6, "srch_rm_cnt": 1},  # 6 guests in 1 room
+            {"user_id": 3, "srch_ci": "2015-06-01", "srch_co": "2015-06-03"},  # lead > 365 days
+            {"user_id": 4, "user_location_country": 0},
+        ]
+    )
+    clean, counts = clean_bookings(raw)
+    c = clean.set_index("user_id")
+    assert len(clean) == 4
+    assert c.loc[2, "flag_occupancy_odd"] and c.loc[2, "ctx_adults"] == 6
+    assert c.loc[3, "flag_extreme_lead"] and c.loc[3, "ctx_lead_days"] > 365
+    assert c.loc[4, "flag_unknown_geo"]
+    assert not c.loc[1, ["flag_occupancy_odd", "flag_extreme_lead", "flag_unknown_geo"]].any()
+    assert (
+        counts["flag_occupancy_odd"],
+        counts["flag_extreme_lead"],
+        counts["flag_unknown_geo"],
+    ) == (1, 1, 1)

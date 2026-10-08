@@ -1,0 +1,135 @@
+{
+  "events": 2952675,
+  "forbidden_raw_columns_in_query_fields": [],
+  "order": {
+    "ts_non_decreasing_within_user_violations": 0,
+    "same_second_pairs_within_user": 4
+  },
+  "targets": {
+    "train": 1710952,
+    "valid": 213869,
+    "test": 213869
+  },
+  "history_before_target": {
+    "valid": {
+      "targets_checked": 213869,
+      "violations": 0,
+      "histories_capped_at_20_share": 0.123061313233802
+    },
+    "test": {
+      "targets_checked": 213869,
+      "violations": 0,
+      "histories_capped_at_20_share": 0.11984906648462376
+    }
+  },
+  "single_field_strength": {
+    "global_popularity_recall@5": 0.14110506899083083,
+    "dest": {
+      "distinct_values": 36933,
+      "recall@5_valid": 0.5359168462937592
+    },
+    "dest_type": {
+      "distinct_values": 9,
+      "recall@5_valid": 0.14595383155108968
+    },
+    "ci_month": {
+      "distinct_values": 12,
+      "recall@5_valid": 0.14071698095563173
+    },
+    "lead": {
+      "distinct_values": 11,
+      "recall@5_valid": 0.14796440811898873
+    },
+    "stay": {
+      "distinct_values": 16,
+      "recall@5_valid": 0.14805792330819334
+    },
+    "adults": {
+      "distinct_values": 10,
+      "recall@5_valid": 0.1412874236097798
+    },
+    "children": {
+      "distinct_values": 10,
+      "recall@5_valid": 0.14080114462591586
+    },
+    "rooms": {
+      "distinct_values": 9,
+      "recall@5_valid": 0.14143237215304696
+    },
+    "package": {
+      "distinct_values": 2,
+      "recall@5_valid": 0.14506543725364593
+    },
+    "mobile": {
+      "distinct_values": 2,
+      "recall@5_valid": 0.14110506899083083
+    },
+    "channel": {
+      "distinct_values": 11,
+      "recall@5_valid": 0.14648219237009572
+    },
+    "site": {
+      "distinct_values": 43,
+      "recall@5_valid": 0.16955238954687216
+    },
+    "posa": {
+      "distinct_values": 5,
+      "recall@5_valid": 0.1661531124192847
+    },
+    "country": {
+      "distinct_values": 235,
+      "recall@5_valid": 0.18602976588472384
+    }
+  },
+  "trip_overlap_with_history": {
+    "valid": {
+      "same_trip_any_cluster": 0.027208244299080277,
+      "same_trip_same_cluster": 0.006480602611879234,
+      "same_trip_same_cluster_n": 1386
+    },
+    "test": {
+      "same_trip_any_cluster": 0.03024281218876976,
+      "same_trip_same_cluster": 0.0063122752713109425,
+      "same_trip_same_cluster_n": 1350
+    }
+  },
+  "candidate_fields": {
+    "checkin_weekday": {
+      "distinct_values": 7,
+      "valid_targets_with_value_seen_ge_5_in_train": 1.0,
+      "recall@5_valid": 0.1408525779799784
+    },
+    "user_region": {
+      "distinct_values": 970,
+      "valid_targets_with_value_seen_ge_5_in_train": 0.9997428332296874,
+      "recall@5_valid": 0.18521618373864374
+    },
+    "user_city": {
+      "distinct_values": 36890,
+      "valid_targets_with_value_seen_ge_5_in_train": 0.9740027774011194,
+      "recall@5_valid": 0.1745694794476993
+    }
+  },
+  "sameDest_signal_age": {
+    "valid": {
+      "targets": 213869,
+      "targets_with_same_dest_cluster_repeat": 32382,
+      "share_of_targets": 0.15141044284117847,
+      "age_<=1h": 7142,
+      "age_<=1d": 1919,
+      "age_<=7d": 4134,
+      "age_<=30d": 5552,
+      "age_>30d": 13635
+    },
+    "test": {
+      "targets": 213869,
+      "targets_with_same_dest_cluster_repeat": 31993,
+      "share_of_targets": 0.14959157241114887,
+      "age_<=1h": 6894,
+      "age_<=1d": 1944,
+      "age_<=7d": 4464,
+      "age_<=30d": 5663,
+      "age_>30d": 13028
+    }
+  }
+}

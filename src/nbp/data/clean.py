@@ -4,6 +4,12 @@ Policy (decided 2026-10-05): rows are never dropped for context defects. The aff
 context value is nulled and a `flag_*` column is set, so the evaluation event set is
 unchanged. Only duplicate keys are dropped. Burst repeats are flagged, not removed; the
 protocol (Day 3) decides whether to collapse them or report both ways.
+
+Decision 2026-10-08 (user): burst repeats are collapsed by `collapse_bursts`, which drops them from
+targets and histories. `clean_bookings` still returns the full flagged table so the "with burst"
+numbers can be reproduced as a sensitivity run. Two further flags are analysis-only (rows stay):
+`flag_session_repeat`, `flag_heavy_user`, `flag_occupancy_odd`, `flag_extreme_lead`,
+`flag_unknown_geo` (unusual but real values; the query features already clip or bucket them).
 """
 
 from __future__ import annotations
@@ -18,7 +24,16 @@ FLAG_COLS = [
     "flag_zero_adults",
     "flag_zero_rooms",
     "flag_burst_repeat",
+    "flag_session_repeat",
+    "flag_heavy_user",
+    "flag_occupancy_odd",
+    "flag_extreme_lead",
+    "flag_unknown_geo",
 ]
+SESSION_WINDOW_S = 3600  # same user, destination and cluster booked again within this many seconds
+MAX_GUESTS_PER_ROOM = 4  # more guests than this per room is flagged as an odd occupancy
+EXTREME_LEAD_DAYS = 365  # check-in more than a year after the search is flagged
+HEAVY_USER_MIN = 50  # bookings per user (99.8th percentile); slicing only, never a model input
 
 
 def party_type(adults: pd.Series, children: pd.Series) -> pd.Series:
@@ -30,7 +45,9 @@ def party_type(adults: pd.Series, children: pd.Series) -> pd.Series:
         children > 0,
         "family",
         np.where(
-            adults == 1, "solo", np.where(adults == 2, "couple", np.where(adults == 0, "unknown", "group"))
+            adults == 1,
+            "solo",
+            np.where(adults == 2, "couple", np.where(adults == 0, "unknown", "group")),
         ),
     )
     return pd.Series(out, index=adults.index, dtype="string")
@@ -53,6 +70,33 @@ def flag_burst_repeats(df: pd.DataFrame) -> pd.Series:
         & s["hotel_cluster"].eq(s["hotel_cluster"].shift())
     )
     return (same_user & same_trip).reindex(df.index)
+
+
+def flag_session_repeats(df: pd.DataFrame) -> pd.Series:
+    """True where the user booked the same destination and cluster within `SESSION_WINDOW_S` before.
+
+    The earlier booking is the user's latest earlier row with the same destination and cluster.
+    Rows already identical in dates (burst repeats) are included; callers combine the flags.
+    Input needs `user_id`, `date_time`, `srch_destination_id`, `hotel_cluster`; output aligned to
+    `df.index`.
+    """
+    order = df.sort_values(["user_id", "date_time"], kind="stable").index
+    s = df.loc[order]
+    key = [s["user_id"], s["srch_destination_id"], s["hotel_cluster"]]
+    age = s["date_time"].groupby(key, sort=False).diff().dt.total_seconds()
+    return (age <= SESSION_WINDOW_S).fillna(False).reindex(df.index)
+
+
+def collapse_bursts(clean: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+    """Drop burst-repeat rows (one trip recorded more than once); the first record is kept.
+
+    Input: `clean_bookings` output (needs `flag_burst_repeat`). Chains A, A, A reduce to one row.
+    Returns (collapsed table with the original index reset, counts). Applying it twice is a no-op.
+    """
+    keep = ~clean["flag_burst_repeat"].to_numpy(dtype=bool)
+    out = clean.loc[keep].reset_index(drop=True)
+    counts = {"rows_in": len(clean), "burst_dropped": int((~keep).sum()), "rows_out": len(out)}
+    return out, counts
 
 
 def clean_bookings(raw: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -91,6 +135,8 @@ def clean_bookings(raw: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
             "src_row": df["src_row"],
         }
     )
+    # int64 seconds: float32 unix times (RecBole .inter) are only exact to about 128 s
+    out["ts_unix"] = df["date_time"].astype("int64") // 10**9
 
     f_ci = (lead < 0).fillna(False)
     f_co = (stay < 0).fillna(False)
@@ -128,6 +174,12 @@ def clean_bookings(raw: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     out["flag_zero_adults"] = f_adults
     out["flag_zero_rooms"] = f_rooms
     out["flag_burst_repeat"] = flag_burst_repeats(df)
+    out["flag_session_repeat"] = flag_session_repeats(df) & ~out["flag_burst_repeat"]
+    guests = df["srch_adults_cnt"] + df["srch_children_cnt"]
+    out["flag_occupancy_odd"] = (guests > MAX_GUESTS_PER_ROOM * df["srch_rm_cnt"]) & ~f_rooms
+    out["flag_extreme_lead"] = (lead > EXTREME_LEAD_DAYS).fillna(False)
+    out["flag_unknown_geo"] = (df["user_location_country"] == 0) | (df["posa_continent"] == 0)
+    out["flag_heavy_user"] = df.groupby("user_id")["user_id"].transform("size") >= HEAVY_USER_MIN
 
     for c in FLAG_COLS:
         counts[c] = int(out[c].sum())

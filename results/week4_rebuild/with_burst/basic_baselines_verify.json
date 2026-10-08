@@ -1,0 +1,89 @@
+{
+  "split": {
+    "valid/warm": {
+      "rebuilt": 218670,
+      "saved": 218670,
+      "same_rows": true
+    },
+    "test/warm": {
+      "rebuilt": 218670,
+      "saved": 218670,
+      "same_rows": true
+    },
+    "valid/cold": {
+      "rebuilt": 50802,
+      "saved": 50802,
+      "same_rows": true
+    },
+    "test/cold": {
+      "rebuilt": 49443,
+      "saved": 49443,
+      "same_rows": true
+    },
+    "cut_equals_last_train_target_minus_128": true,
+    "training_ends_before_first_valid_target": true
+  },
+  "metrics_recomputed_from_saved_ranks": {
+    "mismatches": []
+  },
+  "itemknn": {
+    "K_pick": 100,
+    "max_kept_entries_per_item": 100,
+    "max_abs_diff_on_kept_entries_vs_numpy_cosine": 1.3602452497707418e-12,
+    "kept_entries_are_the_top_K_of_numpy_cosine": true,
+    "test_sample_rows": 5000,
+    "test_sample_rank_mismatches": 0,
+    "test_sample_metrics_rescored": {
+      "n": 5000,
+      "recall@5": 0.3042,
+      "ndcg@5": 0.213,
+      "recall@10": 0.4404,
+      "ndcg@10": 0.2568,
+      "recall@20": 0.6114,
+      "ndcg@20": 0.2999
+    }
+  },
+  "logreg": {
+    "features": [
+      "ctx_dest_id",
+      "ctx_dest_type",
+      "ctx_checkin_month",
+      "stay_bucket",
+      "lead_bucket",
+      "ctx_adults",
+      "ctx_children",
+      "ctx_rooms",
+      "ctx_is_package",
+      "ctx_channel",
+      "ctx_is_mobile",
+      "ctx_site_name",
+      "ctx_posa_continent",
+      "ctx_user_country"
+    ],
+    "forbidden_features": [],
+    "epochs_run": 3,
+    "valid/warm": {
+      "rows": 218670,
+      "rank_mismatches": 0,
+      "ndcg@5_rescored": 0.3638
+    },
+    "valid/cold": {
+      "rows": 50802,
+      "rank_mismatches": 0,
+      "ndcg@5_rescored": 0.3527
+    },
+    "test/warm": {
+      "rows": 218670,
+      "rank_mismatches": 0,
+      "ndcg@5_rescored": 0.3561
+    },
+    "test/cold": {
+      "rows": 49443,
+      "rank_mismatches": 0,
+      "ndcg@5_rescored": 0.3454
+    }
+  },
+  "hardcode_scan": {
+    "decimal_literals_with_3plus_digits": []
+  }
+}

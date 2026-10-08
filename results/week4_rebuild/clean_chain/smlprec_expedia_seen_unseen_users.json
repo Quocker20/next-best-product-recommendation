@@ -1,0 +1,353 @@
+{
+  "run": "seen vs unseen users: plain SMLP4Rec vs hybrid (SMLP4Rec + prior + sameDest), fixed checkpoint and weights, no retraining",
+  "dataset": "expedia (train.csv, is_booking == 1; item = hotel_cluster)",
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-08_expedia_smlp4rec_clean-plain\\best.pth",
+  "definitions": {
+    "seen_user": "user has >= 1 row in the RecBole train split (a train target)",
+    "unseen_user": "no train row; events = warm rows (L >= 1) of such users + first bookings (L = 0) in the window",
+    "plain_SMLP4Rec": "model softmax on L >= 1; global popularity on L = 0",
+    "hybrid": "notebook 04 formula and weights on L >= 1; destination prior only on L = 0"
+  },
+  "hybrid_weights": {
+    "alpha": 0.05,
+    "scheme": "known vs new destination (2)",
+    "final_weights_per_cell": {
+      "0": [
+        0.05,
+        2.0,
+        0.0
+      ],
+      "1": [
+        0.05,
+        1.25,
+        1.0
+      ]
+    }
+  },
+  "presence": {
+    "valid": {
+      "users": 166388,
+      "seen_users": 88168,
+      "unseen_users": 78220,
+      "seen_users_pct": 52.99,
+      "unseen_users_pct": 47.01,
+      "unseen_users_with_history_(L>=1)": 38671,
+      "unseen_users_first_booking_only_(L=0)": 39549,
+      "events": 264638,
+      "seen_events": 157601,
+      "unseen_events": 107037,
+      "seen_events_pct": 59.55,
+      "unseen_events_pct": 40.45,
+      "unseen_events_L>=1": 56268,
+      "unseen_events_L=0": 50769,
+      "mean_history_len_seen": 9.319,
+      "mean_history_len_unseen_L>=1": 1.665
+    },
+    "test": {
+      "users": 165604,
+      "seen_users": 80645,
+      "unseen_users": 84959,
+      "seen_users_pct": 48.7,
+      "unseen_users_pct": 51.3,
+      "unseen_users_with_history_(L>=1)": 47710,
+      "unseen_users_first_booking_only_(L=0)": 37249,
+      "events": 263331,
+      "seen_events": 139815,
+      "unseen_events": 123516,
+      "seen_events_pct": 53.09,
+      "unseen_events_pct": 46.91,
+      "unseen_events_L>=1": 74054,
+      "unseen_events_L=0": 49462,
+      "mean_history_len_seen": 9.707,
+      "mean_history_len_unseen_L>=1": 2.37
+    }
+  },
+  "results": {
+    "valid": {
+      "seen users": {
+        "plain SMLP4Rec": {
+          "n": 157601,
+          "recall@5": 0.3311,
+          "recall@10": 0.4656,
+          "recall@20": 0.6387,
+          "ndcg@5": 0.2332,
+          "ndcg@10": 0.2766,
+          "ndcg@20": 0.3202
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 157601,
+          "recall@5": 0.6223,
+          "recall@10": 0.7892,
+          "recall@20": 0.921,
+          "ndcg@5": 0.4579,
+          "ndcg@10": 0.512,
+          "ndcg@20": 0.5456
+        }
+      },
+      "unseen users": {
+        "plain SMLP4Rec": {
+          "n": 107037,
+          "recall@5": 0.2121,
+          "recall@10": 0.3158,
+          "recall@20": 0.4784,
+          "ndcg@5": 0.1495,
+          "ndcg@10": 0.1828,
+          "ndcg@20": 0.2236
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 107037,
+          "recall@5": 0.5559,
+          "recall@10": 0.7376,
+          "recall@20": 0.8957,
+          "ndcg@5": 0.3925,
+          "ndcg@10": 0.4513,
+          "ndcg@20": 0.4915
+        }
+      },
+      "unseen, L>=1": {
+        "plain SMLP4Rec": {
+          "n": 56268,
+          "recall@5": 0.2907,
+          "recall@10": 0.4113,
+          "recall@20": 0.5806,
+          "ndcg@5": 0.2123,
+          "ndcg@10": 0.251,
+          "ndcg@20": 0.2936
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 56268,
+          "recall@5": 0.5799,
+          "recall@10": 0.7569,
+          "recall@20": 0.9055,
+          "ndcg@5": 0.4202,
+          "ndcg@10": 0.4775,
+          "ndcg@20": 0.5154
+        }
+      },
+      "unseen, L=0 (first booking)": {
+        "plain SMLP4Rec": {
+          "n": 50769,
+          "recall@5": 0.125,
+          "recall@10": 0.21,
+          "recall@20": 0.3651,
+          "ndcg@5": 0.0799,
+          "ndcg@10": 0.1072,
+          "ndcg@20": 0.146
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 50769,
+          "recall@5": 0.5294,
+          "recall@10": 0.7162,
+          "recall@20": 0.8848,
+          "ndcg@5": 0.3618,
+          "ndcg@10": 0.4222,
+          "ndcg@20": 0.4651
+        }
+      },
+      "all events": {
+        "plain SMLP4Rec": {
+          "n": 264638,
+          "recall@5": 0.2829,
+          "recall@10": 0.405,
+          "recall@20": 0.5738,
+          "ndcg@5": 0.1994,
+          "ndcg@10": 0.2386,
+          "ndcg@20": 0.2811
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 264638,
+          "recall@5": 0.5955,
+          "recall@10": 0.7683,
+          "recall@20": 0.9108,
+          "ndcg@5": 0.4314,
+          "ndcg@10": 0.4875,
+          "ndcg@20": 0.5237
+        }
+      }
+    },
+    "test": {
+      "seen users": {
+        "plain SMLP4Rec": {
+          "n": 139815,
+          "recall@5": 0.3272,
+          "recall@10": 0.4615,
+          "recall@20": 0.6325,
+          "ndcg@5": 0.2297,
+          "ndcg@10": 0.2729,
+          "ndcg@20": 0.316
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 139815,
+          "recall@5": 0.6165,
+          "recall@10": 0.7803,
+          "recall@20": 0.9151,
+          "ndcg@5": 0.454,
+          "ndcg@10": 0.5071,
+          "ndcg@20": 0.5414
+        }
+      },
+      "unseen users": {
+        "plain SMLP4Rec": {
+          "n": 123516,
+          "recall@5": 0.2385,
+          "recall@10": 0.3528,
+          "recall@20": 0.5084,
+          "ndcg@5": 0.1664,
+          "ndcg@10": 0.2031,
+          "ndcg@20": 0.2421
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 123516,
+          "recall@5": 0.5511,
+          "recall@10": 0.7312,
+          "recall@20": 0.8893,
+          "ndcg@5": 0.3918,
+          "ndcg@10": 0.4501,
+          "ndcg@20": 0.4903
+        }
+      },
+      "unseen, L>=1": {
+        "plain SMLP4Rec": {
+          "n": 74054,
+          "recall@5": 0.3097,
+          "recall@10": 0.4368,
+          "recall@20": 0.6052,
+          "ndcg@5": 0.2231,
+          "ndcg@10": 0.264,
+          "ndcg@20": 0.3064
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 74054,
+          "recall@5": 0.5768,
+          "recall@10": 0.7509,
+          "recall@20": 0.8985,
+          "ndcg@5": 0.419,
+          "ndcg@10": 0.4754,
+          "ndcg@20": 0.5129
+        }
+      },
+      "unseen, L=0 (first booking)": {
+        "plain SMLP4Rec": {
+          "n": 49462,
+          "recall@5": 0.1318,
+          "recall@10": 0.227,
+          "recall@20": 0.3635,
+          "ndcg@5": 0.0814,
+          "ndcg@10": 0.1119,
+          "ndcg@20": 0.1459
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 49462,
+          "recall@5": 0.5127,
+          "recall@10": 0.7016,
+          "recall@20": 0.8755,
+          "ndcg@5": 0.351,
+          "ndcg@10": 0.4122,
+          "ndcg@20": 0.4564
+        }
+      },
+      "all events": {
+        "plain SMLP4Rec": {
+          "n": 263331,
+          "recall@5": 0.2856,
+          "recall@10": 0.4105,
+          "recall@20": 0.5743,
+          "ndcg@5": 0.2,
+          "ndcg@10": 0.2401,
+          "ndcg@20": 0.2813
+        },
+        "hybrid (SMLP4Rec + prior + sameDest)": {
+          "n": 263331,
+          "recall@5": 0.5858,
+          "recall@10": 0.7573,
+          "recall@20": 0.903,
+          "ndcg@5": 0.4248,
+          "ndcg@10": 0.4804,
+          "ndcg@20": 0.5174
+        }
+      }
+    }
+  },
+  "bootstrap_test_95ci_hybrid_minus_plain": {
+    "seen users": {
+      "recall@5": {
+        "diff": 0.2893,
+        "ci95": [
+          0.2865,
+          0.292
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.2243,
+        "ci95": [
+          0.2222,
+          0.2263
+        ]
+      }
+    },
+    "unseen users": {
+      "recall@5": {
+        "diff": 0.3126,
+        "ci95": [
+          0.3093,
+          0.3157
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.2254,
+        "ci95": [
+          0.223,
+          0.2276
+        ]
+      }
+    },
+    "unseen, L>=1": {
+      "recall@5": {
+        "diff": 0.267,
+        "ci95": [
+          0.2633,
+          0.2712
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.1959,
+        "ci95": [
+          0.1932,
+          0.1988
+        ]
+      }
+    },
+    "unseen, L=0 (first booking)": {
+      "recall@5": {
+        "diff": 0.3809,
+        "ci95": [
+          0.3758,
+          0.3859
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.2697,
+        "ci95": [
+          0.2658,
+          0.2733
+        ]
+      }
+    },
+    "all events": {
+      "recall@5": {
+        "diff": 0.3002,
+        "ci95": [
+          0.2982,
+          0.3022
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.2248,
+        "ci95": [
+          0.2234,
+          0.2263
+        ]
+      }
+    }
+  }
+}

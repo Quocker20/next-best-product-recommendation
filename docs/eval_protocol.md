@@ -5,12 +5,12 @@ Applies to the main model (SMLP4Rec query token + sameDest) and the two baseline
 ## Data
 - Expedia `train.csv`, `is_booking == 1`; item = `hotel_cluster` (100 classes, a proxy for room category / package). Clicks are never positives.
 - Query = the fields of the target booking's own search. Forbidden as input: `hotel_continent`, `hotel_country`, `hotel_market`, `orig_destination_distance`, `cnt`, `is_booking` (they describe the booked hotel or the label).
-- Cleaning rules (`src/nbp/data/clean.py`): drop duplicate keys; null + flag context defects; flag burst repeats. **Status:** the RecBole exports used by notebook 01c still read raw `train.csv`; aligning them to the cleaned parquet is plan stage B.
+- Cleaning rules (`src/nbp/data/clean.py`): drop duplicate keys; null + flag context defects; **collapse burst repeats** (2026-10-08; `docs/data_cleaning_strategy.md`). Every export and notebook reads `data/interim/expedia_bookings.parquet`; RecBole `timestamp` is the exact event index (row position, sorted by time, user, source row), so the split has no float32 ties. The uncollapsed numbers are kept as a sensitivity run in `results/week4_rebuild/with_burst/`.
 
 ## Split
 - Global temporal 80/10/10 over next-booking targets (every booking except each user's first), ordered by `date_time` (RecBole `RS: [0.8, 0.1, 0.1]`, `order: TO`). No random splits.
-- Sizes: valid 218,670 and test 218,670 warm targets. History = the user's previous bookings (max 20).
-- **Warm rows:** L ≥ 1 prior bookings (the targets above). **Cold rows:** first booking of each user inside the valid / test window (L = 0; valid 50,803, test 49,443). **All events** = warm + cold (test 268,113).
+- Sizes (collapsed data): train 1,710,952, valid 213,869 and test 213,869 warm targets. History = the user's previous bookings (max 20).
+- **Warm rows:** L ≥ 1 prior bookings (the targets above). **Cold rows:** first booking of each user inside the valid / test window (L = 0; valid 50,769, test 49,462). **All events** = warm + cold (test 263,331).
 - Warm rows are the headline set; cold and all-events are always reported next to it.
 
 ## Task and ranking

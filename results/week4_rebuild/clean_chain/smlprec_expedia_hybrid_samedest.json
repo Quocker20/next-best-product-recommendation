@@ -1,0 +1,393 @@
+{
+  "formula": "score = log q_SMLP4Rec + w_p * log q_prior + w_s * log q_sameDest; log q = log((1 - alpha) * p + alpha / 100); p_sameDest = 0.7^age-weighted same-destination bookings normalized over clusters, uniform when none; cold rows (L = 0) prior only",
+  "selection": {
+    "objective": "per-row Recall@5 + NDCG@5 on valid",
+    "rule": "one-standard-error rule, SE of the paired per-row difference clustered by user; simplest = smallest max weight, then smallest weight sum, then largest alpha",
+    "grid": {
+      "alpha": [
+        0.05,
+        0.1,
+        0.2,
+        0.3,
+        0.5
+      ],
+      "w_p": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ],
+      "w_s": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ],
+      "w_SMLP4Rec": 1.0
+    },
+    "best_on_valid": [
+      0.1,
+      2.0,
+      2.5
+    ],
+    "one_se_pick": [
+      0.05,
+      2.0,
+      1.5
+    ],
+    "n_within_one_se": 7,
+    "eligible": [
+      {
+        "alpha": 0.05,
+        "w_p": 2.0,
+        "w_s": 1.5,
+        "recall@5": 0.611,
+        "ndcg@5": 0.4478
+      },
+      {
+        "alpha": 0.1,
+        "w_p": 2.0,
+        "w_s": 2.0,
+        "recall@5": 0.611,
+        "ndcg@5": 0.4479
+      },
+      {
+        "alpha": 0.05,
+        "w_p": 2.0,
+        "w_s": 2.0,
+        "recall@5": 0.6109,
+        "ndcg@5": 0.4478
+      },
+      {
+        "alpha": 0.1,
+        "w_p": 2.0,
+        "w_s": 2.5,
+        "recall@5": 0.611,
+        "ndcg@5": 0.4479
+      },
+      {
+        "alpha": 0.05,
+        "w_p": 2.0,
+        "w_s": 2.5,
+        "recall@5": 0.6109,
+        "ndcg@5": 0.4479
+      },
+      {
+        "alpha": 0.1,
+        "w_p": 2.0,
+        "w_s": 3.0,
+        "recall@5": 0.611,
+        "ndcg@5": 0.4479
+      },
+      {
+        "alpha": 0.05,
+        "w_p": 2.0,
+        "w_s": 3.0,
+        "recall@5": 0.6109,
+        "ndcg@5": 0.4479
+      }
+    ],
+    "best_per_alpha": [
+      {
+        "alpha": 0.05,
+        "w_p": 2.0,
+        "w_s": 3.0,
+        "recall@5": 0.6109,
+        "ndcg@5": 0.4479
+      },
+      {
+        "alpha": 0.1,
+        "w_p": 2.0,
+        "w_s": 2.5,
+        "recall@5": 0.611,
+        "ndcg@5": 0.4479
+      },
+      {
+        "alpha": 0.2,
+        "w_p": 2.0,
+        "w_s": 3.0,
+        "recall@5": 0.6105,
+        "ndcg@5": 0.4478
+      },
+      {
+        "alpha": 0.3,
+        "w_p": 1.5,
+        "w_s": 2.0,
+        "recall@5": 0.6104,
+        "ndcg@5": 0.4471
+      },
+      {
+        "alpha": 0.5,
+        "w_p": 1.5,
+        "w_s": 2.0,
+        "recall@5": 0.6093,
+        "ndcg@5": 0.447
+      }
+    ]
+  },
+  "cohorts": {
+    "cv": "user-level 2-fold on valid, seeds [0, 1, 2]; cell weights by the one-SE rule on the tuning half",
+    "schemes": {
+      "global (1 set)": {
+        "cells": 1,
+        "min_coverage": 1.0,
+        "oof_joint": 1.05877,
+        "gain_vs_global": 0.0,
+        "se_of_gain": 0.0,
+        "within_one_se_of_best": false
+      },
+      "known vs new destination (2)": {
+        "cells": 2,
+        "min_coverage": 0.2852,
+        "oof_joint": 1.05907,
+        "gain_vs_global": 0.0003,
+        "se_of_gain": 0.00025,
+        "within_one_se_of_best": true
+      },
+      "L=1 vs L>=2 (2)": {
+        "cells": 2,
+        "min_coverage": 0.1808,
+        "oof_joint": 1.05866,
+        "gain_vs_global": -0.00011,
+        "se_of_gain": 4e-05,
+        "within_one_se_of_best": false
+      },
+      "L = 1 | 2-4 | 5+ (3)": {
+        "cells": 3,
+        "min_coverage": 0.1808,
+        "oof_joint": 1.05861,
+        "gain_vs_global": -0.00016,
+        "se_of_gain": 5e-05,
+        "within_one_se_of_best": false
+      },
+      "4 L buckets (4)": {
+        "cells": 4,
+        "min_coverage": 0.1808,
+        "oof_joint": 1.05827,
+        "gain_vs_global": -0.0005,
+        "se_of_gain": 0.00017,
+        "within_one_se_of_best": false
+      },
+      "L=1 vs L>=2 x known/new (4)": {
+        "cells": 4,
+        "min_coverage": 0.0248,
+        "oof_joint": 1.05885,
+        "gain_vs_global": 7e-05,
+        "se_of_gain": 0.00025,
+        "within_one_se_of_best": false
+      }
+    },
+    "best_out_of_fold": "known vs new destination (2)",
+    "chosen_fewest_cells_within_one_se": "known vs new destination (2)",
+    "final_weights_per_cell": {
+      "0": [
+        0.05,
+        2.0,
+        0.0
+      ],
+      "1": [
+        0.05,
+        1.25,
+        1.0
+      ]
+    }
+  },
+  "reference": {
+    "name": "SMLP4Rec + prior (notebook 03, w_p = 1.5)",
+    "w_p": 1.5,
+    "source": "smlprec_expedia_late_fusion.json"
+  },
+  "benchmark": {
+    "valid": {
+      "warm": {
+        "SMLP4Rec + prior (notebook 03, w_p = 1.5)": {
+          "n": 213869,
+          "recall@5": 0.5933,
+          "recall@10": 0.7735,
+          "recall@20": 0.9153,
+          "ndcg@5": 0.42,
+          "ndcg@10": 0.4783,
+          "ndcg@20": 0.5145
+        },
+        "SMLP4Rec + prior + sameDest (this notebook)": {
+          "n": 213869,
+          "recall@5": 0.6111,
+          "recall@10": 0.7807,
+          "recall@20": 0.9169,
+          "ndcg@5": 0.448,
+          "ndcg@10": 0.5029,
+          "ndcg@20": 0.5376
+        }
+      },
+      "all_events": {
+        "SMLP4Rec + prior (notebook 03, w_p = 1.5)": {
+          "n": 264638,
+          "recall@5": 0.5811,
+          "recall@10": 0.7625,
+          "recall@20": 0.9094,
+          "ndcg@5": 0.4088,
+          "ndcg@10": 0.4676,
+          "ndcg@20": 0.505
+        },
+        "SMLP4Rec + prior + sameDest (this notebook)": {
+          "n": 264638,
+          "recall@5": 0.5955,
+          "recall@10": 0.7683,
+          "recall@20": 0.9108,
+          "ndcg@5": 0.4314,
+          "ndcg@10": 0.4875,
+          "ndcg@20": 0.5237
+        }
+      }
+    },
+    "test": {
+      "warm": {
+        "SMLP4Rec + prior (notebook 03, w_p = 1.5)": {
+          "n": 213869,
+          "recall@5": 0.5851,
+          "recall@10": 0.7617,
+          "recall@20": 0.9073,
+          "ndcg@5": 0.4139,
+          "ndcg@10": 0.4712,
+          "ndcg@20": 0.5083
+        },
+        "SMLP4Rec + prior + sameDest (this notebook)": {
+          "n": 213869,
+          "recall@5": 0.6028,
+          "recall@10": 0.7701,
+          "recall@20": 0.9093,
+          "ndcg@5": 0.4419,
+          "ndcg@10": 0.4961,
+          "ndcg@20": 0.5315
+        }
+      },
+      "all_events": {
+        "SMLP4Rec + prior (notebook 03, w_p = 1.5)": {
+          "n": 263331,
+          "recall@5": 0.5715,
+          "recall@10": 0.7504,
+          "recall@20": 0.9014,
+          "ndcg@5": 0.4021,
+          "ndcg@10": 0.4601,
+          "ndcg@20": 0.4985
+        },
+        "SMLP4Rec + prior + sameDest (this notebook)": {
+          "n": 263331,
+          "recall@5": 0.5858,
+          "recall@10": 0.7573,
+          "recall@20": 0.903,
+          "ndcg@5": 0.4248,
+          "ndcg@10": 0.4804,
+          "ndcg@20": 0.5174
+        }
+      }
+    }
+  },
+  "test_slices_recall@5_ndcg@5": {
+    "known destination": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.6601 / 0.4947",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.7199 / 0.5875",
+      "rows": 60586
+    },
+    "new destination": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.5554 / 0.3820",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.5565 / 0.3843",
+      "rows": 153283
+    },
+    "target already booked": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.8085 / 0.6413",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.8657 / 0.7376",
+      "rows": 62430
+    },
+    "target new to the user": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.4930 / 0.3201",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.4944 / 0.3200",
+      "rows": 151439
+    },
+    "L=1": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.5500 / 0.3824",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.5569 / 0.3954",
+      "rows": 39778
+    },
+    "L=2-4": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.5726 / 0.4022",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.5845 / 0.4228",
+      "rows": 67266
+    },
+    "L=5-9": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.5959 / 0.4225",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.6136 / 0.4512",
+      "rows": 46340
+    },
+    "L>=10": {
+      "SMLP4Rec + prior (notebook 03, w_p = 1.5)": "0.6137 / 0.4410",
+      "SMLP4Rec + prior + sameDest (this notebook)": "0.6449 / 0.4865",
+      "rows": 60485
+    }
+  },
+  "component_check_test": {
+    "SMLP4Rec + prior + sameDest (this notebook)": {
+      "spread share M/P/S, known destination": [
+        0.27,
+        0.52,
+        0.21
+      ],
+      "spread share M/P/S, new destination": [
+        0.236,
+        0.764,
+        0.0
+      ],
+      "drop SMLP4Rec": "-0.0231 / -0.0175",
+      "drop prior": "-0.2647 / -0.1871",
+      "drop sameDest": "-0.0146 / -0.0232"
+    }
+  },
+  "bootstrap_test_95ci": {
+    "hybrid minus SMLP4Rec + prior": {
+      "warm": {
+        "recall@5": {
+          "diff": 0.0177,
+          "ci95": [
+            0.0167,
+            0.0187
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.028,
+          "ci95": [
+            0.0272,
+            0.0288
+          ]
+        }
+      },
+      "all_events": {
+        "recall@5": {
+          "diff": 0.0144,
+          "ci95": [
+            0.0136,
+            0.0152
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.0227,
+          "ci95": [
+            0.0221,
+            0.0234
+          ]
+        }
+      }
+    }
+  }
+}

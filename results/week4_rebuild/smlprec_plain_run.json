@@ -1,0 +1,177 @@
+{
+  "run": "SMLP4Rec plain (history only), 3 epochs, collapsed Expedia bookings, notebook 01",
+  "dataset": "expedia (bookings, burst repeats collapsed; item = hotel_cluster)",
+  "data_version": "collapsed (expedia_bookings.parquet)",
+  "git_commit": "529344c",
+  "config": {
+    "MAX_ITEM_LIST_LENGTH": 20,
+    "n_layers": 2,
+    "hidden_size": 64,
+    "hidden_dropout_prob": 0.0,
+    "loss_type": "CE",
+    "epochs": 3,
+    "train_batch_size": 1024,
+    "learning_rate": 0.001,
+    "seed": 2022,
+    "eval_args": {
+      "split": {
+        "RS": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "order": "TO",
+      "group_by": null,
+      "mode": "full"
+    },
+    "topk": [
+      5,
+      10,
+      20
+    ],
+    "valid_metric": "NDCG@10"
+  },
+  "dataset_stats": {
+    "users": 813985,
+    "items": 100,
+    "sequence_targets": 2138690
+  },
+  "n_parameters": 33702,
+  "splits": {
+    "train": {
+      "targets": 1710952,
+      "first_target_event": 20,
+      "last_target_event": 2424705,
+      "mean_history_len": 5.781
+    },
+    "valid": {
+      "targets": 213869,
+      "first_target_event": 2424706,
+      "last_target_event": 2689343,
+      "mean_history_len": 7.305
+    },
+    "test": {
+      "targets": 213869,
+      "first_target_event": 2689344,
+      "last_target_event": 2952674,
+      "mean_history_len": 7.166
+    }
+  },
+  "timing_seconds": {
+    "data_build": 222.9,
+    "train_and_eval": 1623.9,
+    "test": 35.8
+  },
+  "best_epoch_by_valid": 3,
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-08_expedia_smlp4rec_clean-plain\\best.pth",
+  "per_epoch": [
+    {
+      "epoch": 1,
+      "train_loss": 6599.4057,
+      "train_seconds": 534.0,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.3203,
+        "recall@10": 0.45,
+        "recall@20": 0.6216,
+        "ndcg@5": 0.2274,
+        "ndcg@10": 0.2692,
+        "ndcg@20": 0.3124
+      },
+      "test": {
+        "n": 213869,
+        "recall@5": 0.3214,
+        "recall@10": 0.452,
+        "recall@20": 0.6208,
+        "ndcg@5": 0.2274,
+        "ndcg@10": 0.2694,
+        "ndcg@20": 0.3119
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 6547.9849,
+      "train_seconds": 509.8,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.3202,
+        "recall@10": 0.4508,
+        "recall@20": 0.6228,
+        "ndcg@5": 0.2275,
+        "ndcg@10": 0.2695,
+        "ndcg@20": 0.3128
+      },
+      "test": {
+        "n": 213869,
+        "recall@5": 0.3212,
+        "recall@10": 0.4533,
+        "recall@20": 0.6226,
+        "ndcg@5": 0.2274,
+        "ndcg@10": 0.2699,
+        "ndcg@20": 0.3125
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 6542.7099,
+      "train_seconds": 491.0,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.3204,
+        "recall@10": 0.4513,
+        "recall@20": 0.6234,
+        "ndcg@5": 0.2277,
+        "ndcg@10": 0.2698,
+        "ndcg@20": 0.3132
+      },
+      "test": {
+        "n": 213869,
+        "recall@5": 0.3212,
+        "recall@10": 0.453,
+        "recall@20": 0.623,
+        "ndcg@5": 0.2274,
+        "ndcg@10": 0.2698,
+        "ndcg@20": 0.3127
+      }
+    }
+  ],
+  "valid": {
+    "n": 213869,
+    "recall@5": 0.3204,
+    "recall@10": 0.4513,
+    "recall@20": 0.6234,
+    "ndcg@5": 0.2277,
+    "ndcg@10": 0.2698,
+    "ndcg@20": 0.3132
+  },
+  "test": {
+    "n": 213869,
+    "recall@5": 0.3212,
+    "recall@10": 0.453,
+    "recall@20": 0.623,
+    "ndcg@5": 0.2274,
+    "ndcg@10": 0.2698,
+    "ndcg@20": 0.3127
+  },
+  "heuristics_same_test_rows": {
+    "global_popularity": {
+      "n": 213869,
+      "recall@5": 0.1487,
+      "recall@10": 0.2488,
+      "recall@20": 0.3938,
+      "ndcg@5": 0.0944,
+      "ndcg@10": 0.1263,
+      "ndcg@20": 0.1626
+    },
+    "repeat_last_then_popularity": {
+      "n": 213869,
+      "recall@5": 0.2399,
+      "recall@10": 0.3289,
+      "recall@20": 0.4642,
+      "ndcg@5": 0.1848,
+      "ndcg@10": 0.2133,
+      "ndcg@20": 0.2472
+    }
+  }
+}

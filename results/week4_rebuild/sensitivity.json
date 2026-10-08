@@ -1,0 +1,240 @@
+{
+  "run": "2026-10-09_expedia_smlp4rec_query-1c-clean",
+  "rows": 213869,
+  "sameDest_gain": {
+    "all_warm": {
+      "rows": 213869,
+      "query_token": {
+        "n": 213869,
+        "recall@5": 0.5803,
+        "ndcg@5": 0.4113
+      },
+      "query_token_sameDest": {
+        "n": 213869,
+        "recall@5": 0.5954,
+        "ndcg@5": 0.4349
+      },
+      "gain_bootstrap": {
+        "recall@5": {
+          "diff": 0.0151,
+          "ci95": [
+            0.0144,
+            0.0157
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.0236,
+          "ci95": [
+            0.023,
+            0.0243
+          ]
+        }
+      }
+    },
+    "excluding_rebook_within_1h": {
+      "rows": 206975,
+      "query_token": {
+        "n": 206975,
+        "recall@5": 0.5716,
+        "ndcg@5": 0.4015
+      },
+      "query_token_sameDest": {
+        "n": 206975,
+        "recall@5": 0.5819,
+        "ndcg@5": 0.4171
+      },
+      "gain_bootstrap": {
+        "recall@5": {
+          "diff": 0.0103,
+          "ci95": [
+            0.0097,
+            0.0109
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.0156,
+          "ci95": [
+            0.015,
+            0.0162
+          ]
+        }
+      }
+    },
+    "excluding_rebook_within_1d": {
+      "rows": 205031,
+      "query_token": {
+        "n": 205031,
+        "recall@5": 0.569,
+        "ndcg@5": 0.3986
+      },
+      "query_token_sameDest": {
+        "n": 205031,
+        "recall@5": 0.578,
+        "ndcg@5": 0.4119
+      },
+      "gain_bootstrap": {
+        "recall@5": {
+          "diff": 0.009,
+          "ci95": [
+            0.0084,
+            0.0096
+          ]
+        },
+        "ndcg@5": {
+          "diff": 0.0133,
+          "ci95": [
+            0.0127,
+            0.0139
+          ]
+        }
+      }
+    }
+  },
+  "rows_removed": {
+    "within_1h": 6894,
+    "within_1d": 8838
+  },
+  "vs_baselines_warm": {
+    "query_token minus logistic_regression": {
+      "recall@5": {
+        "diff": 0.0581,
+        "ci95": [
+          0.0562,
+          0.0601
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0545,
+        "ci95": [
+          0.053,
+          0.0558
+        ]
+      }
+    },
+    "query_token_sameDest minus logistic_regression": {
+      "recall@5": {
+        "diff": 0.0732,
+        "ci95": [
+          0.0713,
+          0.0752
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0781,
+        "ci95": [
+          0.0765,
+          0.0796
+        ]
+      }
+    },
+    "query_token minus ItemKNN": {
+      "recall@5": {
+        "diff": 0.2765,
+        "ci95": [
+          0.2743,
+          0.2789
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.2022,
+        "ci95": [
+          0.2007,
+          0.2038
+        ]
+      }
+    },
+    "query_token_sameDest minus ItemKNN": {
+      "recall@5": {
+        "diff": 0.2916,
+        "ci95": [
+          0.2894,
+          0.2939
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.2258,
+        "ci95": [
+          0.2243,
+          0.2273
+        ]
+      }
+    },
+    "logistic_regression": {
+      "n": 213869,
+      "recall@5": 0.5222,
+      "ndcg@5": 0.3568
+    },
+    "ItemKNN": {
+      "n": 213869,
+      "recall@5": 0.3038,
+      "ndcg@5": 0.2091
+    }
+  },
+  "cold_rows": {
+    "rows": 49462,
+    "query_token minus logistic_regression": {
+      "recall@5": {
+        "diff": -0.0067,
+        "ci95": [
+          -0.01,
+          -0.0034
+        ]
+      },
+      "ndcg@5": {
+        "diff": -0.0076,
+        "ci95": [
+          -0.0096,
+          -0.0054
+        ]
+      }
+    },
+    "query_token minus destination_prior": {
+      "recall@5": {
+        "diff": -0.0099,
+        "ci95": [
+          -0.0132,
+          -0.0067
+        ]
+      },
+      "ndcg@5": {
+        "diff": -0.0097,
+        "ci95": [
+          -0.0117,
+          -0.0075
+        ]
+      }
+    },
+    "logistic_regression minus destination_prior": {
+      "recall@5": {
+        "diff": -0.0032,
+        "ci95": [
+          -0.006,
+          -0.0004
+        ]
+      },
+      "ndcg@5": {
+        "diff": -0.0021,
+        "ci95": [
+          -0.0039,
+          -0.0003
+        ]
+      }
+    },
+    "query_token_plus_prior minus logistic_regression": {
+      "recall@5": {
+        "diff": 0.0066,
+        "ci95": [
+          0.0037,
+          0.0096
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0031,
+        "ci95": [
+          0.0013,
+          0.0049
+        ]
+      }
+    }
+  }
+}

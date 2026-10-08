@@ -1,109 +1,109 @@
 {
   "run": "SMLP4Rec + query token on L = 0 rows (first bookings, empty history), checkpoint of notebook 01c, no retraining",
-  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-07_expedia_smlp4rec_query-1c\\best.pth",
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-09_expedia_smlp4rec_query-1c-clean\\best.pth",
   "definition": "L = 0 rows as notebook 06: first booking of each user whose first booking is in the valid / test window; history = all padding",
   "n_rows": {
-    "valid": 50803,
-    "test": 49443
+    "valid": 50769,
+    "test": 49462
   },
-  "w_fusion_chosen_in_01c": 0.25,
+  "w_fusion_chosen_in_01c": 0.5,
   "results": {
     "valid": {
       "global popularity": {
-        "n": 50803,
-        "recall@5": 0.1251,
-        "recall@10": 0.2101,
+        "n": 50769,
+        "recall@5": 0.125,
+        "recall@10": 0.21,
         "recall@20": 0.3603,
-        "ndcg@5": 0.08,
-        "ndcg@10": 0.107,
-        "ndcg@20": 0.1446
+        "ndcg@5": 0.0799,
+        "ndcg@10": 0.1069,
+        "ndcg@20": 0.1445
       },
       "destination prior only": {
-        "n": 50803,
-        "recall@5": 0.529,
-        "recall@10": 0.7158,
+        "n": 50769,
+        "recall@5": 0.5295,
+        "recall@10": 0.716,
         "recall@20": 0.8849,
-        "ndcg@5": 0.3614,
-        "ndcg@10": 0.4219,
-        "ndcg@20": 0.4649
+        "ndcg@5": 0.3619,
+        "ndcg@10": 0.4222,
+        "ndcg@20": 0.4651
       },
       "query token alone (empty history)": {
-        "n": 50803,
-        "recall@5": 0.5127,
-        "recall@10": 0.7026,
-        "recall@20": 0.8719,
-        "ndcg@5": 0.3466,
-        "ndcg@10": 0.408,
-        "ndcg@20": 0.4511
+        "n": 50769,
+        "recall@5": 0.5124,
+        "recall@10": 0.7057,
+        "recall@20": 0.8738,
+        "ndcg@5": 0.3471,
+        "ndcg@10": 0.4096,
+        "ndcg@20": 0.4523
       },
-      "query token + prior (w=0.25)": {
-        "n": 50803,
-        "recall@5": 0.5207,
-        "recall@10": 0.7142,
-        "recall@20": 0.8849,
-        "ndcg@5": 0.3535,
-        "ndcg@10": 0.416,
-        "ndcg@20": 0.4594
+      "query token + prior (w=0.5)": {
+        "n": 50769,
+        "recall@5": 0.5288,
+        "recall@10": 0.7199,
+        "recall@20": 0.8898,
+        "ndcg@5": 0.3595,
+        "ndcg@10": 0.4212,
+        "ndcg@20": 0.4644
       },
       "query token, query shuffled": {
-        "n": 50803,
-        "recall@5": 0.0699,
-        "recall@10": 0.1351,
-        "recall@20": 0.2596,
-        "ndcg@5": 0.042,
-        "ndcg@10": 0.0628,
-        "ndcg@20": 0.0939
+        "n": 50769,
+        "recall@5": 0.0702,
+        "recall@10": 0.1346,
+        "recall@20": 0.2601,
+        "ndcg@5": 0.0413,
+        "ndcg@10": 0.0619,
+        "ndcg@20": 0.0933
       }
     },
     "test": {
       "global popularity": {
-        "n": 49443,
-        "recall@5": 0.1317,
-        "recall@10": 0.2269,
-        "recall@20": 0.3588,
-        "ndcg@5": 0.0813,
-        "ndcg@10": 0.1114,
+        "n": 49462,
+        "recall@5": 0.1318,
+        "recall@10": 0.227,
+        "recall@20": 0.3589,
+        "ndcg@5": 0.0814,
+        "ndcg@10": 0.1115,
         "ndcg@20": 0.1444
       },
       "destination prior only": {
-        "n": 49443,
-        "recall@5": 0.5123,
-        "recall@10": 0.7017,
-        "recall@20": 0.8751,
-        "ndcg@5": 0.3506,
-        "ndcg@10": 0.4119,
-        "ndcg@20": 0.456
+        "n": 49462,
+        "recall@5": 0.5129,
+        "recall@10": 0.7015,
+        "recall@20": 0.8757,
+        "ndcg@5": 0.3511,
+        "ndcg@10": 0.4121,
+        "ndcg@20": 0.4564
       },
       "query token alone (empty history)": {
-        "n": 49443,
-        "recall@5": 0.5019,
-        "recall@10": 0.6925,
-        "recall@20": 0.8632,
-        "ndcg@5": 0.342,
-        "ndcg@10": 0.4036,
-        "ndcg@20": 0.4471
+        "n": 49462,
+        "recall@5": 0.5029,
+        "recall@10": 0.6969,
+        "recall@20": 0.8668,
+        "ndcg@5": 0.3414,
+        "ndcg@10": 0.4041,
+        "ndcg@20": 0.4473
       },
-      "query token + prior (w=0.25)": {
-        "n": 49443,
-        "recall@5": 0.5102,
-        "recall@10": 0.7029,
-        "recall@20": 0.8777,
-        "ndcg@5": 0.3484,
-        "ndcg@10": 0.4107,
-        "ndcg@20": 0.4552
+      "query token + prior (w=0.5)": {
+        "n": 49462,
+        "recall@5": 0.5162,
+        "recall@10": 0.7097,
+        "recall@20": 0.881,
+        "ndcg@5": 0.352,
+        "ndcg@10": 0.4146,
+        "ndcg@20": 0.4582
       },
       "query token, query shuffled": {
-        "n": 49443,
-        "recall@5": 0.0711,
-        "recall@10": 0.1362,
-        "recall@20": 0.2608,
-        "ndcg@5": 0.0424,
-        "ndcg@10": 0.0632,
-        "ndcg@20": 0.0944
+        "n": 49462,
+        "recall@5": 0.0701,
+        "recall@10": 0.1365,
+        "recall@20": 0.2612,
+        "ndcg@5": 0.0415,
+        "ndcg@10": 0.0627,
+        "ndcg@20": 0.0939
       }
     }
   },
-  "reference_notebook_06_L0_hybrid_prior_only_test": {
+  "reference_notebook_06_L0_hybrid_prior_only_test_uncollapsed_data": {
     "n": 49443,
     "recall@5": 0.5121,
     "recall@10": 0.7017,
@@ -113,101 +113,101 @@
     "ndcg@20": 0.4559
   },
   "reference_warm_rows_history_masked_test_01c": {
-    "n": 218670,
-    "recall@5": 0.5165,
-    "recall@10": 0.709,
-    "recall@20": 0.8741,
-    "ndcg@5": 0.3496,
-    "ndcg@10": 0.412,
-    "ndcg@20": 0.454
+    "n": 213869,
+    "recall@5": 0.5116,
+    "recall@10": 0.7063,
+    "recall@20": 0.8735,
+    "ndcg@5": 0.3465,
+    "ndcg@10": 0.4096,
+    "ndcg@20": 0.4522
   },
   "test_slices_ndcg5_recall5": {
     "destination in query-token vocab": {
       "global popularity": {
-        "n": 48361,
-        "recall@5": 0.1319,
-        "ndcg@5": 0.0812
+        "n": 48377,
+        "recall@5": 0.132,
+        "ndcg@5": 0.0813
       },
       "destination prior only": {
-        "n": 48361,
-        "recall@5": 0.513,
-        "ndcg@5": 0.3504
+        "n": 48377,
+        "recall@5": 0.5136,
+        "ndcg@5": 0.3508
       },
       "query token alone (empty history)": {
-        "n": 48361,
-        "recall@5": 0.5076,
-        "ndcg@5": 0.346
+        "n": 48377,
+        "recall@5": 0.5089,
+        "ndcg@5": 0.3455
       },
-      "query token + prior (w=0.25)": {
-        "n": 48361,
-        "recall@5": 0.513,
-        "ndcg@5": 0.3504
+      "query token + prior (w=0.5)": {
+        "n": 48377,
+        "recall@5": 0.5176,
+        "ndcg@5": 0.3527
       },
       "query token, query shuffled": {
-        "n": 48361,
-        "recall@5": 0.0713,
-        "ndcg@5": 0.0425
+        "n": 48377,
+        "recall@5": 0.0703,
+        "ndcg@5": 0.0416
       }
     },
     "destination out of vocab": {
       "global popularity": {
-        "n": 1082,
-        "recall@5": 0.1238,
-        "ndcg@5": 0.0853
+        "n": 1085,
+        "recall@5": 0.1235,
+        "ndcg@5": 0.0851
       },
       "destination prior only": {
-        "n": 1082,
-        "recall@5": 0.4806,
-        "ndcg@5": 0.362
+        "n": 1085,
+        "recall@5": 0.4793,
+        "ndcg@5": 0.3613
       },
       "query token alone (empty history)": {
-        "n": 1082,
-        "recall@5": 0.2468,
-        "ndcg@5": 0.1611
+        "n": 1085,
+        "recall@5": 0.2378,
+        "ndcg@5": 0.1564
       },
-      "query token + prior (w=0.25)": {
-        "n": 1082,
-        "recall@5": 0.3826,
-        "ndcg@5": 0.2588
+      "query token + prior (w=0.5)": {
+        "n": 1085,
+        "recall@5": 0.4535,
+        "ndcg@5": 0.3214
       },
       "query token, query shuffled": {
-        "n": 1082,
-        "recall@5": 0.0619,
-        "ndcg@5": 0.0359
+        "n": 1085,
+        "recall@5": 0.0618,
+        "ndcg@5": 0.0342
       }
     }
   },
-  "test_share_destination_oov": 0.02188378536901078,
+  "test_share_destination_oov": 0.021936031701103878,
   "bootstrap_test_95ci": {
     "query token alone minus prior only": {
       "recall@5": {
-        "diff": -0.0104,
+        "diff": -0.0099,
         "ci95": [
-          -0.0136,
-          -0.0072
+          -0.0132,
+          -0.0067
         ]
       },
       "ndcg@5": {
-        "diff": -0.0087,
+        "diff": -0.0097,
         "ci95": [
-          -0.0108,
-          -0.0066
+          -0.0117,
+          -0.0075
         ]
       }
     },
     "query token + prior minus prior only": {
       "recall@5": {
-        "diff": -0.0021,
+        "diff": 0.0033,
         "ci95": [
-          -0.0051,
-          0.0008
+          0.0005,
+          0.006
         ]
       },
       "ndcg@5": {
-        "diff": -0.0023,
+        "diff": 0.001,
         "ci95": [
-          -0.0042,
-          -0.0004
+          -0.0006,
+          0.0027
         ]
       }
     }

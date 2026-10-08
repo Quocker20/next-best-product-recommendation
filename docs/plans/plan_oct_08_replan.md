@@ -55,7 +55,9 @@ Rule: loop = change data or model -> benchmark on valid -> record row -> analyse
 - [x] Commit and push.
 - [x] Removed empty `src/nbp/priors/`; CLAUDE.md, README and docs rewritten for this scope.
 
-### B. Data processing (9-12 Oct)
+### B. Data processing (9-12 Oct) — mostly DONE 2026-10-09
+Done: burst collapse + flags (`docs/data_cleaning_strategy.md`), exports aligned to the cleaned parquet, leakage audit (`results/week4_rebuild/leakage_audit.json`), notebooks 01-07 rerun on the collapsed data, sensitivity runs. Results: `PROGRESS.md` (stage B results) and `reports/benchmark_results.csv`. Still open below: query-field ablations by retraining, rare-destination handling, cold users in training (notebook 01d).
+
 - [ ] Align the RecBole exports (`expedia_to_recbole.py`, `expedia_query_to_recbole.py`) with the cleaned `expedia_bookings.parquet` (they read raw `train.csv` today), then rerun 01c and 07 on one source.
 - [ ] Leakage audit of every query field and of the sameDest feature (the target row's own booking must never reach its inputs; checklist in `plan_oct_01_14.md`, Day 9).
 - [ ] Data audit of the interim tables: duplicates, `srch_co < srch_ci`, missing `orig_destination_distance`, unknown destinations; report counts by code, fix in the scripted pipeline only.
