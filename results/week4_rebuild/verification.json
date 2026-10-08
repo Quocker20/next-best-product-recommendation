@@ -1,0 +1,85 @@
+{
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "split sizes plain = rows - users, 80/10/10",
+      "pass": true,
+      "detail": "{'train': 1710952, 'valid': 213869, 'test': 213869}"
+    },
+    {
+      "check": "split sizes 01c = rows - users, 80/10/10",
+      "pass": true,
+      "detail": "{'train': 1710952, 'valid': 213869, 'test': 213869}"
+    },
+    {
+      "check": "split sizes 01d = rows - users, 80/10/10",
+      "pass": true,
+      "detail": "{'train': 1710952, 'valid': 213869, 'test': 213869}"
+    },
+    {
+      "check": "split sizes notebook 07",
+      "pass": true,
+      "detail": "{'train': 1710952, 'valid': 213869, 'test': 213869}"
+    },
+    {
+      "check": "event ranges of the splits identical in plain, 01c and 01d",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "01d cold training rows = first bookings before the last train target",
+      "pass": true,
+      "detail": "713754 vs 713754"
+    },
+    {
+      "check": "01d cold training rows end before the first valid target",
+      "pass": true,
+      "detail": "max 2424703 < 2424706"
+    },
+    {
+      "check": "no user is both a cold training row and a cold valid / test row",
+      "pass": true,
+      "detail": "0 users"
+    },
+    {
+      "check": "cold test rows: notebook 07 = table = cold JSONs",
+      "pass": true,
+      "detail": "49462 / 49462"
+    },
+    {
+      "check": "cold valid rows: notebook 07 = table = cold JSONs",
+      "pass": true,
+      "detail": "50769 / 50769"
+    },
+    {
+      "check": "benchmark_results.csv equals a rebuild from the JSON files",
+      "pass": true,
+      "detail": "20 rows"
+    },
+    {
+      "check": "all_events n = warm n + cold n (ItemKNN)",
+      "pass": true,
+      "detail": "263331"
+    },
+    {
+      "check": "all_events n = warm n + cold n (Logistic regression)",
+      "pass": true,
+      "detail": "263331"
+    },
+    {
+      "check": "metrics monotone in K and within [0, 1]",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "no forbidden raw column in the query fields",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "no history booking at or after its target",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

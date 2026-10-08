@@ -30,7 +30,7 @@ from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
 from recbole.utils import init_seed
 
-from nbp.data.query_features import QUERY_FIELDS, build_vocab, encode
+from nbp.data.query_features import QUERY_FIELDS, encode
 from nbp.eval.bootstrap import paired_bootstrap
 from nbp.eval.metrics import summarize, target_rank
 from nbp.models.smlprec_query import ROW_ID, SMLPRECQuery
@@ -42,10 +42,14 @@ CONFIG = ROOT / "configs" / "smlprec_expedia.yaml"
 WORK = ROOT / "data" / "interim" / "recbole"
 CODES = ROOT / "data" / "interim" / "expedia_query_codes_clean.npz"
 EVENT_COLS = ROOT / "data" / "interim" / "expedia_event_cols_clean.npz"  # row position = event index = TIME
-RUN_DIR = max((ROOT / "experiments").glob("*_expedia_smlp4rec_query-1c-clean"))
-QRUN = json.loads((ROOT / "results" / "week4_rebuild" / "smlprec_query_run.json").read_text(encoding="utf-8"))
+# usage: query_token_cold_users.py [run tag] [query run json] [output json]
+TAG = sys.argv[1] if len(sys.argv) > 1 else "query-1c-clean"
+QRUN_JSON = sys.argv[2] if len(sys.argv) > 2 else "smlprec_query_run.json"
+OUT_NAME = sys.argv[3] if len(sys.argv) > 3 else "smlprec_query_cold_L0.json"
+RUN_DIR = max((ROOT / "experiments").glob(f"*_expedia_smlp4rec_{TAG}"))
+QRUN = json.loads((ROOT / "results" / "week4_rebuild" / QRUN_JSON).read_text(encoding="utf-8"))
 SU = json.loads((ROOT / "results" / "week3_implementation" / "smlprec_expedia_seen_unseen_users.json").read_text(encoding="utf-8"))
-OUT = ROOT / "results" / "week4_rebuild" / "smlprec_query_cold_L0.json"
+OUT = ROOT / "results" / "week4_rebuild" / OUT_NAME
 KS = (5, 10, 20)
 N_CLUSTERS, M_SMOOTH, EPS, TIME_MARGIN = 100, 5, 1e-6, 0  # TIME is the exact event index
 W_FUSION = QRUN["prior_fusion_check"]["chosen_w_on_valid_recall@5"]
@@ -73,7 +77,8 @@ z = np.load(CODES)
 codes, fields = z["codes"], list(z["fields"])
 assert fields == list(QUERY_FIELDS)
 train_rows = train_data.dataset.inter_feat[ROW_ID].long().numpy()
-vocab = build_vocab(codes, train_rows)
+vocab_z = np.load(RUN_DIR / "vocab.npz")  # the vocabulary the checkpoint was trained with
+vocab = [vocab_z[f"vocab_{f}"] for f in fields]
 Q = encode(codes, vocab)
 field_sizes = [len(v) + 1 for v in vocab]
 ck = torch.load(RUN_DIR / "best.pth")

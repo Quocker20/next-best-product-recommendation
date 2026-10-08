@@ -39,4 +39,4 @@ Rows 3,000,685 to 2,952,675; users unchanged (813,985; the first record of each 
 
 ## Open
 - Whether session repeats (tier 4) should also be collapsed: user decision after the sensitivity run.
-- `verify_basic_baselines.py` still checks the notebook 07 outputs against the old numbers; rerun and adapt after the final notebook runs.
+- `verify_basic_baselines.py` still checks the notebook 07 outputs against the old (uncollapsed) numbers; `scripts/verify_stage_b.py` is the current consistency check.

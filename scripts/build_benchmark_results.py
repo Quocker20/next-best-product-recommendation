@@ -65,14 +65,23 @@ def main() -> None:
     for row_set in ("warm", "all_events"):
         for src_name, (name, role) in QUERY_RUN_MODELS.items():
             rows.append(
-                row(name, role, row_set, str(SEED), bench[row_set][src_name], "smlprec_query_run.json")
+                row(
+                    name,
+                    role,
+                    row_set,
+                    str(SEED),
+                    bench[row_set][src_name],
+                    "smlprec_query_run.json",
+                )
             )
 
     b = json.loads((RES / "basic_baselines.json").read_text(encoding="utf8"))["results"]["test"]
     for src_name, (name, role) in BASELINES.items():
         seed = "deterministic" if name == "ItemKNN" else str(SEED)
         for src_set, row_set in BASELINE_ROWS.items():
-            rows.append(row(name, role, row_set, seed, b[src_name][src_set], "basic_baselines.json"))
+            rows.append(
+                row(name, role, row_set, seed, b[src_name][src_set], "basic_baselines.json")
+            )
 
     cold = json.loads((RES / "smlprec_query_cold_L0.json").read_text(encoding="utf8"))
     qt = cold["results"]["test"]["query token alone (empty history)"]
@@ -86,6 +95,37 @@ def main() -> None:
             "smlprec_query_cold_L0.json",
         )
     )
+
+    # variant trained with the first bookings (L = 0 rows), notebook 01d
+    qd_path = RES / "smlprec_query_cold_train_run.json"
+    if qd_path.exists():
+        bd = json.loads(qd_path.read_text(encoding="utf8"))["samedest_hybrid"]["benchmark_test"]
+        for row_set in ("warm", "all_events"):
+            for src_name in ("Query token", "Query token + sameDest"):
+                name, _ = QUERY_RUN_MODELS[src_name]
+                rows.append(
+                    row(
+                        f"{name} [trained with L=0 rows]",
+                        "main-model variant (01d)",
+                        row_set,
+                        str(SEED),
+                        bd[row_set][src_name],
+                        qd_path.name,
+                    )
+                )
+        cd_path = RES / "smlprec_query_cold_L0_cold_train.json"
+        if cd_path.exists():
+            qd = json.loads(cd_path.read_text(encoding="utf8"))
+            rows.append(
+                row(
+                    "SMLP4Rec query token (empty history) [trained with L=0 rows]",
+                    "main-model variant (01d)",
+                    "cold",
+                    str(SEED),
+                    qd["results"]["test"]["query token alone (empty history)"],
+                    cd_path.name,
+                )
+            )
 
     df = pd.DataFrame(rows)
     OUT.parent.mkdir(parents=True, exist_ok=True)
