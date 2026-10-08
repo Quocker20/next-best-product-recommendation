@@ -42,21 +42,21 @@ Findings so far:
 | Seeds: mean +- std over >= 3 for the main model | One seed |
 | Slices (main model + two baselines): season, trip context, user activity (L), known vs new destination | Only L and seen/unseen done |
 | RQ4 metrics (diversity, popularity bias, coverage per destination / season) | Not computed |
-| `docs/eval_protocol.md`, `reports/benchmark_results.csv`, `PROGRESS.md` entry | Not written |
 | Final report + slides | Week-3 deck / report describe the discarded prior variant |
 
 ## 3. Plan
 
 Rule: loop = change data or model -> benchmark on valid -> record row -> analyse. Test is read once at the end of each stage.
 
-### A. Lock and record (8-9 Oct)
-- [ ] `PROGRESS.md`: decision record (main model, baselines, why, slice table, rejected variants, this scope cut).
-- [ ] `docs/eval_protocol.md`: split, warm / cold / all-events definitions, Recall@K and NDCG@K for K = 5, 10, 20, full ranking over 100 clusters, tuning rules, bootstrap, seeds.
-- [ ] `reports/benchmark_results.csv`: one row per dataset x model x seed, filled from existing JSON by a script.
-- [ ] Commit notebook 01c, results, new scripts (git status shows unstaged work).
-- [ ] Remove empty `src/nbp/priors/` (user OK needed).
+### A. Lock and record (8-9 Oct) — DONE 2026-10-08
+- [x] `PROGRESS.md`: decision record.
+- [x] `docs/eval_protocol.md`.
+- [x] `reports/benchmark_results.csv` (15 rows, built by `scripts/build_benchmark_results.py` from the JSON files; rerun after every new result).
+- [x] Commit and push.
+- [x] Removed empty `src/nbp/priors/`; CLAUDE.md, README and docs rewritten for this scope.
 
 ### B. Data processing (9-12 Oct)
+- [ ] Align the RecBole exports (`expedia_to_recbole.py`, `expedia_query_to_recbole.py`) with the cleaned `expedia_bookings.parquet` (they read raw `train.csv` today), then rerun 01c and 07 on one source.
 - [ ] Leakage audit of every query field and of the sameDest feature (the target row's own booking must never reach its inputs; checklist in `plan_oct_01_14.md`, Day 9).
 - [ ] Data audit of the interim tables: duplicates, `srch_co < srch_ci`, missing `orig_destination_distance`, unknown destinations; report counts by code, fix in the scripted pipeline only.
 - [ ] Query-field work, each tested as an ablation on valid (the 14 fields above are already in; do not redo them): per-field drop-one contribution; candidates not yet used: `destinations.csv` latent features d1..d149 (best lead for rare destinations, currently excluded), check-in weekday, user city / region (known at query time, excluded so far; check sparsity and leakage first), per-position context on the history bookings. `orig_destination_distance` and every `hotel_*` field stay excluded (describe the booked hotel).
@@ -91,5 +91,4 @@ Never cut: leakage audit, epoch check, 3 seeds on the main model, season and tri
 - Logistic regression is already strong (0.52 Recall@5 with no history). If the main model's margin over it is small on some slice, report it as is.
 
 ## 6. Decisions needed from the user
-1. OK to delete empty `src/nbp/priors/`?
-2. OK to update CLAUDE.md §3 / §8 to match this scope (remove the dropped models and the LLM rerank rule)? Not changed yet.
+None open.

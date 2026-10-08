@@ -1,0 +1,16 @@
+dataset,model,role,seed,row_set,n,recall@5,recall@10,recall@20,ndcg@5,ndcg@10,ndcg@20,source
+expedia,SMLP4Rec plain (history only),main-model ablation,2022,warm,218670,0.3369,0.4645,0.6309,0.2439,0.285,0.3269,smlprec_query_run.json
+expedia,SMLP4Rec query token,main-model ablation,2022,warm,218670,0.5898,0.7636,0.9029,0.4209,0.4772,0.5127,smlprec_query_run.json
+expedia,SMLP4Rec query token + sameDest,main model,2022,warm,218670,0.606,0.7709,0.9051,0.4475,0.5009,0.5351,smlprec_query_run.json
+expedia,Old hybrid (plain + prior + sameDest),internal reference,2022,warm,218670,0.6106,0.7741,0.909,0.4539,0.507,0.5413,smlprec_query_run.json
+expedia,SMLP4Rec plain (history only),main-model ablation,2022,all_events,268113,0.299,0.4206,0.5807,0.2139,0.253,0.2932,smlprec_query_run.json
+expedia,SMLP4Rec query token,main-model ablation,2022,all_events,268113,0.5736,0.7505,0.8956,0.4063,0.4637,0.5006,smlprec_query_run.json
+expedia,SMLP4Rec query token + sameDest,main model,2022,all_events,268113,0.5868,0.7565,0.8974,0.428,0.483,0.5188,smlprec_query_run.json
+expedia,Old hybrid (plain + prior + sameDest),internal reference,2022,all_events,268113,0.5925,0.7608,0.9027,0.4349,0.4894,0.5255,smlprec_query_run.json
+expedia,ItemKNN,baseline,deterministic,warm,218670,0.3161,0.4498,0.6182,0.2195,0.2624,0.3049,basic_baselines.json
+expedia,ItemKNN,baseline,deterministic,cold,49443,0.1317,0.2269,0.3634,0.0813,0.1118,0.1458,basic_baselines.json
+expedia,ItemKNN,baseline,deterministic,all_events,268113,0.2821,0.4087,0.5712,0.194,0.2347,0.2756,basic_baselines.json
+expedia,Logistic regression,baseline,2022,warm,218670,0.5219,0.7107,0.8735,0.3561,0.4172,0.4586,basic_baselines.json
+expedia,Logistic regression,baseline,2022,cold,49443,0.5061,0.6952,0.8653,0.3454,0.4066,0.4498,basic_baselines.json
+expedia,Logistic regression,baseline,2022,all_events,268113,0.519,0.7078,0.872,0.3541,0.4153,0.457,basic_baselines.json
+expedia,SMLP4Rec query token (empty history),main-model ablation,2022,cold,49443,0.5019,0.6925,0.8632,0.342,0.4036,0.4471,smlprec_query_cold_L0.json

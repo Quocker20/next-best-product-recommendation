@@ -10,10 +10,10 @@ One dataset (Expedia), one main model (SMLP4Rec query token + sameDest), two cla
 
 ## Deliverables checklist
 - [x] Dataset selection, EDA notebooks, data cards
-- [ ] `docs/eval_protocol.md`
+- [x] `docs/eval_protocol.md`
 - [ ] Cleaned and audited data, leakage audit (plan stage B)
 - [ ] Tuned main model, 3 seeds, two baselines with comparable tuning (stage C)
-- [ ] `reports/benchmark_results.csv`
+- [x] `reports/benchmark_results.csv`
 - [ ] RQ1 slices and RQ4 metrics (stage D)
 - [ ] Final report + slides built from `results/` (stage E)
 - [ ] Reproducible repo with README
