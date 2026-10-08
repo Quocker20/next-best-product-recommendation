@@ -680,14 +680,146 @@ slide(
 )
 
 
+# ---- 4b. query token (notebook 01c): lượt tìm kiếm vào trong mô hình
+QT = json.loads((W4 / "smlprec_query_run.json").read_text(encoding="utf-8"))
+QTT, QTP = QT["test"], QT["plain_rescored_test"]
+QCFG, QCOV, Q_TIME = QT["config"], QT["query_coverage"], QT["timing_seconds"]
+PF = QT["prior_fusion_check"]
+PF_W = PF["chosen_w_on_valid_recall@5"]
+PF_ALONE, PF_FUSED = "query token alone (w=0)", f"query token + prior (w={PF_W})"
+PF_T, PF_B, PF_S = PF["test"], PF["bootstrap_fused_minus_query_token_test"], PF["test_slices_recall@5_ndcg@5"]
+QD = QT["diagnostics_test"]
+Q_PRIOR = WARM[K_PRIOR]
+Q_SIM = WARM[K_FUSION]["ndcg@5"] - QTT["ndcg@5"]  # plain + prior minus query token (NDCG@5)
+Q_GAP = WARM[K_HYBRID]["ndcg@5"] - QTT["ndcg@5"]  # hybrid minus query token (NDCG@5)
+Q_FIELDS = [
+    ["Điểm đến", "mã điểm đến (embedding riêng nếu có ≥ 5 lần ở train), loại điểm đến"],
+    ["Lịch", "tháng check-in, số ngày từ lúc tìm đến check-in, số đêm"],
+    ["Nhóm khách", "số người lớn, số trẻ em, số phòng"],
+    ["Gói và kênh", "gói, thiết bị di động, kênh, site, châu lục điểm bán, quốc gia khách"],
+]
+slide(
+    "4 · Thử nghiệm",
+    "Đưa lượt tìm kiếm vào trong mô hình: query token",
+    f"""<div class="flow six">
+  <div class="fbox in">Lịch sử<small>tối đa 20 cụm đã đặt</small></div><div class="farrow">+</div>
+  <div class="fbox prior">Query token<small>[MASK] + 14 trường của lượt tìm</small></div><div class="farrow">→</div>
+  <div class="fbox model">SMLP4Rec<small>2 lớp, hidden 64, 21 vị trí</small></div><div class="farrow">→</div>
+  <div class="fbox gate">Vị trí query<small>chấm 100 cụm (CE)</small></div>
+</div>
+{table(["Nhóm", "14 trường của lượt tìm, cộng thành một vector query"], Q_FIELDS, right_from=9)}
+<div class="kpis three">
+  <div class="kpi"><b class="s">{num(QT["n_parameters"])}</b><span>tham số (chỉ lịch sử: {num(QT["n_parameters_history_only"])}); {pct(QT["n_query_parameters"] / QT["n_parameters"], 0)} là bảng embedding query</span></div>
+  <div class="kpi"><b class="s">{QCFG["epochs"]} epoch</b><span>cùng cấu hình, phép chia và seed như plain; {dec(Q_TIME["train_and_eval"] / 60, 1)} phút trên CPU</span></div>
+  <div class="kpi"><b class="s">{num(QCOV["dest"]["vocab_size"])}</b><span>điểm đến có embedding riêng; {pct(QCOV["dest"]["oov_test_targets"], 1)} dòng test nằm ngoài vocab</span></div>
+</div>
+<div class="note">Không dùng: mã khách sạn (hotel_*), khoảng cách, thành phố và vùng của khách, đặc trưng ẩn của destinations.csv. Lịch sử vẫn chỉ là chuỗi cụm, chưa mang ngữ cảnh từng booking cũ.</div>""",
+    sub="Thêm một vị trí cuối chuỗi cho lượt tìm hiện tại; hidden state tại đó chấm điểm 100 cụm",
+)
+
+Q_SERIES = [
+    ("SMLP4Rec plain", [QTP["ndcg@5"], QTP["ndcg@10"]], GRAY),
+    ("+ query token", [QTT["ndcg@5"], QTT["ndcg@10"]], BLUE),
+    ("plain + prior", [WARM[K_FUSION]["ndcg@5"], WARM[K_FUSION]["ndcg@10"]], AMBER),
+    ("hybrid (+ sameDest)", [WARM[K_HYBRID]["ndcg@5"], WARM[K_HYBRID]["ndcg@10"]], TEAL),
+]
+Q_ROWS = [
+    ["SMLP4Rec plain: chỉ lịch sử", dec(QTP["ndcg@5"], 4), pct(QTP["recall@5"])],
+    ["SMLP4Rec + query token", dec(QTT["ndcg@5"], 4), pct(QTT["recall@5"])],
+    ["SMLP4Rec + prior (nb 03)", dec(WARM[K_FUSION]["ndcg@5"], 4), pct(WARM[K_FUSION]["recall@5"])],
+    ["Hybrid + sameDest (nb 04)", dec(WARM[K_HYBRID]["ndcg@5"], 4), pct(WARM[K_HYBRID]["recall@5"])],
+]
+Q_BOOT = QT["bootstrap_query_minus_plain_test"]["all warm rows"]
+slide(
+    "4 · Thử nghiệm",
+    "Điểm của SMLP4Rec có query token",
+    f"""<div class="row">
+  <div class="panel grow"><div class="ph">NDCG@K, tập test, user có lịch sử (L ≥ 1)</div>
+    {grouped_bars(Q_SERIES, ["NDCG@5", "NDCG@10"], ymax=0.6, as_pct=False, w=560)}
+  </div>
+  <div class="panel side2"><div class="ph">Tập test, {num(QTT["n"])} dòng, xếp hạng đủ 100 cụm</div>
+    {table(["Cách", "NDCG@5", "Recall@5"], Q_ROWS, hl=(1,))}
+    <p class="sm">Query token so với plain: NDCG@5 {ci(Q_BOOT, "ndcg@5")}, Recall@5 {ci(Q_BOOT, "recall@5")} (bootstrap 95%). Tăng ở mọi nhóm user đã thấy, chưa thấy và mọi độ dài lịch sử.</p>
+  </div>
+</div>
+<div class="note">Rút ra: chỉ thêm lượt tìm vào trong mô hình, NDCG@5 tăng {dec(QTP["ndcg@5"], 3)} → {dec(QTT["ndcg@5"], 3)}, Recall@5 {pct(QTP["recall@5"], 0)} → {pct(QTT["recall@5"], 0)}, không cần phần vá bên ngoài. Điểm ngang SMLP4Rec + prior (chênh {dec(abs(Q_SIM), 3)}); hybrid vẫn cao hơn {dec(Q_GAP, 3)} NDCG@5. Cột plain chấm lại trên đúng các dòng này, khớp bản notebook 01.</div>""",
+    sub="Cùng phép chia, cùng 3 epoch; một seed; chỉ user có lịch sử (user mới chưa chấm bản này)",
+)
+
+Q_DIAG = [
+    ["Thật (có lịch sử, có query)", QD["real"]],
+    ["Xáo query giữa các dòng", QD["query shuffled"]],
+    ["Che lịch sử, giữ query", QD["history masked"]],
+    ["Vừa xáo vừa che", QD["both (shuffled + masked)"]],
+]
+slide(
+    "4 · Thử nghiệm",
+    "Query token mang thông tin giống prior điểm đến",
+    f"""<div class="cmp2">
+  <div class="panel"><div class="ph">Chẩn đoán trên cùng checkpoint, test (không huấn luyện lại)</div>
+    {table(["Phép thử", "NDCG@5", "Recall@5"], [[n, dec(d["ndcg@5"], 4), pct(d["recall@5"])] for n, d in Q_DIAG], hl=(0,))}
+    <p class="sm">Xáo query làm điểm tụt gần về mức popularity ({dec(POP["ndcg@5"], 3)}): mô hình dựa vào query. Che lịch sử, chỉ còn query, vẫn đạt {dec(QD["history masked"]["ndcg@5"], 3)}, cao hơn cả plain có đủ lịch sử ({dec(QTP["ndcg@5"], 3)}).</p>
+  </div>
+  <div class="panel"><div class="ph">Đặt cạnh các cách dùng điểm đến khác (NDCG@5, test)</div>
+    {table(["Cách", "NDCG@5"], [
+        ["Prior điểm đến một mình", dec(Q_PRIOR["ndcg@5"], 4)],
+        ["Query token, che lịch sử", dec(QD["history masked"]["ndcg@5"], 4)],
+        ["Query token + lịch sử", dec(QTT["ndcg@5"], 4)],
+        ["SMLP4Rec + prior (cộng log sau)", dec(WARM[K_FUSION]["ndcg@5"], 4)],
+    ], hl=(2,))}
+    <p class="sm">Lịch sử cộng thêm khoảng {dec(QTT["ndcg@5"] - QD["history masked"]["ndcg@5"], 3)} NDCG@5 trên nền query; ở nb 03 prior + lịch sử hơn prior một mình {dec(WARM[K_FUSION]["ndcg@5"] - Q_PRIOR["ndcg@5"], 3)}: hai cách đo cho cùng bậc độ lớn.</p>
+  </div>
+</div>
+<div class="note">Rút ra: điểm của query token gần như trùng SMLP4Rec + prior. Hợp lý: query token chứa điểm đến, nên mô hình tự học p(cụm | điểm đến) mà prior cung cấp bằng cách đếm. Điểm giống nhau chỉ là bằng chứng gián tiếp, nên kiểm tra trực tiếp ở slide sau.</div>""",
+    sub="Giả thuyết: query token đã bao hàm prior, nên cộng thêm prior không tăng đáng kể",
+)
+
+Q_SL = [
+    ("Phổ biến (từ 200 booking)", "destination 200+"),
+    ("20–199 booking", "destination 20-199"),
+    ("Hiếm (1–19 booking)", "destination 1-19 bookings in prior data"),
+    ("Ngoài vocab query token", "destination out of query-token vocab"),
+]
+Q_SL_ROWS = [
+    [
+        lab,
+        num(PF_S[f"{key} | query token alone"]["n"]),
+        dec(PF_S[f"{key} | query token alone"]["ndcg@5"], 3),
+        dec(PF_S[f"{key} | query token + prior"]["ndcg@5"], 3),
+        dec(PF_S[f"{key} | prior only"]["ndcg@5"], 3),
+    ]
+    for lab, key in Q_SL
+]
+slide(
+    "4 · Thử nghiệm",
+    "Kiểm chứng: cộng prior vào query token có tăng không?",
+    f"""<div class="eq">điểm = log p<sub>query token</sub> + w · log p<sub>prior</sub>(cụm | điểm đến) <span class="sm">· w = {dec(PF_W, 2)} chọn trên valid (bản plain: {dec(LFB, 1)}); w = 0 là mô hình một mình</span></div>
+<div class="cmp2">
+  <div class="panel"><div class="ph">Tập test, user có lịch sử</div>
+    {table(["Cách", "NDCG@5", "Recall@5"], [
+        ["Query token một mình", dec(PF_T[PF_ALONE]["ndcg@5"], 4), pct(PF_T[PF_ALONE]["recall@5"])],
+        [f"Query token + prior (w = {dec(PF_W, 2)})", dec(PF_T[PF_FUSED]["ndcg@5"], 4), pct(PF_T[PF_FUSED]["recall@5"])],
+        ["Prior một mình", dec(PF_T["destination prior only"]["ndcg@5"], 4), pct(PF_T["destination prior only"]["recall@5"])],
+    ], hl=(1,))}
+    <p class="sm">Cộng prior: NDCG@5 {ci(PF_B, "ndcg@5")}, Recall@5 {ci(PF_B, "recall@5")} (bootstrap 95%); nhỏ so với sameDest {pp(HB["ndcg@5"]["diff"])} NDCG@5.</p>
+  </div>
+  <div class="panel"><div class="ph">Theo độ phổ biến của điểm đến trong dữ liệu prior (NDCG@5, test)</div>
+    {table(["Nhóm", "Số dòng", "Một mình", "+ prior", "Prior"], Q_SL_ROWS, cls="dense")}
+  </div>
+</div>
+<div class="note">Rút ra: đúng cho phần lớn dữ liệu. Điểm đến phổ biến ({num(PF_S["destination 200+ | query token alone"]["n"])} dòng), prior không thêm ({dec(PF_S["destination 200+ | query token alone"]["ndcg@5"], 3)} → {dec(PF_S["destination 200+ | query token + prior"]["ndcg@5"], 3)}); phần tăng nằm ở điểm đến hiếm hoặc ngoài vocab, nơi prior có backoff theo market. Khoảng cách {dec(Q_GAP, 3)} NDCG@5 còn lại với hybrid thuộc về sameDest, thứ query token chưa có.</div>""",
+    sub="Trọng số w chọn trên valid, test chấm một lần; prior dựng như notebook 03",
+)
+
+
 # ---- 5. kết luận
 slide(
     "5 · Kết luận",
     "Kết luận",
     f"""<div class="grid3">
   <div class="card good"><h3>Đã làm</h3><p>Chạy SMLP4Rec gốc trên Expedia (plain), rút ra điểm yếu, thử hai hướng: chỉnh top 5 và thêm thông tin điểm đến (prior, rồi sameDest); cuối cùng thử tách trọng số theo thói quen.</p></div>
-  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: NDCG@5 {dec(WARM[K_PLAIN]["ndcg@5"], 2)} → {dec(WARM[K_HYBRID]["ndcg@5"], 2)}, Recall@5 {pct(WARM[K_PLAIN]["recall@5"], 0)} → {pct(WARM[K_HYBRID]["recall@5"], 0)}. Tách theo thói quen không thêm gì. Hồi quy logistic chỉ dùng điểm đến đạt NDCG@5 {dec(BL["results"]["test"][LR_K]["all events"]["ndcg@5"], 2)} (mọi sự kiện test), ItemKNN chỉ dùng lịch sử đạt {dec(BL["results"]["test"][KNN_K]["all events"]["ndcg@5"], 2)}: điểm cao chủ yếu do điểm đến; hai baseline không cho thấy dấu hiệu rò rỉ.</p></div>
-  <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh; hai baseline cơ bản (ItemKNN, hồi quy logistic) đã chạy, chưa có MF, item2vec, AdaGIN, LightGBM. Tiếp: đưa điểm đến vào trong mô hình, chạy lại trên chia theo sự kiện (gồm người dùng mới).</p></div>
+  <div class="card good"><h3>Rút ra</h3><p>Đa số đặt cụm mới; điểm đến là tín hiệu chủ đạo. Ép tỉ lệ làm giảm điểm; prior và sameDest tăng mạnh: NDCG@5 {dec(WARM[K_PLAIN]["ndcg@5"], 2)} → {dec(WARM[K_HYBRID]["ndcg@5"], 2)}, Recall@5 {pct(WARM[K_PLAIN]["recall@5"], 0)} → {pct(WARM[K_HYBRID]["recall@5"], 0)}. Tách theo thói quen không thêm gì. Đưa lượt tìm vào trong mô hình (query token) cho NDCG@5 {dec(QTT["ndcg@5"], 2)}, ngang SMLP4Rec + prior; cộng thêm prior chỉ tăng {dec(PF_B["ndcg@5"]["diff"], 3)}. Hồi quy logistic chỉ dùng điểm đến đạt NDCG@5 {dec(BL["results"]["test"][LR_K]["all events"]["ndcg@5"], 2)} (mọi sự kiện test), ItemKNN chỉ dùng lịch sử đạt {dec(BL["results"]["test"][KNN_K]["all events"]["ndcg@5"], 2)}: điểm cao chủ yếu do điểm đến; hai baseline không cho thấy dấu hiệu rò rỉ.</p></div>
+  <div class="card"><h3>Còn lại</h3><p>Một seed, prior tĩnh; hai baseline cơ bản (ItemKNN, hồi quy logistic) đã chạy, chưa có MF, item2vec, AdaGIN, LightGBM. Query token chưa chấm người dùng mới (L = 0); lịch sử chưa mang ngữ cảnh từng booking, sameDest chưa vào trong mô hình. Tiếp: ngữ cảnh theo vị trí cho lịch sử, chấm người dùng mới, chạy lại trên chia theo sự kiện.</p></div>
 </div>
 <div class="note">Quyết định: SMLP4Rec + prior điểm đến + sameDest, 2 bộ trọng số (điểm đến mới / đã đặt); không tách theo thói quen.</div>""",
 )

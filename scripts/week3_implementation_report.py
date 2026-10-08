@@ -14,7 +14,8 @@ smlprec_expedia_dynamic_cap_run.json (notebook 02), smlprec_expedia_late_fusion.
 smlprec_expedia_hybrid_behaviour_split.json (notebook 05),
 smlprec_expedia_seen_unseen_users.json (notebook 06); and from results/week4_rebuild/:
 basic_baselines.json (ItemKNN + logistic regression, notebook 07), basic_baselines_verify.json
-(independent check, scripts/verify_basic_baselines.py).
+(independent check, scripts/verify_basic_baselines.py), smlprec_query_run.json (query token and the
+prior-fusion check, notebook 01c).
 Figures: results/figures/vi/week3_fig1-7 (scripts/week3_report_figures.py, run it first) and
 fig12_smlp4rec_architecture.png from the week-2 report.
 
@@ -64,6 +65,7 @@ SU = load("smlprec_expedia_seen_unseen_users.json")
 W4 = ROOT / "results" / "week4_rebuild"
 BL = json.loads((W4 / "basic_baselines.json").read_text(encoding="utf-8"))
 BV = json.loads((W4 / "basic_baselines_verify.json").read_text(encoding="utf-8"))
+QT = json.loads((W4 / "smlprec_query_run.json").read_text(encoding="utf-8"))
 
 
 # ---------------------------------------------------------------- number formatting
@@ -459,7 +461,7 @@ def build() -> Builder:
             [
                 [("Phiên bản", True)],
                 (
-                    "06/10/2026 — đi kèm slide week3_report_slides_v2; notebook 01–07 trong "
+                    "07/10/2026 — đi kèm slide week3_report_slides_v2; notebook 01–07 và 01c trong "
                     "notebooks/hospitality/smlp4rec/"
                 ),
             ],
@@ -1266,6 +1268,157 @@ def build() -> Builder:
         ]
     )
 
+    # 6.4 query token (notebook 01c)
+    QTT, QTP, QCFG, QCOV, QTIME = QT["test"], QT["plain_rescored_test"], QT["config"], QT["query_coverage"], QT["timing_seconds"]
+    QD = QT["diagnostics_test"]
+    QBOOT = QT["bootstrap_query_minus_plain_test"]["all warm rows"]
+    q_sim = WARM["fusion"]["ndcg@5"] - QTT["ndcg@5"]
+    q_gap = WARM["hybrid"]["ndcg@5"] - QTT["ndcg@5"]
+    b.h2("6.4 Query token: đưa lượt tìm kiếm vào trong mô hình")
+    b.p(
+        "Bản plain chỉ đọc chuỗi cụm đã đặt; mọi trường của lượt tìm kiếm hiện tại (điểm đến, ngày, nhóm khách, gói, kênh) "
+        "bị bỏ. Hybrid ở mục 5 bù bằng cách cộng prior và sameDest bên ngoài mô hình. Notebook 01c đưa lượt tìm vào trong "
+        "mô hình: thêm một vị trí cuối chuỗi (query token) gồm vector [MASK] học được cộng một embedding cho mỗi trường "
+        "của lượt tìm; trạng thái ẩn tại vị trí đó chấm điểm 100 cụm. Phần lịch sử giữ nguyên (20 cụm, đệm bên phải)."
+    )
+    b.table(
+        [
+            ["Nhóm", "14 trường của lượt tìm (cộng thành một vector query)"],
+            ["Điểm đến", "mã điểm đến (embedding riêng nếu có ít nhất 5 lần ở các mục tiêu train), loại điểm đến"],
+            ["Lịch", "tháng check-in, số ngày từ lúc tìm đến check-in (nhóm), số đêm (nhóm)"],
+            ["Nhóm khách", "số người lớn, số trẻ em, số phòng"],
+            ["Gói và kênh", "gói, thiết bị di động, kênh, site, châu lục điểm bán, quốc gia của khách"],
+        ],
+        [2200, 7438],
+    )
+    b.p(
+        f"Cùng cấu hình và phép chia với bản plain ({QCFG['epochs']} epoch, hidden {QCFG['hidden_size']}, {QCFG['n_layers']} lớp, "
+        f"seed {QCFG['seed']}); chỉ chấm user có lịch sử (L ≥ 1), chưa chấm user mới. Số tham số {num(QT['n_parameters'])} "
+        f"(bản chỉ lịch sử: {num(QT['n_parameters_history_only'])}), trong đó {num(QT['n_query_parameters'])} là các bảng embedding "
+        f"query. Vocab điểm đến và quốc gia chỉ đếm trên mục tiêu train (điểm đến: ít nhất 5 lần, {num(QCOV['dest']['vocab_size'])} "
+        f"điểm đến); giá trị ngoài vocab dùng chỉ số 0 ({pct(QCOV['dest']['oov_test_targets'], 1)} dòng test về điểm đến). "
+        "Không dùng mã khách sạn (hotel_*), khoảng cách, thành phố và vùng của khách, đặc trưng ẩn của destinations.csv. "
+        f"Huấn luyện và chấm {dec(QTIME['train_and_eval'] / 60, 1)} phút trên CPU. Bản plain được chấm lại trên đúng các dòng "
+        "này và khớp kết quả notebook 01."
+    )
+    b.table(
+        [METRIC_HEAD]
+        + [
+            metric_row("SMLP4Rec plain: chỉ lịch sử", QTP),
+            metric_row("SMLP4Rec + query token", QTT, bold=True),
+            metric_row(f"SMLP4Rec + prior (w_p = {dec(W_BEST, 1)}, mục 5.1)", WARM["fusion"]),
+            metric_row("Hybrid: + sameDest (mục 5.2)", WARM["hybrid"]),
+        ],
+        METRIC_W,
+    )
+    b.p(
+        [
+            ("Đọc kết quả. ", True),
+            (
+                f"Chỉ thêm lượt tìm vào trong mô hình, NDCG@5 tăng {dec(QTP['ndcg@5'], 3)} → {dec(QTT['ndcg@5'], 3)} "
+                f"và Recall@5 {pct(QTP['recall@5'])} → {pct(QTT['recall@5'])}; so với plain: NDCG@5 {ci_ndcg(QBOOT)}, "
+                f"Recall@5 {ci_recall(QBOOT)} (bootstrap 95%), tăng ở user đã thấy, chưa thấy và mọi độ dài lịch sử. "
+                f"Điểm ngang SMLP4Rec + prior (chênh {dec(abs(q_sim), 3)} NDCG@5) mà không cần phần vá bên ngoài; hybrid vẫn "
+                f"cao hơn {dec(q_gap, 3)} NDCG@5.",
+                False,
+            ),
+        ]
+    )
+    b.table(
+        [["Chẩn đoán trên cùng checkpoint (test)", "NDCG@5", "Recall@5"]]
+        + [
+            [n, dec(d["ndcg@5"]), pct(d["recall@5"])]
+            for n, d in (
+                ("Thật (có lịch sử, có query)", QD["real"]),
+                ("Xáo query giữa các dòng", QD["query shuffled"]),
+                ("Che lịch sử, giữ query", QD["history masked"]),
+                ("Vừa xáo vừa che", QD["both (shuffled + masked)"]),
+            )
+        ],
+        [6038, 1800, 1800],
+    )
+    b.p(
+        f"Xáo query làm điểm tụt về mức popularity ({dec(POP['ndcg@5'], 3)}), nên mô hình dựa vào query. Che lịch sử, chỉ còn "
+        f"query, vẫn đạt NDCG@5 {dec(QD['history masked']['ndcg@5'], 3)}, cao hơn cả plain có đủ lịch sử "
+        f"({dec(QTP['ndcg@5'], 3)}): thông tin của lượt tìm mạnh hơn lịch sử. Lịch sử cộng thêm "
+        f"{dec(QTT['ndcg@5'] - QD['history masked']['ndcg@5'], 3)} NDCG@5 trên nền query; ở mục 5.1, prior cộng lịch sử hơn prior "
+        f"một mình {dec(WARM['fusion']['ndcg@5'] - WARM['prior']['ndcg@5'], 3)}: hai cách đo cho cùng bậc độ lớn."
+    )
+
+    # 6.5 prior check on the query-token model (notebook 01c, section 10)
+    PF = QT["prior_fusion_check"]
+    PF_W = PF["chosen_w_on_valid_recall@5"]
+    PF_ALONE, PF_FUSED = "query token alone (w=0)", f"query token + prior (w={PF_W})"
+    PF_T, PF_B, PF_S = PF["test"], PF["bootstrap_fused_minus_query_token_test"], PF["test_slices_recall@5_ndcg@5"]
+    b.h2("6.5 Kiểm chứng: cộng prior vào query token có tăng không")
+    b.p(
+        "Điểm của query token gần như trùng SMLP4Rec + prior. Giả thuyết: query token chứa điểm đến nên mô hình đã tự học "
+        "p(cụm | điểm đến) mà prior cung cấp bằng cách đếm; vậy cộng thêm prior sẽ không tăng đáng kể. Điểm giống nhau chỉ là "
+        "bằng chứng gián tiếp, nên kiểm tra trực tiếp: điểm = log p_query token + w · log p_prior(cụm | điểm đến), prior dựng "
+        "như mục 5.1 (làm trơn về market, cắt trước mục tiêu train cuối), w chọn trên valid theo Recall@5 (hòa thì lấy w nhỏ), "
+        f"test chấm một lần. w = 0 phải tái tạo mô hình một mình (đã kiểm tra). w chọn là {dec(PF_W, 2)}, nhỏ hơn nhiều so với "
+        f"{dec(W_BEST, 1)} của bản plain; trên valid, w càng lớn điểm càng giảm."
+    )
+    b.table(
+        [METRIC_HEAD]
+        + [
+            metric_row("Query token một mình", PF_T[PF_ALONE]),
+            metric_row(f"Query token + prior (w = {dec(PF_W, 2)})", PF_T[PF_FUSED], bold=True),
+            metric_row("Prior điểm đến một mình", PF_T["destination prior only"]),
+        ],
+        METRIC_W,
+    )
+    qs_keys = [
+        ("Điểm đến phổ biến (từ 200 booking trong dữ liệu prior)", "destination 200+"),
+        ("20–199 booking", "destination 20-199"),
+        ("Hiếm (1–19 booking)", "destination 1-19 bookings in prior data"),
+        ("Chưa từng thấy trong prior", "destination unseen in prior data"),
+        ("Ngoài vocab của query token", "destination out of query-token vocab"),
+        ("Trong vocab của query token", "destination in query-token vocab"),
+    ]
+    b.table(
+        [["Nhóm điểm đến (test)", "Số dòng", "NDCG@5 một mình", "NDCG@5 + prior", "NDCG@5 prior", "Recall@5 một mình", "Recall@5 + prior"]]
+        + [
+            [
+                lab,
+                num(PF_S[f"{k} | query token alone"]["n"]),
+                dec(PF_S[f"{k} | query token alone"]["ndcg@5"], 3),
+                dec(PF_S[f"{k} | query token + prior"]["ndcg@5"], 3),
+                dec(PF_S[f"{k} | prior only"]["ndcg@5"], 3),
+                pct(PF_S[f"{k} | query token alone"]["recall@5"]),
+                pct(PF_S[f"{k} | query token + prior"]["recall@5"]),
+            ]
+            for lab, k in qs_keys
+        ],
+        [2638, 1000, 1200, 1200, 1200, 1200, 1200],
+    )
+    b.p(
+        [
+            ("Đọc kết quả. ", True),
+            (
+                f"Cộng prior chỉ tăng nhẹ: NDCG@5 {ci_ndcg(PF_B)}, Recall@5 {ci_recall(PF_B)} (bootstrap 95%), nhỏ hơn nhiều so "
+                f"với sameDest (NDCG@5 {ci_ndcg(HB['warm'])} trên SMLP4Rec + prior). Với điểm đến phổ biến "
+                f"({num(PF_S['destination 200+ | query token alone']['n'])} dòng), prior không thêm gì "
+                f"(NDCG@5 {dec(PF_S['destination 200+ | query token alone']['ndcg@5'], 3)} → "
+                f"{dec(PF_S['destination 200+ | query token + prior']['ndcg@5'], 3)}); phần tăng nằm ở điểm đến hiếm hoặc ngoài vocab, "
+                "nơi prior có backoff theo market còn mô hình thiếu dữ liệu. Giả thuyết đúng cho phần lớn dữ liệu: query token đã "
+                f"bao hàm prior. Khoảng cách {dec(q_gap, 3)} NDCG@5 còn lại với hybrid thuộc về sameDest, thông tin về lịch sử của "
+                "user tại đúng điểm đến, mà lịch sử của query token chưa có (mỗi booking cũ mới chỉ là mã cụm).",
+                False,
+            ),
+        ]
+    )
+    b.p(
+        [
+            ("Giới hạn. ", True),
+            (
+                "Một seed, một checkpoint, 3 epoch (loss còn giảm ở epoch cuối); trọng số w toàn cục, chưa tách theo nhóm điểm đến; "
+                "chưa chấm user mới (L = 0) và chưa tách riêng đóng góp của từng trường ngoài điểm đến.",
+                False,
+            ),
+        ]
+    )
+
     # ------------------------------------------------------------ 7. conclusion
     b.h1("7. Kết luận và bước tiếp theo")
     b.h2("7.1 Kết luận")
@@ -1283,6 +1436,12 @@ def build() -> Builder:
                 "lần đặt đầu (L = 0), chỉ có popularity thay thế."
             ),
             "Tách trọng số theo thói quen không thêm gì; giữ 2 bộ trọng số (điểm đến mới / đã đặt).",
+            (
+                "Đưa lượt tìm vào trong mô hình (query token, mục 6.4) đưa NDCG@5 từ "
+                f"{dec(QT['plain_rescored_test']['ndcg@5'])} lên {dec(QT['test']['ndcg@5'])}, ngang SMLP4Rec + prior; "
+                f"cộng thêm prior chỉ tăng {sdec(QT['prior_fusion_check']['bootstrap_fused_minus_query_token_test']['ndcg@5']['diff'])} "
+                "NDCG@5 (mục 6.5): query token đã bao hàm prior, phần còn thiếu so với hybrid là sameDest."
+            ),
             (
                 "Hai baseline cơ bản (ItemKNN chỉ dùng lịch sử, hồi quy logistic chỉ dùng điểm đến) cho thấy điểm cao "
                 "của hybrid chủ yếu do điểm đến của lượt tìm; không thấy dấu hiệu rò rỉ hay lỗi chia tập."
@@ -1302,7 +1461,8 @@ def build() -> Builder:
     b.bullets(
         [
             "Chạy nhiều seed và báo cáo trung bình ± độ lệch chuẩn.",
-            "Đưa điểm đến vào trong mô hình (query token) và so với cách trộn sau.",
+            "Đưa ngữ cảnh theo từng booking cũ (điểm đến, nhóm khách, mùa) vào chuỗi lịch sử, để sameDest có thể nằm trong mô hình.",
+            "Chấm query token cho user mới (L = 0) và thêm các lần đặt đầu vào tập huấn luyện nếu cần.",
             "Chạy lại trên phép chia theo sự kiện, gồm cả user mới, trong cùng một bảng.",
             "Thêm các mô hình so sánh còn lại: MF, item2vec, AdaGIN, LightGBM (ItemKNN và hồi quy logistic đã chạy ở mục 6.3), cùng phép chia và tập ứng viên.",
             "Bổ sung chỉ số ngoài độ chính xác: độ đa dạng trong danh sách, thiên lệch popularity.",
@@ -1316,6 +1476,7 @@ def build() -> Builder:
             "Hotel cluster là đại diện ẩn danh cho hạng phòng hoặc gói; kết luận kinh doanh kế thừa giới hạn này.",
             f"Một seed ({CFG['seed']}), {CFG['epochs']} epoch, cấu hình nhẹ trên CPU; chưa tinh chỉnh siêu tham số của SMLP4Rec.",
             "Prior tĩnh, đếm đến cuối train; không cập nhật trong cửa sổ valid/test.",
+            "Query token: một seed, 3 epoch, loss còn giảm; chưa chấm user mới; lịch sử chưa mang ngữ cảnh từng booking.",
             "Hai baseline cơ bản: một seed, lưới K và C nhỏ, hồi quy logistic chỉ 3 epoch và C chọn ở biên lưới; dùng để kiểm tra tính hợp lý, chưa phải bảng so sánh cuối.",
             "Phép chia 80/10/10 của RecBole tính trên mục tiêu có lịch sử; user mới được chấm riêng cùng cửa sổ thời gian.",
             "Mọi kết quả là offline trên dữ liệu công khai; không có dữ liệu Vinpearl.",
@@ -1367,13 +1528,14 @@ def build() -> Builder:
                 "07_basic_baselines",
                 "results/week4_rebuild/basic_baselines.json, basic_baselines_verify.json",
             ],
+            ["6.4, 6.5", "01c_train_test_smlp4rec_query", "results/week4_rebuild/smlprec_query_run.json"],
         ],
         [1200, 3000, 5438],
     )
     b.p(
         "Notebook nằm trong notebooks/hospitality/smlp4rec/, file kết quả trong results/week3_implementation/. "
         "Hình được vẽ bởi scripts/week3_report_figures.py; báo cáo được dựng bởi scripts/week3_implementation_report.py. "
-        "Kiểm tra độc lập của mục 6.3: scripts/verify_basic_baselines.py.",
+        "Kiểm tra độc lập của mục 6.3: scripts/verify_basic_baselines.py. Notebook 01c đọc dữ liệu từ scripts/expedia_query_to_recbole.py; mục 6.4 và 6.5 dùng file kết quả trong results/week4_rebuild/.",
     )
 
     # ------------------------------------------------------------ references

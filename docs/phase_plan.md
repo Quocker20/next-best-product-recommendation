@@ -1,28 +1,19 @@
-# Phase plan and deliverables (moved from CLAUDE.md)
+# Plan and deliverables
 
-## Mentor's phase plan
+Active plan: `plan_oct_08_replan.md` (in `docs/plans/`). Earlier plans are history.
 
-| Phase | Work | Key outputs |
-|-------|------|-------------|
-| 1 | Theory + EDA | EDA notebooks, data cards, dataset scoring, chosen datasets |
-| 2 | Baselines (Popularity, MF, item2vec) + evaluation protocol | Processed data, protocol doc, first benchmark table |
-| 3 | Sequence models (GRU4Rec / SASRec) | Extended benchmark, RQ1 answer |
-| 4 | Context-aware ablation + LLM rerank | Ablation results, rerank results with cost/latency, RQ2 answer |
-| 5 | Diversity trade-off + catalog schema | Trade-off charts, RQ4 answer, unified catalog schema |
-| 6 | Simulated cross-sell data + final report | Simulator, cross-sell results, RQ3 answer, demo, final report + slides |
+## Current scope (2026-10-08)
+One dataset (Expedia), one main model (SMLP4Rec query token + sameDest), two classical baselines (ItemKNN, logistic regression). Work = data processing, model tuning, evaluation, report. See `CLAUDE.md` §1 for what is out of scope.
 
-Under the current scope (§1), the simulator / cross-sell / RQ3 part of Phase 6 is deferred; Phase 6 = final report + slides only. Phase 4's "context-aware ablation" runs on Expedia trip context (party, dates/season, package, destination, channel), not on food context. Phase 5's "unified catalog schema" covers packages/rooms only for now.
-
-Work in loops: train → benchmark → analyze → answer RQ, adding to one shared results table. Do not train everything first and analyze at the end.
+## Original mentor phases (reference only)
+1 Theory + EDA · 2 Baselines + protocol · 3 Sequence models · 4 Context-aware ablation + LLM rerank · 5 Diversity trade-off + catalog schema · 6 Cross-sell + final report. Under the current scope only Phase 1 (done), the protocol, the main model with two baselines, the RQ1 / RQ4 analysis and the final report + slides remain.
 
 ## Deliverables checklist
-
-- [ ] Processed datasets + pipeline code + data cards
-- [ ] Evaluation protocol doc
-- [ ] Trained models (all families) with configs and metrics
-- [ ] Benchmark results table + RQ1–RQ4 analysis
-- [ ] Linked-ID simulator + simulated dataset
-- [ ] Unified catalog schema (packages/rooms, rides, dishes) aligned with the roadmap's Integration Design section
-- [ ] Vinpearl ↔ GSM cross-sell demo on simulated data
-- [ ] Final benchmark report + presentation slides
+- [x] Dataset selection, EDA notebooks, data cards
+- [ ] `docs/eval_protocol.md`
+- [ ] Cleaned and audited data, leakage audit (plan stage B)
+- [ ] Tuned main model, 3 seeds, two baselines with comparable tuning (stage C)
+- [ ] `reports/benchmark_results.csv`
+- [ ] RQ1 slices and RQ4 metrics (stage D)
+- [ ] Final report + slides built from `results/` (stage E)
 - [ ] Reproducible repo with README

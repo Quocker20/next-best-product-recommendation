@@ -1,7 +1,7 @@
 {
   "run": "SMLP4Rec + query token (context-aware, no hybrid), 3 epochs, notebook 01c",
   "dataset": "expedia (train.csv, is_booking == 1; item = hotel_cluster)",
-  "git_commit": "6706ac5",
+  "git_commit": "13ce620",
   "query_fields": [
     "dest",
     "dest_type",
@@ -160,17 +160,17 @@
     }
   },
   "timing_seconds": {
-    "data_build": 66.6,
-    "train_and_eval": 729.1,
-    "test": 21.0
+    "data_build": 191.4,
+    "train_and_eval": 994.7,
+    "test": 22.7
   },
   "best_epoch_by_valid": 3,
-  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-07_expedia_smlp4rec_query-1c\\best.pth",
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-08_expedia_smlp4rec_query-1c\\best.pth",
   "per_epoch": [
     {
       "epoch": 1,
       "train_loss": 5183.8896,
-      "train_seconds": 198.7,
+      "train_seconds": 308.4,
       "valid": {
         "n": 218670,
         "recall@5": 0.5832,
@@ -189,12 +189,12 @@
         "ndcg@10": 0.4647,
         "ndcg@20": 0.5008
       },
-      "eval_seconds": 15.2
+      "eval_seconds": 22.6
     },
     {
       "epoch": 2,
       "train_loss": 4631.6362,
-      "train_seconds": 223.4,
+      "train_seconds": 301.2,
       "valid": {
         "n": 218670,
         "recall@5": 0.5965,
@@ -213,12 +213,12 @@
         "ndcg@10": 0.4764,
         "ndcg@20": 0.5119
       },
-      "eval_seconds": 14.7
+      "eval_seconds": 24.5
     },
     {
       "epoch": 3,
       "train_loss": 4522.59,
-      "train_seconds": 253.6,
+      "train_seconds": 315.2,
       "valid": {
         "n": 218670,
         "recall@5": 0.5981,
@@ -237,7 +237,7 @@
         "ndcg@10": 0.4772,
         "ndcg@20": 0.5127
       },
-      "eval_seconds": 23.3
+      "eval_seconds": 22.8
     }
   ],
   "valid": {
@@ -454,6 +454,458 @@
       "ndcg@5": 0.0462,
       "ndcg@10": 0.0686,
       "ndcg@20": 0.1011
+    }
+  },
+  "prior_fusion_check": {
+    "formula": "score = log p_query_token + w * log p_prior(cluster | searched destination); prior as nb03 (m=5, market backoff, cut before last train target)",
+    "w_grid": [
+      0.0,
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      5.0
+    ],
+    "valid_sweep": {
+      "0.0": {
+        "recall@5": 0.5981,
+        "ndcg@5": 0.4266
+      },
+      "0.1": {
+        "recall@5": 0.602,
+        "ndcg@5": 0.429
+      },
+      "0.25": {
+        "recall@5": 0.6039,
+        "ndcg@5": 0.43
+      },
+      "0.5": {
+        "recall@5": 0.6025,
+        "ndcg@5": 0.4287
+      },
+      "0.75": {
+        "recall@5": 0.6002,
+        "ndcg@5": 0.4264
+      },
+      "1.0": {
+        "recall@5": 0.597,
+        "ndcg@5": 0.4234
+      },
+      "1.5": {
+        "recall@5": 0.591,
+        "ndcg@5": 0.4175
+      },
+      "2.0": {
+        "recall@5": 0.5858,
+        "ndcg@5": 0.4122
+      },
+      "3.0": {
+        "recall@5": 0.5776,
+        "ndcg@5": 0.4042
+      },
+      "5.0": {
+        "recall@5": 0.5679,
+        "ndcg@5": 0.3947
+      }
+    },
+    "chosen_w_on_valid_recall@5": 0.25,
+    "test": {
+      "query token alone (w=0)": {
+        "n": 218670,
+        "recall@5": 0.5898,
+        "recall@10": 0.7636,
+        "recall@20": 0.9029,
+        "ndcg@5": 0.4209,
+        "ndcg@10": 0.4772,
+        "ndcg@20": 0.5127
+      },
+      "query token + prior (w=0.25)": {
+        "n": 218670,
+        "recall@5": 0.5942,
+        "recall@10": 0.771,
+        "recall@20": 0.9125,
+        "ndcg@5": 0.4235,
+        "ndcg@10": 0.4808,
+        "ndcg@20": 0.5168
+      },
+      "destination prior only": {
+        "n": 218670,
+        "recall@5": 0.5298,
+        "recall@10": 0.7213,
+        "recall@20": 0.8849,
+        "ndcg@5": 0.3631,
+        "ndcg@10": 0.4251,
+        "ndcg@20": 0.4666
+      }
+    },
+    "bootstrap_fused_minus_query_token_test": {
+      "recall@5": {
+        "diff": 0.0045,
+        "ci95": [
+          0.0037,
+          0.0053
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0026,
+        "ci95": [
+          0.0021,
+          0.0031
+        ]
+      }
+    },
+    "test_slices_recall@5_ndcg@5": {
+      "destination unseen in prior data | query token alone": {
+        "n": 1503,
+        "recall@5": 0.338,
+        "ndcg@5": 0.2315
+      },
+      "destination unseen in prior data | query token + prior": {
+        "n": 1503,
+        "recall@5": 0.3293,
+        "ndcg@5": 0.2248
+      },
+      "destination unseen in prior data | prior only": {
+        "n": 1503,
+        "recall@5": 0.1071,
+        "ndcg@5": 0.0783
+      },
+      "destination 1-19 bookings in prior data | query token alone": {
+        "n": 9950,
+        "recall@5": 0.5753,
+        "ndcg@5": 0.4371
+      },
+      "destination 1-19 bookings in prior data | query token + prior": {
+        "n": 9950,
+        "recall@5": 0.6508,
+        "ndcg@5": 0.4908
+      },
+      "destination 1-19 bookings in prior data | prior only": {
+        "n": 9950,
+        "recall@5": 0.6818,
+        "ndcg@5": 0.5259
+      },
+      "destination 20-199 | query token alone": {
+        "n": 34761,
+        "recall@5": 0.7165,
+        "ndcg@5": 0.5231
+      },
+      "destination 20-199 | query token + prior": {
+        "n": 34761,
+        "recall@5": 0.7218,
+        "ndcg@5": 0.5261
+      },
+      "destination 20-199 | prior only": {
+        "n": 34761,
+        "recall@5": 0.6904,
+        "ndcg@5": 0.4883
+      },
+      "destination 200+ | query token alone": {
+        "n": 172456,
+        "recall@5": 0.5673,
+        "ndcg@5": 0.401
+      },
+      "destination 200+ | query token + prior": {
+        "n": 172456,
+        "recall@5": 0.5676,
+        "ndcg@5": 0.4006
+      },
+      "destination 200+ | prior only": {
+        "n": 172456,
+        "recall@5": 0.4923,
+        "ndcg@5": 0.331
+      },
+      "destination out of query-token vocab | query token alone": {
+        "n": 5323,
+        "recall@5": 0.3483,
+        "ndcg@5": 0.24
+      },
+      "destination out of query-token vocab | query token + prior": {
+        "n": 5323,
+        "recall@5": 0.4685,
+        "ndcg@5": 0.3294
+      },
+      "destination out of query-token vocab | prior only": {
+        "n": 5323,
+        "recall@5": 0.473,
+        "ndcg@5": 0.3704
+      },
+      "destination in query-token vocab | query token alone": {
+        "n": 213347,
+        "recall@5": 0.5958,
+        "ndcg@5": 0.4254
+      },
+      "destination in query-token vocab | query token + prior": {
+        "n": 213347,
+        "recall@5": 0.5974,
+        "ndcg@5": 0.4258
+      },
+      "destination in query-token vocab | prior only": {
+        "n": 213347,
+        "recall@5": 0.5312,
+        "ndcg@5": 0.3629
+      }
+    },
+    "prior_n_bookings": 2463082,
+    "prior_n_destinations": 34506
+  },
+  "samedest_hybrid": {
+    "description": "query-token model + sameDest (A; the variant with prior was dropped), same formula / grid / one-SE rule as notebook 04, compared with the old hybrid (plain + prior + sameDest) recomputed from the nb04 weights",
+    "formula": "score = log q_model + w_s * log q_sameDest; log q = log((1 - alpha) * p + alpha / 100); cells: query destination new / already in the history",
+    "variants": {
+      "A": "query token + sameDest (w_p = 0)"
+    },
+    "grid": {
+      "alpha": [
+        0.05,
+        0.1,
+        0.2,
+        0.3,
+        0.5
+      ],
+      "w_s": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ]
+    },
+    "tuned_on_valid": {
+      "A": {
+        "n_configs": 50,
+        "best_on_valid": [
+          0.3,
+          0.0,
+          1.5
+        ],
+        "one_se_pick": [
+          0.5,
+          0.0,
+          1.0
+        ],
+        "n_within_one_se": 10,
+        "alpha": 0.5,
+        "weights": {
+          "0": [
+            0.0,
+            0.0
+          ],
+          "1": [
+            0.0,
+            1.0
+          ]
+        }
+      }
+    },
+    "old_hybrid_weights_nb04": {
+      "alpha": 0.2,
+      "weights": {
+        "0": [
+          0.2,
+          2.0,
+          0.0
+        ],
+        "1": [
+          0.2,
+          1.25,
+          1.0
+        ]
+      }
+    },
+    "cold_rows": "L = 0 (49,443 test first bookings): query-token model on an empty history with the 'new destination' weights; plain = popularity, plain + prior and the old hybrid = prior only",
+    "benchmark_test": {
+      "warm": {
+        "SMLP4Rec plain": {
+          "n": 218670,
+          "recall@5": 0.3369,
+          "recall@10": 0.4645,
+          "recall@20": 0.6309,
+          "ndcg@5": 0.2439,
+          "ndcg@10": 0.285,
+          "ndcg@20": 0.3269
+        },
+        "SMLP4Rec plain + prior (nb 03)": {
+          "n": 218670,
+          "recall@5": 0.5919,
+          "recall@10": 0.7657,
+          "recall@20": 0.9086,
+          "ndcg@5": 0.4227,
+          "ndcg@10": 0.4791,
+          "ndcg@20": 0.5154
+        },
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+          "n": 218670,
+          "recall@5": 0.6106,
+          "recall@10": 0.7741,
+          "recall@20": 0.909,
+          "ndcg@5": 0.4539,
+          "ndcg@10": 0.507,
+          "ndcg@20": 0.5413
+        },
+        "Query token": {
+          "n": 218670,
+          "recall@5": 0.5898,
+          "recall@10": 0.7636,
+          "recall@20": 0.9029,
+          "ndcg@5": 0.4209,
+          "ndcg@10": 0.4772,
+          "ndcg@20": 0.5127
+        },
+        "Query token + sameDest": {
+          "n": 218670,
+          "recall@5": 0.606,
+          "recall@10": 0.7709,
+          "recall@20": 0.9051,
+          "ndcg@5": 0.4475,
+          "ndcg@10": 0.5009,
+          "ndcg@20": 0.5351
+        }
+      },
+      "all_events": {
+        "SMLP4Rec plain": {
+          "n": 268113,
+          "recall@5": 0.299,
+          "recall@10": 0.4206,
+          "recall@20": 0.5807,
+          "ndcg@5": 0.2139,
+          "ndcg@10": 0.253,
+          "ndcg@20": 0.2932
+        },
+        "SMLP4Rec plain + prior (nb 03)": {
+          "n": 268113,
+          "recall@5": 0.5772,
+          "recall@10": 0.7539,
+          "recall@20": 0.9024,
+          "ndcg@5": 0.4094,
+          "ndcg@10": 0.4667,
+          "ndcg@20": 0.5045
+        },
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+          "n": 268113,
+          "recall@5": 0.5925,
+          "recall@10": 0.7608,
+          "recall@20": 0.9027,
+          "ndcg@5": 0.4349,
+          "ndcg@10": 0.4894,
+          "ndcg@20": 0.5255
+        },
+        "Query token": {
+          "n": 268113,
+          "recall@5": 0.5736,
+          "recall@10": 0.7505,
+          "recall@20": 0.8956,
+          "ndcg@5": 0.4063,
+          "ndcg@10": 0.4637,
+          "ndcg@20": 0.5006
+        },
+        "Query token + sameDest": {
+          "n": 268113,
+          "recall@5": 0.5868,
+          "recall@10": 0.7565,
+          "recall@20": 0.8974,
+          "ndcg@5": 0.428,
+          "ndcg@10": 0.483,
+          "ndcg@20": 0.5188
+        }
+      }
+    },
+    "bootstrap_test_95ci": {
+      "Query token + sameDest minus Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+        "warm": {
+          "recall@5": {
+            "diff": -0.0046,
+            "ci95": [
+              -0.0061,
+              -0.0032
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0065,
+            "ci95": [
+              -0.0074,
+              -0.0056
+            ]
+          }
+        },
+        "all_events": {
+          "recall@5": {
+            "diff": -0.0057,
+            "ci95": [
+              -0.007,
+              -0.0044
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0069,
+            "ci95": [
+              -0.0077,
+              -0.006
+            ]
+          }
+        }
+      },
+      "Query token minus Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+        "warm": {
+          "recall@5": {
+            "diff": -0.0209,
+            "ci95": [
+              -0.0223,
+              -0.0194
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0331,
+            "ci95": [
+              -0.0343,
+              -0.032
+            ]
+          }
+        },
+        "all_events": {
+          "recall@5": {
+            "diff": -0.0189,
+            "ci95": [
+              -0.0204,
+              -0.0175
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0286,
+            "ci95": [
+              -0.0297,
+              -0.0275
+            ]
+          }
+        }
+      }
+    },
+    "test_slices_recall@5_ndcg@5": {
+      "known destination": {
+        "SMLP4Rec plain": "0.5968 / 0.4815",
+        "SMLP4Rec plain + prior (nb 03)": "0.6785 / 0.5188",
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": "0.7401 / 0.6175",
+        "Query token": "0.6870 / 0.5293",
+        "Query token + sameDest": "0.7413 / 0.6182",
+        "rows": 65407
+      },
+      "new destination": {
+        "SMLP4Rec plain": "0.2259 / 0.1425",
+        "SMLP4Rec plain + prior (nb 03)": "0.5550 / 0.3817",
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": "0.5554 / 0.3842",
+        "Query token": "0.5483 / 0.3746",
+        "Query token + sameDest": "0.5483 / 0.3746",
+        "rows": 153263
+      }
     }
   }
 }

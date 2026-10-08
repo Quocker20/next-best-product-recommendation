@@ -1,5 +1,3 @@
-# Documents
+# docs/
 
-Thư mục lưu trữ các tài liệu kiến trúc, đặc tả yêu cầu, và tài liệu kỹ thuật liên quan đến dự án.
-
-Quy ước: `docs/` chỉ chứa tài liệu tham chiếu không gắn tuần (data card, rubric, checklist, protocol, đề bài). Kế hoạch theo ngày nằm ở `docs/plans/`, giải thích kỹ thuật ở `docs/explainers/`. Báo cáo và slide từng tuần nằm ở `reports/summary/<tuần>/`, output của script ở `results/<tuần>/`.
+Reference documents not tied to a week: data cards (`data_cards/`), dataset rubric and scores, EDA checklist, problem statement, `phase_plan.md`. Dated plans live in `plans/` (active: `plan_oct_08_replan.md`), technical explainers in `explainers/`. Weekly reports and slides go in `reports/summary/<week>/`, script outputs in `results/<week>/`.
