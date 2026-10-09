@@ -1,0 +1,215 @@
+{
+  "run": "SMLP4Rec + query token on L = 0 rows (first bookings, empty history), checkpoint of notebook 01c, no retraining",
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-09_expedia_smlp4rec_query-1d-clean-cold-s2024\\best.pth",
+  "definition": "L = 0 rows as notebook 06: first booking of each user whose first booking is in the valid / test window; history = all padding",
+  "n_rows": {
+    "valid": 50769,
+    "test": 49462
+  },
+  "w_fusion_chosen_in_01c": 0.25,
+  "results": {
+    "valid": {
+      "global popularity": {
+        "n": 50769,
+        "recall@5": 0.125,
+        "recall@10": 0.21,
+        "recall@20": 0.3603,
+        "ndcg@5": 0.0799,
+        "ndcg@10": 0.1069,
+        "ndcg@20": 0.1445
+      },
+      "destination prior only": {
+        "n": 50769,
+        "recall@5": 0.5295,
+        "recall@10": 0.716,
+        "recall@20": 0.8849,
+        "ndcg@5": 0.3619,
+        "ndcg@10": 0.4222,
+        "ndcg@20": 0.4651
+      },
+      "query token alone (empty history)": {
+        "n": 50769,
+        "recall@5": 0.5208,
+        "recall@10": 0.7133,
+        "recall@20": 0.8795,
+        "ndcg@5": 0.3545,
+        "ndcg@10": 0.4168,
+        "ndcg@20": 0.4591
+      },
+      "query token + prior (w=0.25)": {
+        "n": 50769,
+        "recall@5": 0.5286,
+        "recall@10": 0.7211,
+        "recall@20": 0.8887,
+        "ndcg@5": 0.3602,
+        "ndcg@10": 0.4225,
+        "ndcg@20": 0.4651
+      },
+      "query token, query shuffled": {
+        "n": 50769,
+        "recall@5": 0.07,
+        "recall@10": 0.1381,
+        "recall@20": 0.2597,
+        "ndcg@5": 0.0415,
+        "ndcg@10": 0.0632,
+        "ndcg@20": 0.0937
+      }
+    },
+    "test": {
+      "global popularity": {
+        "n": 49462,
+        "recall@5": 0.1318,
+        "recall@10": 0.227,
+        "recall@20": 0.3589,
+        "ndcg@5": 0.0814,
+        "ndcg@10": 0.1115,
+        "ndcg@20": 0.1444
+      },
+      "destination prior only": {
+        "n": 49462,
+        "recall@5": 0.5129,
+        "recall@10": 0.7015,
+        "recall@20": 0.8757,
+        "ndcg@5": 0.3511,
+        "ndcg@10": 0.4121,
+        "ndcg@20": 0.4564
+      },
+      "query token alone (empty history)": {
+        "n": 49462,
+        "recall@5": 0.5122,
+        "recall@10": 0.7021,
+        "recall@20": 0.8728,
+        "ndcg@5": 0.3505,
+        "ndcg@10": 0.412,
+        "ndcg@20": 0.4554
+      },
+      "query token + prior (w=0.25)": {
+        "n": 49462,
+        "recall@5": 0.5173,
+        "recall@10": 0.7109,
+        "recall@20": 0.8819,
+        "ndcg@5": 0.3549,
+        "ndcg@10": 0.4176,
+        "ndcg@20": 0.4611
+      },
+      "query token, query shuffled": {
+        "n": 49462,
+        "recall@5": 0.0721,
+        "recall@10": 0.1399,
+        "recall@20": 0.2645,
+        "ndcg@5": 0.0429,
+        "ndcg@10": 0.0646,
+        "ndcg@20": 0.0958
+      }
+    }
+  },
+  "reference_notebook_06_L0_hybrid_prior_only_test_uncollapsed_data": {
+    "n": 49443,
+    "recall@5": 0.5121,
+    "recall@10": 0.7017,
+    "recall@20": 0.8749,
+    "ndcg@5": 0.3505,
+    "ndcg@10": 0.4119,
+    "ndcg@20": 0.4559
+  },
+  "reference_warm_rows_history_masked_test_01c": {
+    "n": 213869,
+    "recall@5": 0.5257,
+    "recall@10": 0.718,
+    "recall@20": 0.8807,
+    "ndcg@5": 0.3574,
+    "ndcg@10": 0.4196,
+    "ndcg@20": 0.461
+  },
+  "test_slices_ndcg5_recall5": {
+    "destination in query-token vocab": {
+      "global popularity": {
+        "n": 48578,
+        "recall@5": 0.1321,
+        "ndcg@5": 0.0815
+      },
+      "destination prior only": {
+        "n": 48578,
+        "recall@5": 0.5141,
+        "ndcg@5": 0.3514
+      },
+      "query token alone (empty history)": {
+        "n": 48578,
+        "recall@5": 0.5171,
+        "ndcg@5": 0.354
+      },
+      "query token + prior (w=0.25)": {
+        "n": 48578,
+        "recall@5": 0.5201,
+        "ndcg@5": 0.3569
+      },
+      "query token, query shuffled": {
+        "n": 48578,
+        "recall@5": 0.0724,
+        "ndcg@5": 0.0431
+      }
+    },
+    "destination out of vocab": {
+      "global popularity": {
+        "n": 884,
+        "recall@5": 0.1131,
+        "ndcg@5": 0.0766
+      },
+      "destination prior only": {
+        "n": 884,
+        "recall@5": 0.4457,
+        "ndcg@5": 0.3349
+      },
+      "query token alone (empty history)": {
+        "n": 884,
+        "recall@5": 0.2443,
+        "ndcg@5": 0.157
+      },
+      "query token + prior (w=0.25)": {
+        "n": 884,
+        "recall@5": 0.3643,
+        "ndcg@5": 0.2455
+      },
+      "query token, query shuffled": {
+        "n": 884,
+        "recall@5": 0.052,
+        "ndcg@5": 0.0289
+      }
+    }
+  },
+  "test_share_destination_oov": 0.017872306012696616,
+  "bootstrap_test_95ci": {
+    "query token alone minus prior only": {
+      "recall@5": {
+        "diff": -0.0007,
+        "ci95": [
+          -0.0039,
+          0.0028
+        ]
+      },
+      "ndcg@5": {
+        "diff": -0.0006,
+        "ci95": [
+          -0.0026,
+          0.0015
+        ]
+      }
+    },
+    "query token + prior minus prior only": {
+      "recall@5": {
+        "diff": 0.0044,
+        "ci95": [
+          0.0016,
+          0.0073
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0039,
+        "ci95": [
+          0.0021,
+          0.0057
+        ]
+      }
+    }
+  }
+}

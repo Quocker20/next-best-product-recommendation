@@ -1,0 +1,984 @@
+{
+  "run": "SMLP4Rec + query token (context-aware, no hybrid), 3 epochs, notebook 01c",
+  "dataset": "expedia (bookings, burst repeats collapsed; item = hotel_cluster)",
+  "data_version": "collapsed (expedia_bookings.parquet)",
+  "git_commit": "f11b891",
+  "query_fields": [
+    "dest",
+    "dest_type",
+    "ci_month",
+    "lead",
+    "stay",
+    "adults",
+    "children",
+    "rooms",
+    "package",
+    "mobile",
+    "channel",
+    "site",
+    "posa",
+    "country"
+  ],
+  "query_vocab_min_count": {
+    "dest": 5,
+    "dest_type": 1,
+    "ci_month": 1,
+    "lead": 1,
+    "stay": 1,
+    "adults": 1,
+    "children": 1,
+    "rooms": 1,
+    "package": 1,
+    "mobile": 1,
+    "channel": 1,
+    "site": 1,
+    "posa": 1,
+    "country": 5
+  },
+  "excluded_inputs": "destinations.csv latent features, hotel_*, orig_destination_distance, user_location_region/city, cnt",
+  "config": {
+    "MAX_ITEM_LIST_LENGTH": 20,
+    "n_layers": 2,
+    "hidden_size": 64,
+    "hidden_dropout_prob": 0.0,
+    "loss_type": "CE",
+    "epochs": 3,
+    "train_batch_size": 1024,
+    "learning_rate": 0.001,
+    "seed": 2023,
+    "eval_args": {
+      "split": {
+        "RS": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "order": "TO",
+      "group_by": null,
+      "mode": "full"
+    },
+    "topk": [
+      5,
+      10,
+      20
+    ],
+    "valid_metric": "NDCG@10"
+  },
+  "n_parameters": 930652,
+  "n_query_parameters": 896704,
+  "n_parameters_history_only": 33702,
+  "splits": {
+    "train": {
+      "targets": 1710952,
+      "first_target_event": 20,
+      "last_target_event": 2424705,
+      "mean_history_len": 5.781
+    },
+    "valid": {
+      "targets": 213869,
+      "first_target_event": 2424706,
+      "last_target_event": 2689343,
+      "mean_history_len": 7.305
+    },
+    "test": {
+      "targets": 213869,
+      "first_target_event": 2689344,
+      "last_target_event": 2952674,
+      "mean_history_len": 7.166
+    }
+  },
+  "query_coverage": {
+    "dest": {
+      "vocab_size": 13651,
+      "oov_valid_targets": 0.023,
+      "oov_test_targets": 0.0246
+    },
+    "dest_type": {
+      "vocab_size": 8,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "ci_month": {
+      "vocab_size": 12,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "lead": {
+      "vocab_size": 11,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "stay": {
+      "vocab_size": 14,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "adults": {
+      "vocab_size": 10,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "children": {
+      "vocab_size": 10,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "rooms": {
+      "vocab_size": 9,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "package": {
+      "vocab_size": 2,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "mobile": {
+      "vocab_size": 2,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "channel": {
+      "vocab_size": 11,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "site": {
+      "vocab_size": 39,
+      "oov_valid_targets": 0.0003,
+      "oov_test_targets": 0.0003
+    },
+    "posa": {
+      "vocab_size": 5,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "country": {
+      "vocab_size": 212,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    }
+  },
+  "timing_seconds": {
+    "data_build": 112.2,
+    "train_and_eval": 2724.7,
+    "test": 34.3
+  },
+  "best_epoch_by_valid": 3,
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-09_expedia_smlp4rec_query-1c-clean-s2023\\best.pth",
+  "per_epoch": [
+    {
+      "epoch": 1,
+      "train_loss": 5195.1503,
+      "train_seconds": 660.7,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5636,
+        "recall@10": 0.7353,
+        "recall@20": 0.881,
+        "ndcg@5": 0.3998,
+        "ndcg@10": 0.4554,
+        "ndcg@20": 0.4925
+      },
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5556,
+        "recall@10": 0.7284,
+        "recall@20": 0.8751,
+        "ndcg@5": 0.3939,
+        "ndcg@10": 0.4499,
+        "ndcg@20": 0.4873
+      },
+      "eval_seconds": 26.7
+    },
+    {
+      "epoch": 2,
+      "train_loss": 4664.7404,
+      "train_seconds": 878.5,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5837,
+        "recall@10": 0.758,
+        "recall@20": 0.8978,
+        "ndcg@5": 0.4141,
+        "ndcg@10": 0.4706,
+        "ndcg@20": 0.5062
+      },
+      "test": {
+        "n": 213869,
+        "recall@5": 0.574,
+        "recall@10": 0.7471,
+        "recall@20": 0.8897,
+        "ndcg@5": 0.4073,
+        "ndcg@10": 0.4635,
+        "ndcg@20": 0.4998
+      },
+      "eval_seconds": 26.8
+    },
+    {
+      "epoch": 3,
+      "train_loss": 4529.6467,
+      "train_seconds": 1099.1,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5884,
+        "recall@10": 0.7642,
+        "recall@20": 0.903,
+        "ndcg@5": 0.4171,
+        "ndcg@10": 0.4741,
+        "ndcg@20": 0.5094
+      },
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5793,
+        "recall@10": 0.7544,
+        "recall@20": 0.8948,
+        "ndcg@5": 0.4104,
+        "ndcg@10": 0.4672,
+        "ndcg@20": 0.503
+      },
+      "eval_seconds": 32.9
+    }
+  ],
+  "valid": {
+    "n": 213869,
+    "recall@5": 0.5884,
+    "recall@10": 0.7642,
+    "recall@20": 0.903,
+    "ndcg@5": 0.4171,
+    "ndcg@10": 0.4741,
+    "ndcg@20": 0.5094
+  },
+  "test": {
+    "n": 213869,
+    "recall@5": 0.5793,
+    "recall@10": 0.7544,
+    "recall@20": 0.8948,
+    "ndcg@5": 0.4104,
+    "ndcg@10": 0.4672,
+    "ndcg@20": 0.503
+  },
+  "plain_rescored_valid": {
+    "n": 213869,
+    "recall@5": 0.3204,
+    "recall@10": 0.4513,
+    "recall@20": 0.6234,
+    "ndcg@5": 0.2277,
+    "ndcg@10": 0.2698,
+    "ndcg@20": 0.3132
+  },
+  "plain_rescored_test": {
+    "n": 213869,
+    "recall@5": 0.3212,
+    "recall@10": 0.453,
+    "recall@20": 0.623,
+    "ndcg@5": 0.2274,
+    "ndcg@10": 0.2698,
+    "ndcg@20": 0.3127
+  },
+  "heuristics_test": {
+    "global_popularity": {
+      "n": 213869,
+      "recall@5": 0.1487,
+      "recall@10": 0.2488,
+      "recall@20": 0.3938,
+      "ndcg@5": 0.0944,
+      "ndcg@10": 0.1263,
+      "ndcg@20": 0.1626
+    },
+    "repeat_last_then_popularity": {
+      "n": 213869,
+      "recall@5": 0.2399,
+      "recall@10": 0.3289,
+      "recall@20": 0.4642,
+      "ndcg@5": 0.1848,
+      "ndcg@10": 0.2133,
+      "ndcg@20": 0.2472
+    }
+  },
+  "slices_test": {
+    "all warm rows | plain": {
+      "n": 213869,
+      "recall@5": 0.3212,
+      "ndcg@5": 0.2274
+    },
+    "all warm rows | query token": {
+      "n": 213869,
+      "recall@5": 0.5793,
+      "ndcg@5": 0.4104
+    },
+    "seen users | plain": {
+      "n": 139815,
+      "recall@5": 0.3272,
+      "ndcg@5": 0.2297
+    },
+    "seen users | query token": {
+      "n": 139815,
+      "recall@5": 0.5901,
+      "ndcg@5": 0.4193
+    },
+    "unseen users (L>=1) | plain": {
+      "n": 74054,
+      "recall@5": 0.3097,
+      "ndcg@5": 0.2231
+    },
+    "unseen users (L>=1) | query token": {
+      "n": 74054,
+      "recall@5": 0.5589,
+      "ndcg@5": 0.3935
+    },
+    "L=1 | plain": {
+      "n": 39778,
+      "recall@5": 0.2528,
+      "ndcg@5": 0.1798
+    },
+    "L=1 | query token": {
+      "n": 39778,
+      "recall@5": 0.5437,
+      "ndcg@5": 0.3778
+    },
+    "L=2-4 | plain": {
+      "n": 67266,
+      "recall@5": 0.3004,
+      "ndcg@5": 0.2114
+    },
+    "L=2-4 | query token": {
+      "n": 67266,
+      "recall@5": 0.5685,
+      "ndcg@5": 0.4011
+    },
+    "L=5-9 | plain": {
+      "n": 46340,
+      "recall@5": 0.3395,
+      "ndcg@5": 0.2391
+    },
+    "L=5-9 | query token": {
+      "n": 46340,
+      "recall@5": 0.5868,
+      "ndcg@5": 0.4173
+    },
+    "L>=10 | plain": {
+      "n": 60485,
+      "recall@5": 0.3753,
+      "ndcg@5": 0.2675
+    },
+    "L>=10 | query token": {
+      "n": 60485,
+      "recall@5": 0.6089,
+      "ndcg@5": 0.4369
+    }
+  },
+  "bootstrap_query_minus_plain_test": {
+    "all warm rows": {
+      "recall@5": {
+        "diff": 0.2581,
+        "ci95": [
+          0.2558,
+          0.2603
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.183,
+        "ci95": [
+          0.1813,
+          0.1846
+        ]
+      }
+    },
+    "seen users": {
+      "recall@5": {
+        "diff": 0.2628,
+        "ci95": [
+          0.2598,
+          0.2658
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.1897,
+        "ci95": [
+          0.1874,
+          0.1917
+        ]
+      }
+    },
+    "unseen users (L>=1)": {
+      "recall@5": {
+        "diff": 0.2492,
+        "ci95": [
+          0.2454,
+          0.2533
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.1704,
+        "ci95": [
+          0.1674,
+          0.1734
+        ]
+      }
+    }
+  },
+  "diagnostics_test": {
+    "real": {
+      "n": 213869,
+      "recall@5": 0.5793,
+      "recall@10": 0.7544,
+      "recall@20": 0.8948,
+      "ndcg@5": 0.4104,
+      "ndcg@10": 0.4672,
+      "ndcg@20": 0.503
+    },
+    "query shuffled": {
+      "n": 213869,
+      "recall@5": 0.1281,
+      "recall@10": 0.2165,
+      "recall@20": 0.3634,
+      "ndcg@5": 0.0828,
+      "ndcg@10": 0.1111,
+      "ndcg@20": 0.148
+    },
+    "history masked": {
+      "n": 213869,
+      "recall@5": 0.5124,
+      "recall@10": 0.704,
+      "recall@20": 0.8651,
+      "ndcg@5": 0.3462,
+      "ndcg@10": 0.4083,
+      "ndcg@20": 0.4493
+    },
+    "both (shuffled + masked)": {
+      "n": 213869,
+      "recall@5": 0.074,
+      "recall@10": 0.1414,
+      "recall@20": 0.2694,
+      "ndcg@5": 0.044,
+      "ndcg@10": 0.0655,
+      "ndcg@20": 0.0976
+    }
+  },
+  "field_permutation_test": {
+    "dest": {
+      "recall@5": 0.1368,
+      "ndcg@5": 0.0887,
+      "ndcg@5_drop": 0.3217
+    },
+    "dest_type": {
+      "recall@5": 0.5742,
+      "ndcg@5": 0.407,
+      "ndcg@5_drop": 0.0034
+    },
+    "ci_month": {
+      "recall@5": 0.5791,
+      "ndcg@5": 0.4101,
+      "ndcg@5_drop": 0.0003
+    },
+    "lead": {
+      "recall@5": 0.5775,
+      "ndcg@5": 0.4089,
+      "ndcg@5_drop": 0.0015
+    },
+    "stay": {
+      "recall@5": 0.5781,
+      "ndcg@5": 0.4093,
+      "ndcg@5_drop": 0.0011
+    },
+    "adults": {
+      "recall@5": 0.5775,
+      "ndcg@5": 0.4089,
+      "ndcg@5_drop": 0.0015
+    },
+    "children": {
+      "recall@5": 0.5784,
+      "ndcg@5": 0.4095,
+      "ndcg@5_drop": 0.0009
+    },
+    "rooms": {
+      "recall@5": 0.5787,
+      "ndcg@5": 0.4098,
+      "ndcg@5_drop": 0.0006
+    },
+    "package": {
+      "recall@5": 0.5788,
+      "ndcg@5": 0.4098,
+      "ndcg@5_drop": 0.0006
+    },
+    "mobile": {
+      "recall@5": 0.5793,
+      "ndcg@5": 0.4104,
+      "ndcg@5_drop": 0.0
+    },
+    "channel": {
+      "recall@5": 0.5789,
+      "ndcg@5": 0.4101,
+      "ndcg@5_drop": 0.0003
+    },
+    "site": {
+      "recall@5": 0.5775,
+      "ndcg@5": 0.4088,
+      "ndcg@5_drop": 0.0016
+    },
+    "posa": {
+      "recall@5": 0.5787,
+      "ndcg@5": 0.4097,
+      "ndcg@5_drop": 0.0007
+    },
+    "country": {
+      "recall@5": 0.5773,
+      "ndcg@5": 0.409,
+      "ndcg@5_drop": 0.0014
+    }
+  },
+  "prior_fusion_check": {
+    "formula": "score = log p_query_token + w * log p_prior(cluster | searched destination); prior as nb03 (m=5, market backoff, cut before last train target)",
+    "w_grid": [
+      0.0,
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      5.0
+    ],
+    "valid_sweep": {
+      "0.0": {
+        "recall@5": 0.5884,
+        "ndcg@5": 0.4171
+      },
+      "0.1": {
+        "recall@5": 0.5943,
+        "ndcg@5": 0.4209
+      },
+      "0.25": {
+        "recall@5": 0.5977,
+        "ndcg@5": 0.423
+      },
+      "0.5": {
+        "recall@5": 0.598,
+        "ndcg@5": 0.423
+      },
+      "0.75": {
+        "recall@5": 0.5965,
+        "ndcg@5": 0.4214
+      },
+      "1.0": {
+        "recall@5": 0.5941,
+        "ndcg@5": 0.419
+      },
+      "1.5": {
+        "recall@5": 0.5894,
+        "ndcg@5": 0.4144
+      },
+      "2.0": {
+        "recall@5": 0.5847,
+        "ndcg@5": 0.4099
+      },
+      "3.0": {
+        "recall@5": 0.5768,
+        "ndcg@5": 0.4023
+      },
+      "5.0": {
+        "recall@5": 0.5672,
+        "ndcg@5": 0.3935
+      }
+    },
+    "chosen_w_on_valid_recall@5": 0.5,
+    "test": {
+      "query token alone (w=0)": {
+        "n": 213869,
+        "recall@5": 0.5793,
+        "recall@10": 0.7544,
+        "recall@20": 0.8948,
+        "ndcg@5": 0.4104,
+        "ndcg@10": 0.4672,
+        "ndcg@20": 0.503
+      },
+      "query token + prior (w=0.5)": {
+        "n": 213869,
+        "recall@5": 0.5883,
+        "recall@10": 0.7676,
+        "recall@20": 0.9108,
+        "ndcg@5": 0.4159,
+        "ndcg@10": 0.4741,
+        "ndcg@20": 0.5106
+      },
+      "destination prior only": {
+        "n": 213869,
+        "recall@5": 0.5294,
+        "recall@10": 0.7208,
+        "recall@20": 0.8847,
+        "ndcg@5": 0.3626,
+        "ndcg@10": 0.4246,
+        "ndcg@20": 0.4662
+      }
+    },
+    "bootstrap_fused_minus_query_token_test": {
+      "recall@5": {
+        "diff": 0.009,
+        "ci95": [
+          0.0079,
+          0.01
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0055,
+        "ci95": [
+          0.0049,
+          0.0062
+        ]
+      }
+    },
+    "test_slices_recall@5_ndcg@5": {
+      "destination unseen in prior data | query token alone": {
+        "n": 1467,
+        "recall@5": 0.3258,
+        "ndcg@5": 0.2246
+      },
+      "destination unseen in prior data | query token + prior": {
+        "n": 1467,
+        "recall@5": 0.3177,
+        "ndcg@5": 0.2205
+      },
+      "destination unseen in prior data | prior only": {
+        "n": 1467,
+        "recall@5": 0.1084,
+        "ndcg@5": 0.0796
+      },
+      "destination 1-19 bookings in prior data | query token alone": {
+        "n": 9817,
+        "recall@5": 0.5581,
+        "ndcg@5": 0.4244
+      },
+      "destination 1-19 bookings in prior data | query token + prior": {
+        "n": 9817,
+        "recall@5": 0.6787,
+        "ndcg@5": 0.5159
+      },
+      "destination 1-19 bookings in prior data | prior only": {
+        "n": 9817,
+        "recall@5": 0.6817,
+        "ndcg@5": 0.5254
+      },
+      "destination 20-199 | query token alone": {
+        "n": 34521,
+        "recall@5": 0.7085,
+        "ndcg@5": 0.5177
+      },
+      "destination 20-199 | query token + prior": {
+        "n": 34521,
+        "recall@5": 0.7227,
+        "ndcg@5": 0.5256
+      },
+      "destination 20-199 | prior only": {
+        "n": 34521,
+        "recall@5": 0.6905,
+        "ndcg@5": 0.4881
+      },
+      "destination 200+ | query token alone": {
+        "n": 168064,
+        "recall@5": 0.5562,
+        "ndcg@5": 0.3892
+      },
+      "destination 200+ | query token + prior": {
+        "n": 168064,
+        "recall@5": 0.5577,
+        "ndcg@5": 0.3893
+      },
+      "destination 200+ | prior only": {
+        "n": 168064,
+        "recall@5": 0.4911,
+        "ndcg@5": 0.3298
+      },
+      "destination out of query-token vocab | query token alone": {
+        "n": 5251,
+        "recall@5": 0.3285,
+        "ndcg@5": 0.2256
+      },
+      "destination out of query-token vocab | query token + prior": {
+        "n": 5251,
+        "recall@5": 0.5165,
+        "ndcg@5": 0.3745
+      },
+      "destination out of query-token vocab | prior only": {
+        "n": 5251,
+        "recall@5": 0.4753,
+        "ndcg@5": 0.3719
+      },
+      "destination in query-token vocab | query token alone": {
+        "n": 208618,
+        "recall@5": 0.5856,
+        "ndcg@5": 0.4151
+      },
+      "destination in query-token vocab | query token + prior": {
+        "n": 208618,
+        "recall@5": 0.5901,
+        "ndcg@5": 0.417
+      },
+      "destination in query-token vocab | prior only": {
+        "n": 208618,
+        "recall@5": 0.5308,
+        "ndcg@5": 0.3624
+      }
+    },
+    "prior_n_bookings": 2424705,
+    "prior_n_destinations": 34507
+  },
+  "samedest_hybrid": {
+    "description": "query-token model + sameDest (A; the variant with prior was dropped), same formula / grid / one-SE rule as notebook 04, compared with the old hybrid (plain + prior + sameDest) recomputed from the nb04 weights",
+    "formula": "score = log q_model + w_s * log q_sameDest; log q = log((1 - alpha) * p + alpha / 100); cells: query destination new / already in the history",
+    "variants": {
+      "A": "query token + sameDest (w_p = 0)"
+    },
+    "grid": {
+      "alpha": [
+        0.05,
+        0.1,
+        0.2,
+        0.3,
+        0.5
+      ],
+      "w_s": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ]
+    },
+    "tuned_on_valid": {
+      "A": {
+        "n_configs": 50,
+        "best_on_valid": [
+          0.2,
+          0.0,
+          1.25
+        ],
+        "one_se_pick": [
+          0.5,
+          0.0,
+          1.0
+        ],
+        "n_within_one_se": 10,
+        "alpha": 0.5,
+        "weights": {
+          "0": [
+            0.0,
+            0.0
+          ],
+          "1": [
+            0.0,
+            1.0
+          ]
+        }
+      }
+    },
+    "old_hybrid_weights_nb04": {
+      "alpha": 0.2,
+      "weights": {
+        "0": [
+          0.2,
+          2.0,
+          0.0
+        ],
+        "1": [
+          0.2,
+          1.25,
+          1.0
+        ]
+      }
+    },
+    "cold_rows": "L = 0 (49462 test first bookings): query-token model on an empty history with the 'new destination' weights; plain = popularity, plain + prior and the old hybrid = prior only",
+    "benchmark_test": {
+      "warm": {
+        "SMLP4Rec plain": {
+          "n": 213869,
+          "recall@5": 0.3212,
+          "recall@10": 0.453,
+          "recall@20": 0.623,
+          "ndcg@5": 0.2274,
+          "ndcg@10": 0.2698,
+          "ndcg@20": 0.3127
+        },
+        "SMLP4Rec plain + prior (nb 03)": {
+          "n": 213869,
+          "recall@5": 0.5851,
+          "recall@10": 0.7617,
+          "recall@20": 0.9073,
+          "ndcg@5": 0.4139,
+          "ndcg@10": 0.4712,
+          "ndcg@20": 0.5083
+        },
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+          "n": 213869,
+          "recall@5": 0.6023,
+          "recall@10": 0.7692,
+          "recall@20": 0.9078,
+          "ndcg@5": 0.4418,
+          "ndcg@10": 0.496,
+          "ndcg@20": 0.5312
+        },
+        "Query token": {
+          "n": 213869,
+          "recall@5": 0.5793,
+          "recall@10": 0.7544,
+          "recall@20": 0.8948,
+          "ndcg@5": 0.4104,
+          "ndcg@10": 0.4672,
+          "ndcg@20": 0.503
+        },
+        "Query token + sameDest": {
+          "n": 213869,
+          "recall@5": 0.5942,
+          "recall@10": 0.7615,
+          "recall@20": 0.8971,
+          "ndcg@5": 0.4344,
+          "ndcg@10": 0.4887,
+          "ndcg@20": 0.5232
+        }
+      },
+      "all_events": {
+        "SMLP4Rec plain": {
+          "n": 263331,
+          "recall@5": 0.2856,
+          "recall@10": 0.4105,
+          "recall@20": 0.5734,
+          "ndcg@5": 0.2,
+          "ndcg@10": 0.2401,
+          "ndcg@20": 0.2811
+        },
+        "SMLP4Rec plain + prior (nb 03)": {
+          "n": 263331,
+          "recall@5": 0.5715,
+          "recall@10": 0.7504,
+          "recall@20": 0.9014,
+          "ndcg@5": 0.4021,
+          "ndcg@10": 0.4601,
+          "ndcg@20": 0.4985
+        },
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+          "n": 263331,
+          "recall@5": 0.5854,
+          "recall@10": 0.7565,
+          "recall@20": 0.9018,
+          "ndcg@5": 0.4248,
+          "ndcg@10": 0.4802,
+          "ndcg@20": 0.5172
+        },
+        "Query token": {
+          "n": 263331,
+          "recall@5": 0.5635,
+          "recall@10": 0.741,
+          "recall@20": 0.8871,
+          "ndcg@5": 0.3963,
+          "ndcg@10": 0.4538,
+          "ndcg@20": 0.491
+        },
+        "Query token + sameDest": {
+          "n": 263331,
+          "recall@5": 0.5756,
+          "recall@10": 0.7468,
+          "recall@20": 0.8889,
+          "ndcg@5": 0.4158,
+          "ndcg@10": 0.4713,
+          "ndcg@20": 0.5075
+        }
+      }
+    },
+    "bootstrap_test_95ci": {
+      "Query token + sameDest minus Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+        "warm": {
+          "recall@5": {
+            "diff": -0.0081,
+            "ci95": [
+              -0.0097,
+              -0.0066
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0074,
+            "ci95": [
+              -0.0085,
+              -0.0064
+            ]
+          }
+        },
+        "all_events": {
+          "recall@5": {
+            "diff": -0.0099,
+            "ci95": [
+              -0.0113,
+              -0.0085
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.009,
+            "ci95": [
+              -0.0098,
+              -0.0081
+            ]
+          }
+        }
+      },
+      "Query token minus Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+        "warm": {
+          "recall@5": {
+            "diff": -0.023,
+            "ci95": [
+              -0.0247,
+              -0.0214
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0314,
+            "ci95": [
+              -0.0326,
+              -0.0301
+            ]
+          }
+        },
+        "all_events": {
+          "recall@5": {
+            "diff": -0.022,
+            "ci95": [
+              -0.0235,
+              -0.0205
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0285,
+            "ci95": [
+              -0.0295,
+              -0.0275
+            ]
+          }
+        }
+      }
+    },
+    "test_slices_recall@5_ndcg@5": {
+      "known destination": {
+        "SMLP4Rec plain": "0.5617 / 0.4405",
+        "SMLP4Rec plain + prior (nb 03)": "0.6601 / 0.4947",
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": "0.7199 / 0.5878",
+        "Query token": "0.6679 / 0.5032",
+        "Query token + sameDest": "0.7205 / 0.5880",
+        "rows": 60586
+      },
+      "new destination": {
+        "SMLP4Rec plain": "0.2261 / 0.1432",
+        "SMLP4Rec plain + prior (nb 03)": "0.5554 / 0.3820",
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": "0.5558 / 0.3841",
+        "Query token": "0.5442 / 0.3737",
+        "Query token + sameDest": "0.5442 / 0.3737",
+        "rows": 153283
+      }
+    }
+  }
+}

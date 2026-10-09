@@ -17,6 +17,7 @@ Usage: .venv/Scripts/python.exe scripts/expedia_sensitivity.py [run_dir]
 from __future__ import annotations
 
 import json
+import re
 import sys
 
 import numpy as np
@@ -30,7 +31,18 @@ RUNS = sorted((ROOT / "experiments").glob("*_expedia_smlp4rec_query-1c-clean"))
 RUN = RUNS[-1] if len(sys.argv) < 2 else ROOT / sys.argv[1]
 BASE_RANKS = INTERIM / "basic_baselines_ranks_test.parquet"
 CLEAN = INTERIM / "expedia_bookings.parquet"
-OUT = ROOT / "results" / "week4_rebuild" / ("sensitivity_cold_train.json" if "1d" in RUN.name else "sensitivity.json")
+_SEED = re.search(r"-s(\d+)$", RUN.name)  # runs of other seeds carry a -s<seed> suffix
+OUT = (
+    ROOT
+    / "results"
+    / "week4_rebuild"
+    / (
+        "sensitivity"
+        + ("_cold_train" if "1d" in RUN.name else "")
+        + (f"_seed{_SEED.group(1)}" if _SEED else "")
+        + ".json"
+    )
+)
 LR = "Logistic regression (C=10.0, destination + context, no history)"
 KNN = "ItemKNN (cosine, K=100, history only)"
 WINDOWS = {"within_1h": 3600, "within_1d": 86400}
