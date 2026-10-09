@@ -20,8 +20,14 @@ pooling_mode: mean
 loss_type: CE
 
 # training
+# max_epochs / early_stop_*: read by notebooks 01c and 01d only (nbp.models.early_stop). They train up to
+# max_epochs and stop after early_stop_patience epochs without a valid NDCG@10 gain > early_stop_min_delta;
+# best.pth = best valid epoch. `epochs` below stays 3 for nb01 and the week-3 scripts.
+max_epochs: 10
+early_stop_patience: 2
+early_stop_min_delta: 7.0e-4   # ~2 x paired SE (0.00035) of the epoch-to-epoch valid NDCG@10 gain: results/week4_rebuild/early_stop_threshold_analysis.txt
 epochs: 3
-stopping_step: 10   # no early stop inside 3 epochs
+stopping_step: 10   # RecBole's own early stop; unused by the notebooks (nb01 runs a fixed 3 epochs)
 train_batch_size: 1024
 learning_rate: 0.001
 neg_sampling: ~

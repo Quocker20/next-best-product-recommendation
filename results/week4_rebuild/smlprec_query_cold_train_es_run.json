@@ -1,0 +1,1193 @@
+{
+  "run": "SMLP4Rec + query token trained with the L = 0 rows (empty history), up to max_epochs with early stopping (valid NDCG@10), notebook 01d",
+  "cold_training_rows": 713754,
+  "dataset": "expedia (bookings, burst repeats collapsed; item = hotel_cluster)",
+  "data_version": "collapsed (expedia_bookings.parquet)",
+  "git_commit": "6c91623",
+  "query_fields": [
+    "dest",
+    "dest_type",
+    "ci_month",
+    "lead",
+    "stay",
+    "adults",
+    "children",
+    "rooms",
+    "package",
+    "mobile",
+    "channel",
+    "site",
+    "posa",
+    "country"
+  ],
+  "query_vocab_min_count": {
+    "dest": 5,
+    "dest_type": 1,
+    "ci_month": 1,
+    "lead": 1,
+    "stay": 1,
+    "adults": 1,
+    "children": 1,
+    "rooms": 1,
+    "package": 1,
+    "mobile": 1,
+    "channel": 1,
+    "site": 1,
+    "posa": 1,
+    "country": 5
+  },
+  "excluded_inputs": "destinations.csv latent features, hotel_*, orig_destination_distance, user_location_region/city, cnt",
+  "config": {
+    "MAX_ITEM_LIST_LENGTH": 20,
+    "n_layers": 2,
+    "hidden_size": 64,
+    "hidden_dropout_prob": 0.0,
+    "loss_type": "CE",
+    "epochs": 10,
+    "max_epochs": 10,
+    "early_stop_patience": 2,
+    "early_stop_min_delta": 0.0007,
+    "train_batch_size": 1024,
+    "learning_rate": 0.001,
+    "seed": 2022,
+    "eval_args": {
+      "split": {
+        "RS": [
+          0.8,
+          0.1,
+          0.1
+        ]
+      },
+      "order": "TO",
+      "group_by": null,
+      "mode": "full"
+    },
+    "topk": [
+      5,
+      10,
+      20
+    ],
+    "valid_metric": "NDCG@10"
+  },
+  "n_parameters": 1050204,
+  "n_query_parameters": 1016256,
+  "n_parameters_history_only": 33702,
+  "splits": {
+    "train": {
+      "targets": 1710952,
+      "first_target_event": 20,
+      "last_target_event": 2424705,
+      "mean_history_len": 5.781
+    },
+    "valid": {
+      "targets": 213869,
+      "first_target_event": 2424706,
+      "last_target_event": 2689343,
+      "mean_history_len": 7.305
+    },
+    "test": {
+      "targets": 213869,
+      "first_target_event": 2689344,
+      "last_target_event": 2952674,
+      "mean_history_len": 7.166
+    }
+  },
+  "query_coverage": {
+    "dest": {
+      "vocab_size": 15509,
+      "oov_valid_targets": 0.0187,
+      "oov_test_targets": 0.0203
+    },
+    "dest_type": {
+      "vocab_size": 9,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "ci_month": {
+      "vocab_size": 12,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "lead": {
+      "vocab_size": 11,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "stay": {
+      "vocab_size": 14,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "adults": {
+      "vocab_size": 10,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "children": {
+      "vocab_size": 10,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "rooms": {
+      "vocab_size": 9,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "package": {
+      "vocab_size": 2,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "mobile": {
+      "vocab_size": 2,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "channel": {
+      "vocab_size": 11,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "site": {
+      "vocab_size": 41,
+      "oov_valid_targets": 0.0001,
+      "oov_test_targets": 0.0002
+    },
+    "posa": {
+      "vocab_size": 5,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    },
+    "country": {
+      "vocab_size": 219,
+      "oov_valid_targets": 0.0,
+      "oov_test_targets": 0.0
+    }
+  },
+  "timing_seconds": {
+    "data_build": 60.3,
+    "train_and_eval": 11128.1,
+    "test": 25.5
+  },
+  "best_epoch_by_valid": 8,
+  "stop_reason": "early stop: no valid NDCG@10 gain > 0.0007 for 2 epochs",
+  "early_stop": {
+    "monitor": "valid ndcg@10",
+    "patience": 2,
+    "min_delta": 0.0007,
+    "max_epochs": 10
+  },
+  "checkpoint": "C:\\workspace\\PROJECTS\\next-best-product-recommendation\\experiments\\2026-10-10_expedia_smlp4rec_query-1d-clean-cold-es\\best.pth",
+  "per_epoch": [
+    {
+      "epoch": 1,
+      "train_loss": 7224.3405,
+      "train_loss_per_batch": 3.0508,
+      "train_seconds": 1303.0,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5829,
+        "recall@10": 0.7587,
+        "recall@20": 0.901,
+        "ndcg@5": 0.4131,
+        "ndcg@10": 0.47,
+        "ndcg@20": 0.5063
+      },
+      "valid_nll": 2.8268,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5722,
+        "recall@10": 0.7476,
+        "recall@20": 0.8917,
+        "ndcg@5": 0.4048,
+        "ndcg@10": 0.4616,
+        "ndcg@20": 0.4983
+      },
+      "eval_seconds": 67.2,
+      "is_best": false
+    },
+    {
+      "epoch": 2,
+      "train_loss": 6546.1181,
+      "train_loss_per_batch": 2.7644,
+      "train_seconds": 1375.1,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5932,
+        "recall@10": 0.7702,
+        "recall@20": 0.9101,
+        "ndcg@5": 0.4203,
+        "ndcg@10": 0.4777,
+        "ndcg@20": 0.5134
+      },
+      "valid_nll": 2.7738,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5851,
+        "recall@10": 0.7626,
+        "recall@20": 0.9041,
+        "ndcg@5": 0.4146,
+        "ndcg@10": 0.4722,
+        "ndcg@20": 0.5083
+      },
+      "eval_seconds": 55.3,
+      "is_best": false
+    },
+    {
+      "epoch": 3,
+      "train_loss": 6417.9381,
+      "train_loss_per_batch": 2.7103,
+      "train_seconds": 1300.1,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5969,
+        "recall@10": 0.7745,
+        "recall@20": 0.9132,
+        "ndcg@5": 0.4233,
+        "ndcg@10": 0.4809,
+        "ndcg@20": 0.5162
+      },
+      "valid_nll": 2.7507,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5897,
+        "recall@10": 0.7657,
+        "recall@20": 0.9055,
+        "ndcg@5": 0.4179,
+        "ndcg@10": 0.475,
+        "ndcg@20": 0.5106
+      },
+      "eval_seconds": 88.6,
+      "is_best": false
+    },
+    {
+      "epoch": 4,
+      "train_loss": 6350.9805,
+      "train_loss_per_batch": 2.682,
+      "train_seconds": 1142.0,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.5987,
+        "recall@10": 0.7761,
+        "recall@20": 0.9135,
+        "ndcg@5": 0.4251,
+        "ndcg@10": 0.4827,
+        "ndcg@20": 0.5177
+      },
+      "valid_nll": 2.7438,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5908,
+        "recall@10": 0.7663,
+        "recall@20": 0.9065,
+        "ndcg@5": 0.4198,
+        "ndcg@10": 0.4768,
+        "ndcg@20": 0.5125
+      },
+      "eval_seconds": 34.4,
+      "is_best": false
+    },
+    {
+      "epoch": 5,
+      "train_loss": 6305.6951,
+      "train_loss_per_batch": 2.6629,
+      "train_seconds": 791.5,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.6018,
+        "recall@10": 0.779,
+        "recall@20": 0.916,
+        "ndcg@5": 0.4275,
+        "ndcg@10": 0.485,
+        "ndcg@20": 0.5199
+      },
+      "valid_nll": 2.7304,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5921,
+        "recall@10": 0.7696,
+        "recall@20": 0.9093,
+        "ndcg@5": 0.421,
+        "ndcg@10": 0.4786,
+        "ndcg@20": 0.5143
+      },
+      "eval_seconds": 45.6,
+      "is_best": false
+    },
+    {
+      "epoch": 6,
+      "train_loss": 6270.7974,
+      "train_loss_per_batch": 2.6481,
+      "train_seconds": 1336.6,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.6026,
+        "recall@10": 0.78,
+        "recall@20": 0.9163,
+        "ndcg@5": 0.4285,
+        "ndcg@10": 0.4861,
+        "ndcg@20": 0.5208
+      },
+      "valid_nll": 2.7289,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.594,
+        "recall@10": 0.7701,
+        "recall@20": 0.9091,
+        "ndcg@5": 0.4227,
+        "ndcg@10": 0.4798,
+        "ndcg@20": 0.5152
+      },
+      "eval_seconds": 91.1,
+      "is_best": false
+    },
+    {
+      "epoch": 7,
+      "train_loss": 6243.0178,
+      "train_loss_per_batch": 2.6364,
+      "train_seconds": 1181.1,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.6035,
+        "recall@10": 0.7803,
+        "recall@20": 0.9164,
+        "ndcg@5": 0.4296,
+        "ndcg@10": 0.4869,
+        "ndcg@20": 0.5216
+      },
+      "valid_nll": 2.7258,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5968,
+        "recall@10": 0.7723,
+        "recall@20": 0.9109,
+        "ndcg@5": 0.4248,
+        "ndcg@10": 0.4817,
+        "ndcg@20": 0.517
+      },
+      "eval_seconds": 37.1,
+      "is_best": false
+    },
+    {
+      "epoch": 8,
+      "train_loss": 6220.4843,
+      "train_loss_per_batch": 2.6269,
+      "train_seconds": 803.1,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.6047,
+        "recall@10": 0.782,
+        "recall@20": 0.9171,
+        "ndcg@5": 0.4305,
+        "ndcg@10": 0.488,
+        "ndcg@20": 0.5224
+      },
+      "valid_nll": 2.7174,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5965,
+        "recall@10": 0.7723,
+        "recall@20": 0.9107,
+        "ndcg@5": 0.4248,
+        "ndcg@10": 0.4818,
+        "ndcg@20": 0.5171
+      },
+      "eval_seconds": 25.6,
+      "is_best": true
+    },
+    {
+      "epoch": 9,
+      "train_loss": 6200.0629,
+      "train_loss_per_batch": 2.6183,
+      "train_seconds": 597.3,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.6049,
+        "recall@10": 0.781,
+        "recall@20": 0.9175,
+        "ndcg@5": 0.4311,
+        "ndcg@10": 0.4882,
+        "ndcg@20": 0.523
+      },
+      "valid_nll": 2.7216,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5966,
+        "recall@10": 0.7717,
+        "recall@20": 0.9109,
+        "ndcg@5": 0.4251,
+        "ndcg@10": 0.4819,
+        "ndcg@20": 0.5174
+      },
+      "eval_seconds": 26.5,
+      "is_best": false
+    },
+    {
+      "epoch": 10,
+      "train_loss": 6182.5025,
+      "train_loss_per_batch": 2.6109,
+      "train_seconds": 776.6,
+      "valid": {
+        "n": 213869,
+        "recall@5": 0.6047,
+        "recall@10": 0.7812,
+        "recall@20": 0.9169,
+        "ndcg@5": 0.4305,
+        "ndcg@10": 0.4878,
+        "ndcg@20": 0.5224
+      },
+      "valid_nll": 2.7229,
+      "test": {
+        "n": 213869,
+        "recall@5": 0.5972,
+        "recall@10": 0.7725,
+        "recall@20": 0.9111,
+        "ndcg@5": 0.4254,
+        "ndcg@10": 0.4822,
+        "ndcg@20": 0.5175
+      },
+      "eval_seconds": 50.3,
+      "is_best": false
+    }
+  ],
+  "valid": {
+    "n": 213869,
+    "recall@5": 0.6047,
+    "recall@10": 0.782,
+    "recall@20": 0.9171,
+    "ndcg@5": 0.4305,
+    "ndcg@10": 0.488,
+    "ndcg@20": 0.5224
+  },
+  "test": {
+    "n": 213869,
+    "recall@5": 0.5965,
+    "recall@10": 0.7723,
+    "recall@20": 0.9107,
+    "ndcg@5": 0.4248,
+    "ndcg@10": 0.4818,
+    "ndcg@20": 0.5171
+  },
+  "plain_rescored_valid": {
+    "n": 213869,
+    "recall@5": 0.3204,
+    "recall@10": 0.4513,
+    "recall@20": 0.6234,
+    "ndcg@5": 0.2277,
+    "ndcg@10": 0.2698,
+    "ndcg@20": 0.3132
+  },
+  "plain_rescored_test": {
+    "n": 213869,
+    "recall@5": 0.3212,
+    "recall@10": 0.453,
+    "recall@20": 0.623,
+    "ndcg@5": 0.2274,
+    "ndcg@10": 0.2698,
+    "ndcg@20": 0.3127
+  },
+  "heuristics_test": {
+    "global_popularity": {
+      "n": 213869,
+      "recall@5": 0.1487,
+      "recall@10": 0.2488,
+      "recall@20": 0.3938,
+      "ndcg@5": 0.0944,
+      "ndcg@10": 0.1263,
+      "ndcg@20": 0.1626
+    },
+    "repeat_last_then_popularity": {
+      "n": 213869,
+      "recall@5": 0.2399,
+      "recall@10": 0.3289,
+      "recall@20": 0.4642,
+      "ndcg@5": 0.1848,
+      "ndcg@10": 0.2133,
+      "ndcg@20": 0.2472
+    }
+  },
+  "slices_test": {
+    "all warm rows | plain": {
+      "n": 213869,
+      "recall@5": 0.3212,
+      "ndcg@5": 0.2274
+    },
+    "all warm rows | query token": {
+      "n": 213869,
+      "recall@5": 0.5965,
+      "ndcg@5": 0.4248
+    },
+    "seen users | plain": {
+      "n": 139815,
+      "recall@5": 0.3272,
+      "ndcg@5": 0.2297
+    },
+    "seen users | query token": {
+      "n": 139815,
+      "recall@5": 0.6067,
+      "ndcg@5": 0.4336
+    },
+    "unseen users (L>=1) | plain": {
+      "n": 74054,
+      "recall@5": 0.3097,
+      "ndcg@5": 0.2231
+    },
+    "unseen users (L>=1) | query token": {
+      "n": 74054,
+      "recall@5": 0.5771,
+      "ndcg@5": 0.4082
+    },
+    "L=1 | plain": {
+      "n": 39778,
+      "recall@5": 0.2528,
+      "ndcg@5": 0.1798
+    },
+    "L=1 | query token": {
+      "n": 39778,
+      "recall@5": 0.5625,
+      "ndcg@5": 0.3934
+    },
+    "L=2-4 | plain": {
+      "n": 67266,
+      "recall@5": 0.3004,
+      "ndcg@5": 0.2114
+    },
+    "L=2-4 | query token": {
+      "n": 67266,
+      "recall@5": 0.5854,
+      "ndcg@5": 0.4135
+    },
+    "L=5-9 | plain": {
+      "n": 46340,
+      "recall@5": 0.3395,
+      "ndcg@5": 0.2391
+    },
+    "L=5-9 | query token": {
+      "n": 46340,
+      "recall@5": 0.6062,
+      "ndcg@5": 0.434
+    },
+    "L>=10 | plain": {
+      "n": 60485,
+      "recall@5": 0.3753,
+      "ndcg@5": 0.2675
+    },
+    "L>=10 | query token": {
+      "n": 60485,
+      "recall@5": 0.6237,
+      "ndcg@5": 0.4511
+    }
+  },
+  "bootstrap_query_minus_plain_test": {
+    "all warm rows": {
+      "recall@5": {
+        "diff": 0.2753,
+        "ci95": [
+          0.2729,
+          0.2776
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.1974,
+        "ci95": [
+          0.1958,
+          0.199
+        ]
+      }
+    },
+    "seen users": {
+      "recall@5": {
+        "diff": 0.2795,
+        "ci95": [
+          0.2765,
+          0.2826
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.204,
+        "ci95": [
+          0.2017,
+          0.2062
+        ]
+      }
+    },
+    "unseen users (L>=1)": {
+      "recall@5": {
+        "diff": 0.2674,
+        "ci95": [
+          0.2635,
+          0.2714
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.185,
+        "ci95": [
+          0.1821,
+          0.1879
+        ]
+      }
+    }
+  },
+  "diagnostics_test": {
+    "real": {
+      "n": 213869,
+      "recall@5": 0.5965,
+      "recall@10": 0.7723,
+      "recall@20": 0.9107,
+      "ndcg@5": 0.4248,
+      "ndcg@10": 0.4818,
+      "ndcg@20": 0.5171
+    },
+    "query shuffled": {
+      "n": 213869,
+      "recall@5": 0.1233,
+      "recall@10": 0.2077,
+      "recall@20": 0.3513,
+      "ndcg@5": 0.0807,
+      "ndcg@10": 0.1077,
+      "ndcg@20": 0.1437
+    },
+    "history masked": {
+      "n": 213869,
+      "recall@5": 0.5312,
+      "recall@10": 0.7233,
+      "recall@20": 0.886,
+      "ndcg@5": 0.3616,
+      "ndcg@10": 0.4239,
+      "ndcg@20": 0.4653
+    },
+    "both (shuffled + masked)": {
+      "n": 213869,
+      "recall@5": 0.0761,
+      "recall@10": 0.1451,
+      "recall@20": 0.2731,
+      "ndcg@5": 0.0456,
+      "ndcg@10": 0.0677,
+      "ndcg@20": 0.0997
+    }
+  },
+  "field_permutation_test": {
+    "dest": {
+      "recall@5": 0.1313,
+      "ndcg@5": 0.0857,
+      "ndcg@5_drop": 0.3391
+    },
+    "dest_type": {
+      "recall@5": 0.5908,
+      "ndcg@5": 0.4204,
+      "ndcg@5_drop": 0.0044
+    },
+    "ci_month": {
+      "recall@5": 0.5947,
+      "ndcg@5": 0.4235,
+      "ndcg@5_drop": 0.0013
+    },
+    "lead": {
+      "recall@5": 0.5915,
+      "ndcg@5": 0.421,
+      "ndcg@5_drop": 0.0038
+    },
+    "stay": {
+      "recall@5": 0.5917,
+      "ndcg@5": 0.4207,
+      "ndcg@5_drop": 0.0041
+    },
+    "adults": {
+      "recall@5": 0.5924,
+      "ndcg@5": 0.4211,
+      "ndcg@5_drop": 0.0037
+    },
+    "children": {
+      "recall@5": 0.5944,
+      "ndcg@5": 0.4232,
+      "ndcg@5_drop": 0.0016
+    },
+    "rooms": {
+      "recall@5": 0.5938,
+      "ndcg@5": 0.4226,
+      "ndcg@5_drop": 0.0022
+    },
+    "package": {
+      "recall@5": 0.5953,
+      "ndcg@5": 0.4239,
+      "ndcg@5_drop": 0.0009
+    },
+    "mobile": {
+      "recall@5": 0.5967,
+      "ndcg@5": 0.4249,
+      "ndcg@5_drop": -0.0001
+    },
+    "channel": {
+      "recall@5": 0.5959,
+      "ndcg@5": 0.4242,
+      "ndcg@5_drop": 0.0006
+    },
+    "site": {
+      "recall@5": 0.5955,
+      "ndcg@5": 0.4238,
+      "ndcg@5_drop": 0.001
+    },
+    "posa": {
+      "recall@5": 0.5959,
+      "ndcg@5": 0.4242,
+      "ndcg@5_drop": 0.0006
+    },
+    "country": {
+      "recall@5": 0.5942,
+      "ndcg@5": 0.4229,
+      "ndcg@5_drop": 0.0019
+    }
+  },
+  "prior_fusion_check": {
+    "formula": "score = log p_query_token + w * log p_prior(cluster | searched destination); prior as nb03 (m=5, market backoff, cut before last train target)",
+    "w_grid": [
+      0.0,
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      5.0
+    ],
+    "valid_sweep": {
+      "0.0": {
+        "recall@5": 0.6047,
+        "ndcg@5": 0.4305
+      },
+      "0.1": {
+        "recall@5": 0.6074,
+        "ndcg@5": 0.4322
+      },
+      "0.25": {
+        "recall@5": 0.6078,
+        "ndcg@5": 0.4323
+      },
+      "0.5": {
+        "recall@5": 0.6061,
+        "ndcg@5": 0.4306
+      },
+      "0.75": {
+        "recall@5": 0.6032,
+        "ndcg@5": 0.4278
+      },
+      "1.0": {
+        "recall@5": 0.5993,
+        "ndcg@5": 0.4242
+      },
+      "1.5": {
+        "recall@5": 0.5926,
+        "ndcg@5": 0.4177
+      },
+      "2.0": {
+        "recall@5": 0.5867,
+        "ndcg@5": 0.4122
+      },
+      "3.0": {
+        "recall@5": 0.5776,
+        "ndcg@5": 0.4037
+      },
+      "5.0": {
+        "recall@5": 0.5678,
+        "ndcg@5": 0.3942
+      }
+    },
+    "chosen_w_on_valid_recall@5": 0.25,
+    "test": {
+      "query token alone (w=0)": {
+        "n": 213869,
+        "recall@5": 0.5965,
+        "recall@10": 0.7723,
+        "recall@20": 0.9107,
+        "ndcg@5": 0.4248,
+        "ndcg@10": 0.4818,
+        "ndcg@20": 0.5171
+      },
+      "query token + prior (w=0.25)": {
+        "n": 213869,
+        "recall@5": 0.5984,
+        "recall@10": 0.7757,
+        "recall@20": 0.9158,
+        "ndcg@5": 0.426,
+        "ndcg@10": 0.4835,
+        "ndcg@20": 0.5192
+      },
+      "destination prior only": {
+        "n": 213869,
+        "recall@5": 0.5294,
+        "recall@10": 0.7208,
+        "recall@20": 0.8847,
+        "ndcg@5": 0.3626,
+        "ndcg@10": 0.4246,
+        "ndcg@20": 0.4662
+      }
+    },
+    "bootstrap_fused_minus_query_token_test": {
+      "recall@5": {
+        "diff": 0.002,
+        "ci95": [
+          0.0012,
+          0.0027
+        ]
+      },
+      "ndcg@5": {
+        "diff": 0.0012,
+        "ci95": [
+          0.0008,
+          0.0016
+        ]
+      }
+    },
+    "test_slices_recall@5_ndcg@5": {
+      "destination unseen in prior data | query token alone": {
+        "n": 1467,
+        "recall@5": 0.3327,
+        "ndcg@5": 0.2258
+      },
+      "destination unseen in prior data | query token + prior": {
+        "n": 1467,
+        "recall@5": 0.3401,
+        "ndcg@5": 0.232
+      },
+      "destination unseen in prior data | prior only": {
+        "n": 1467,
+        "recall@5": 0.1084,
+        "ndcg@5": 0.0796
+      },
+      "destination 1-19 bookings in prior data | query token alone": {
+        "n": 9817,
+        "recall@5": 0.6121,
+        "ndcg@5": 0.4663
+      },
+      "destination 1-19 bookings in prior data | query token + prior": {
+        "n": 9817,
+        "recall@5": 0.6688,
+        "ndcg@5": 0.5059
+      },
+      "destination 1-19 bookings in prior data | prior only": {
+        "n": 9817,
+        "recall@5": 0.6824,
+        "ndcg@5": 0.5256
+      },
+      "destination 20-199 | query token alone": {
+        "n": 34521,
+        "recall@5": 0.7307,
+        "ndcg@5": 0.5321
+      },
+      "destination 20-199 | query token + prior": {
+        "n": 34521,
+        "recall@5": 0.7303,
+        "ndcg@5": 0.5323
+      },
+      "destination 20-199 | prior only": {
+        "n": 34521,
+        "recall@5": 0.6904,
+        "ndcg@5": 0.4881
+      },
+      "destination 200+ | query token alone": {
+        "n": 168064,
+        "recall@5": 0.5703,
+        "ndcg@5": 0.4021
+      },
+      "destination 200+ | query token + prior": {
+        "n": 168064,
+        "recall@5": 0.5695,
+        "ndcg@5": 0.4012
+      },
+      "destination 200+ | prior only": {
+        "n": 168064,
+        "recall@5": 0.4911,
+        "ndcg@5": 0.3298
+      },
+      "destination out of query-token vocab | query token alone": {
+        "n": 4348,
+        "recall@5": 0.3415,
+        "ndcg@5": 0.2318
+      },
+      "destination out of query-token vocab | query token + prior": {
+        "n": 4348,
+        "recall@5": 0.4554,
+        "ndcg@5": 0.3168
+      },
+      "destination out of query-token vocab | prior only": {
+        "n": 4348,
+        "recall@5": 0.4384,
+        "ndcg@5": 0.3423
+      },
+      "destination in query-token vocab | query token alone": {
+        "n": 209521,
+        "recall@5": 0.6018,
+        "ndcg@5": 0.4288
+      },
+      "destination in query-token vocab | query token + prior": {
+        "n": 209521,
+        "recall@5": 0.6014,
+        "ndcg@5": 0.4282
+      },
+      "destination in query-token vocab | prior only": {
+        "n": 209521,
+        "recall@5": 0.5313,
+        "ndcg@5": 0.3631
+      }
+    },
+    "prior_n_bookings": 2424705,
+    "prior_n_destinations": 34507
+  },
+  "samedest_hybrid": {
+    "description": "query-token model + sameDest (A; the variant with prior was dropped), same formula / grid / one-SE rule as notebook 04, compared with the old hybrid (plain + prior + sameDest) recomputed from the nb04 weights",
+    "formula": "score = log q_model + w_s * log q_sameDest; log q = log((1 - alpha) * p + alpha / 100); cells: query destination new / already in the history",
+    "variants": {
+      "A": "query token + sameDest (w_p = 0)"
+    },
+    "grid": {
+      "alpha": [
+        0.05,
+        0.1,
+        0.2,
+        0.3,
+        0.5
+      ],
+      "w_s": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ]
+    },
+    "tuned_on_valid": {
+      "A": {
+        "n_configs": 50,
+        "best_on_valid": [
+          0.1,
+          0.0,
+          1.0
+        ],
+        "one_se_pick": [
+          0.2,
+          0.0,
+          0.75
+        ],
+        "n_within_one_se": 5,
+        "alpha": 0.2,
+        "weights": {
+          "0": [
+            0.0,
+            0.0
+          ],
+          "1": [
+            0.0,
+            0.75
+          ]
+        }
+      }
+    },
+    "old_hybrid_weights_nb04": {
+      "alpha": 0.2,
+      "weights": {
+        "0": [
+          0.2,
+          2.0,
+          0.0
+        ],
+        "1": [
+          0.2,
+          1.25,
+          1.0
+        ]
+      }
+    },
+    "cold_rows": "L = 0 (49462 test first bookings): query-token model on an empty history with the 'new destination' weights; plain = popularity, plain + prior and the old hybrid = prior only",
+    "benchmark_test": {
+      "warm": {
+        "SMLP4Rec plain": {
+          "n": 213869,
+          "recall@5": 0.3212,
+          "recall@10": 0.453,
+          "recall@20": 0.623,
+          "ndcg@5": 0.2274,
+          "ndcg@10": 0.2698,
+          "ndcg@20": 0.3127
+        },
+        "SMLP4Rec plain + prior (nb 03)": {
+          "n": 213869,
+          "recall@5": 0.5851,
+          "recall@10": 0.7617,
+          "recall@20": 0.9073,
+          "ndcg@5": 0.4139,
+          "ndcg@10": 0.4712,
+          "ndcg@20": 0.5083
+        },
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+          "n": 213869,
+          "recall@5": 0.6023,
+          "recall@10": 0.7692,
+          "recall@20": 0.9078,
+          "ndcg@5": 0.4418,
+          "ndcg@10": 0.496,
+          "ndcg@20": 0.5312
+        },
+        "Query token": {
+          "n": 213869,
+          "recall@5": 0.5965,
+          "recall@10": 0.7723,
+          "recall@20": 0.9107,
+          "ndcg@5": 0.4248,
+          "ndcg@10": 0.4818,
+          "ndcg@20": 0.5171
+        },
+        "Query token + sameDest": {
+          "n": 213869,
+          "recall@5": 0.6104,
+          "recall@10": 0.7786,
+          "recall@20": 0.9125,
+          "ndcg@5": 0.4461,
+          "ndcg@10": 0.5007,
+          "ndcg@20": 0.5348
+        }
+      },
+      "all_events": {
+        "SMLP4Rec plain": {
+          "n": 263331,
+          "recall@5": 0.2856,
+          "recall@10": 0.4105,
+          "recall@20": 0.5734,
+          "ndcg@5": 0.2,
+          "ndcg@10": 0.2401,
+          "ndcg@20": 0.2811
+        },
+        "SMLP4Rec plain + prior (nb 03)": {
+          "n": 263331,
+          "recall@5": 0.5715,
+          "recall@10": 0.7504,
+          "recall@20": 0.9014,
+          "ndcg@5": 0.4021,
+          "ndcg@10": 0.4601,
+          "ndcg@20": 0.4985
+        },
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+          "n": 263331,
+          "recall@5": 0.5854,
+          "recall@10": 0.7565,
+          "recall@20": 0.9018,
+          "ndcg@5": 0.4248,
+          "ndcg@10": 0.4802,
+          "ndcg@20": 0.5172
+        },
+        "Query token": {
+          "n": 263331,
+          "recall@5": 0.5831,
+          "recall@10": 0.7613,
+          "recall@20": 0.905,
+          "ndcg@5": 0.4122,
+          "ndcg@10": 0.47,
+          "ndcg@20": 0.5066
+        },
+        "Query token + sameDest": {
+          "n": 263331,
+          "recall@5": 0.5944,
+          "recall@10": 0.7664,
+          "recall@20": 0.9066,
+          "ndcg@5": 0.4295,
+          "ndcg@10": 0.4853,
+          "ndcg@20": 0.521
+        }
+      }
+    },
+    "bootstrap_test_95ci": {
+      "Query token + sameDest minus Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+        "warm": {
+          "recall@5": {
+            "diff": 0.0081,
+            "ci95": [
+              0.0066,
+              0.0096
+            ]
+          },
+          "ndcg@5": {
+            "diff": 0.0043,
+            "ci95": [
+              0.0034,
+              0.0052
+            ]
+          }
+        },
+        "all_events": {
+          "recall@5": {
+            "diff": 0.0089,
+            "ci95": [
+              0.0076,
+              0.0103
+            ]
+          },
+          "ndcg@5": {
+            "diff": 0.0048,
+            "ci95": [
+              0.0038,
+              0.0056
+            ]
+          }
+        }
+      },
+      "Query token minus Hybrid c\u0169: plain + prior + sameDest (nb 04)": {
+        "warm": {
+          "recall@5": {
+            "diff": -0.0058,
+            "ci95": [
+              -0.0074,
+              -0.0041
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.017,
+            "ci95": [
+              -0.0182,
+              -0.0159
+            ]
+          }
+        },
+        "all_events": {
+          "recall@5": {
+            "diff": -0.0024,
+            "ci95": [
+              -0.0038,
+              -0.001
+            ]
+          },
+          "ndcg@5": {
+            "diff": -0.0125,
+            "ci95": [
+              -0.0136,
+              -0.0116
+            ]
+          }
+        }
+      }
+    },
+    "test_slices_recall@5_ndcg@5": {
+      "known destination": {
+        "SMLP4Rec plain": "0.5617 / 0.4405",
+        "SMLP4Rec plain + prior (nb 03)": "0.6601 / 0.4947",
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": "0.7199 / 0.5878",
+        "Query token": "0.6783 / 0.5166",
+        "Query token + sameDest": "0.7273 / 0.5917",
+        "rows": 60586
+      },
+      "new destination": {
+        "SMLP4Rec plain": "0.2261 / 0.1432",
+        "SMLP4Rec plain + prior (nb 03)": "0.5554 / 0.3820",
+        "Hybrid c\u0169: plain + prior + sameDest (nb 04)": "0.5558 / 0.3841",
+        "Query token": "0.5641 / 0.3885",
+        "Query token + sameDest": "0.5641 / 0.3885",
+        "rows": 153283
+      }
+    }
+  }
+}
