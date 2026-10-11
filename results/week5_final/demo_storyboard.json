@@ -1,0 +1,1238 @@
+{
+ "dataset": "Expedia Hotel Recommendations (public), bookings, burst repeats collapsed",
+ "split": "test (global temporal 80/10/10), seed 2022",
+ "generated_by": "scripts/demo_storyboard_export.py",
+ "git_commit": "d9b41ec",
+ "models": {
+  "plain": "SMLP4Rec, history only (notebook 01e, 2026-10-10_expedia_smlp4rec_plain-1e-clean-cold-es, best epoch 2; trained on the same rows as the final model)",
+  "query": "SMLP4Rec + query token (notebook 01d, 2026-10-10_expedia_smlp4rec_query-1d-clean-cold-es, best epoch 8), model scores only",
+  "samedest": "the same + sameDest (alpha and weights tuned on valid, results/week4_rebuild/smlprec_query_cold_train_es_run.json)",
+  "baselines": "ItemKNN and logistic regression from notebook 07b (data/interim/demo_baselines_07b.npz), the same models as the final table; real-booking ranks checked against data/interim/baselines_es_ranks_test.parquet"
+ },
+ "selection": "picked for illustration from seeded test draws (docs/plans/final_prep/04_demo_options.md \u00a73); D is a deliberate miss",
+ "bookings": [
+  {
+   "key": "A",
+   "role": "A new customer: first booking, no history",
+   "mode": "cold",
+   "seed": 960,
+   "event": 2793792,
+   "user_id": 380617,
+   "truth": 23,
+   "n_prior": 0,
+   "matches_expected": true,
+   "fields": {
+    "dest": 8254,
+    "dest_type": 1,
+    "ci_month": 2,
+    "lead": 7,
+    "stay": 3,
+    "adults": 2,
+    "children": 0,
+    "rooms": 1,
+    "package": 0,
+    "mobile": 0,
+    "channel": 5,
+    "site": 24,
+    "posa": 2,
+    "country": 3
+   },
+   "history_events": [],
+   "steps": {
+    "plain": {
+     "top": [
+      {
+       "cluster": 91
+      },
+      {
+       "cluster": 48
+      },
+      {
+       "cluster": 42
+      },
+      {
+       "cluster": 59
+      },
+      {
+       "cluster": 16
+      }
+     ],
+     "truth_rank": 79
+    },
+    "query": {
+     "top": [
+      {
+       "cluster": 23,
+       "prev_rank": 79,
+       "p": 0.0819
+      },
+      {
+       "cluster": 4,
+       "prev_rank": 38,
+       "p": 0.0567
+      },
+      {
+       "cluster": 50,
+       "prev_rank": 9,
+       "p": 0.0521
+      },
+      {
+       "cluster": 13,
+       "prev_rank": 29,
+       "p": 0.0483
+      },
+      {
+       "cluster": 39,
+       "prev_rank": 37,
+       "p": 0.0449
+      }
+     ],
+     "truth_rank": 1
+    },
+    "samedest": {
+     "top": [
+      {
+       "cluster": 23,
+       "prev_rank": 1,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 4,
+       "prev_rank": 2,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 50,
+       "prev_rank": 3,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 13,
+       "prev_rank": 4,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 39,
+       "prev_rank": 5,
+       "samedest_share": 0.01
+      }
+     ],
+     "truth_rank": 1,
+     "known_destination": false,
+     "w_samedest": 0.0,
+     "alpha": 0.2,
+     "boosted_clusters": []
+    },
+    "baselines": {
+     "lr": {
+      "top": [
+       4,
+       98,
+       41,
+       97,
+       70
+      ],
+      "truth_rank": 37
+     },
+     "knn": {
+      "top": [
+       91,
+       48,
+       42,
+       59,
+       28
+      ],
+      "truth_rank": 79,
+      "note": "history only (empty: popularity)"
+     }
+    }
+   },
+   "whatif": {
+    "label": "Same search by a family (2 adults, 2 children)",
+    "no_history": false,
+    "changed": {
+     "adults": 2,
+     "children": 2,
+     "rooms": 1
+    },
+    "steps": {
+     "plain": {
+      "top": [
+       {
+        "cluster": 91
+       },
+       {
+        "cluster": 48
+       },
+       {
+        "cluster": 42
+       },
+       {
+        "cluster": 59
+       },
+       {
+        "cluster": 16
+       }
+      ],
+      "truth_rank": 79
+     },
+     "query": {
+      "top": [
+       {
+        "cluster": 98,
+        "prev_rank": 12,
+        "p": 0.0697
+       },
+       {
+        "cluster": 4,
+        "prev_rank": 38,
+        "p": 0.0479
+       },
+       {
+        "cluster": 13,
+        "prev_rank": 29,
+        "p": 0.0476
+       },
+       {
+        "cluster": 19,
+        "prev_rank": 34,
+        "p": 0.0467
+       },
+       {
+        "cluster": 50,
+        "prev_rank": 9,
+        "p": 0.0434
+       }
+      ],
+      "truth_rank": 7
+     },
+     "samedest": {
+      "top": [
+       {
+        "cluster": 98,
+        "prev_rank": 1,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 4,
+        "prev_rank": 2,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 13,
+        "prev_rank": 3,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 19,
+        "prev_rank": 4,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 50,
+        "prev_rank": 5,
+        "samedest_share": 0.01
+       }
+      ],
+      "truth_rank": 7,
+      "known_destination": false,
+      "w_samedest": 0.0,
+      "alpha": 0.2,
+      "boosted_clusters": []
+     },
+     "baselines": {
+      "lr": {
+       "top": [
+        4,
+        98,
+        70,
+        41,
+        18
+       ],
+       "truth_rank": 42
+      },
+      "knn": {
+       "top": [
+        91,
+        48,
+        42,
+        59,
+        28
+       ],
+       "truth_rank": 79,
+       "note": "history only (empty: popularity)"
+      }
+     }
+    }
+   },
+   "search": {
+    "dest": 8254,
+    "ci": "2015-02-06",
+    "co": "2015-02-08",
+    "nights": 2,
+    "adults": 2,
+    "children": 0,
+    "rooms": 1,
+    "package": 0,
+    "channel": 5,
+    "mobile": 0,
+    "party_type": "couple"
+   },
+   "src_row": 2980771,
+   "booked_on": "2014-12-05",
+   "history": []
+  },
+  {
+   "key": "B",
+   "role": "A returning customer, back at the destination of an earlier trip",
+   "mode": "warm",
+   "seed": 385,
+   "event": 2934572,
+   "user_id": 831510,
+   "truth": 56,
+   "n_prior": 10,
+   "matches_expected": true,
+   "fields": {
+    "dest": 12269,
+    "dest_type": 6,
+    "ci_month": 1,
+    "lead": 5,
+    "stay": 5,
+    "adults": 2,
+    "children": 2,
+    "rooms": 1,
+    "package": 0,
+    "mobile": 0,
+    "channel": 9,
+    "site": 2,
+    "posa": 3,
+    "country": 215
+   },
+   "history_events": [
+    38634,
+    434499,
+    930845,
+    971930,
+    1608237,
+    1650776,
+    2017114,
+    2316569,
+    2561101,
+    2749741
+   ],
+   "steps": {
+    "plain": {
+     "top": [
+      {
+       "cluster": 82
+      },
+      {
+       "cluster": 30
+      },
+      {
+       "cluster": 85
+      },
+      {
+       "cluster": 62
+      },
+      {
+       "cluster": 81
+      }
+     ],
+     "truth_rank": 58
+    },
+    "query": {
+     "top": [
+      {
+       "cluster": 19,
+       "prev_rank": 73,
+       "p": 0.253
+      },
+      {
+       "cluster": 70,
+       "prev_rank": 64,
+       "p": 0.0749
+      },
+      {
+       "cluster": 95,
+       "prev_rank": 61,
+       "p": 0.0727
+      },
+      {
+       "cluster": 37,
+       "prev_rank": 31,
+       "p": 0.0723
+      },
+      {
+       "cluster": 21,
+       "prev_rank": 27,
+       "p": 0.0632
+      }
+     ],
+     "truth_rank": 7
+    },
+    "samedest": {
+     "top": [
+      {
+       "cluster": 56,
+       "prev_rank": 7,
+       "samedest_share": 1.0
+      },
+      {
+       "cluster": 19,
+       "prev_rank": 1,
+       "samedest_share": 0.0
+      },
+      {
+       "cluster": 70,
+       "prev_rank": 2,
+       "samedest_share": 0.0
+      },
+      {
+       "cluster": 95,
+       "prev_rank": 3,
+       "samedest_share": 0.0
+      },
+      {
+       "cluster": 37,
+       "prev_rank": 4,
+       "samedest_share": 0.0
+      }
+     ],
+     "truth_rank": 1,
+     "known_destination": true,
+     "w_samedest": 0.75,
+     "alpha": 0.2,
+     "boosted_clusters": [
+      56
+     ]
+    },
+    "baselines": {
+     "lr": {
+      "top": [
+       19,
+       70,
+       56,
+       41,
+       98
+      ],
+      "truth_rank": 3
+     },
+     "knn": {
+      "top": [
+       82,
+       30,
+       61,
+       81,
+       25
+      ],
+      "truth_rank": 10,
+      "note": "history only"
+     }
+    }
+   },
+   "whatif": {
+    "label": "Same search, earlier bookings removed",
+    "no_history": true,
+    "changed": {},
+    "steps": {
+     "plain": {
+      "top": [
+       {
+        "cluster": 91
+       },
+       {
+        "cluster": 48
+       },
+       {
+        "cluster": 42
+       },
+       {
+        "cluster": 59
+       },
+       {
+        "cluster": 16
+       }
+      ],
+      "truth_rank": 54
+     },
+     "query": {
+      "top": [
+       {
+        "cluster": 19,
+        "prev_rank": 34,
+        "p": 0.3036
+       },
+       {
+        "cluster": 95,
+        "prev_rank": 6,
+        "p": 0.0793
+       },
+       {
+        "cluster": 70,
+        "prev_rank": 39,
+        "p": 0.0721
+       },
+       {
+        "cluster": 41,
+        "prev_rank": 13,
+        "p": 0.0721
+       },
+       {
+        "cluster": 37,
+        "prev_rank": 20,
+        "p": 0.0578
+       }
+      ],
+      "truth_rank": 8
+     },
+     "samedest": {
+      "top": [
+       {
+        "cluster": 19,
+        "prev_rank": 1,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 95,
+        "prev_rank": 2,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 70,
+        "prev_rank": 3,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 41,
+        "prev_rank": 4,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 37,
+        "prev_rank": 5,
+        "samedest_share": 0.01
+       }
+      ],
+      "truth_rank": 8,
+      "known_destination": false,
+      "w_samedest": 0.0,
+      "alpha": 0.2,
+      "boosted_clusters": []
+     },
+     "baselines": {
+      "lr": {
+       "top": [
+        19,
+        70,
+        56,
+        41,
+        98
+       ],
+       "truth_rank": 3
+      },
+      "knn": {
+       "top": [
+        91,
+        48,
+        42,
+        59,
+        28
+       ],
+       "truth_rank": 45,
+       "note": "history only (empty: popularity)"
+      }
+     }
+    }
+   },
+   "search": {
+    "dest": 12269,
+    "ci": "2015-01-17",
+    "co": "2015-01-21",
+    "nights": 4,
+    "adults": 2,
+    "children": 2,
+    "rooms": 1,
+    "package": 0,
+    "channel": 9,
+    "mobile": 0,
+    "party_type": "family"
+   },
+   "src_row": 2182442,
+   "booked_on": "2014-12-29",
+   "history": [
+    {
+     "event": 38634,
+     "booked_on": "2013-01-21",
+     "dest": 12269,
+     "cluster": 56,
+     "ci": "2013-01-22",
+     "co": "2013-01-27"
+    },
+    {
+     "event": 434499,
+     "booked_on": "2013-06-10",
+     "dest": 14882,
+     "cluster": 82,
+     "ci": "2013-06-10",
+     "co": "2013-06-11"
+    },
+    {
+     "event": 930845,
+     "booked_on": "2013-11-28",
+     "dest": 14882,
+     "cluster": 81,
+     "ci": "2013-11-28",
+     "co": "2013-11-29"
+    },
+    {
+     "event": 971930,
+     "booked_on": "2013-12-15",
+     "dest": 14882,
+     "cluster": 3,
+     "ci": "2013-12-15",
+     "co": "2013-12-16"
+    },
+    {
+     "event": 1608237,
+     "booked_on": "2014-05-27",
+     "dest": 55898,
+     "cluster": 61,
+     "ci": "2014-05-28",
+     "co": "2014-05-30"
+    },
+    {
+     "event": 1650776,
+     "booked_on": "2014-06-04",
+     "dest": 8253,
+     "cluster": 25,
+     "ci": "2014-06-07",
+     "co": "2014-06-10"
+    },
+    {
+     "event": 2017114,
+     "booked_on": "2014-08-05",
+     "dest": 12267,
+     "cluster": 72,
+     "ci": "2014-11-09",
+     "co": "2014-11-10"
+    },
+    {
+     "event": 2316569,
+     "booked_on": "2014-09-22",
+     "dest": 20322,
+     "cluster": 30,
+     "ci": "2014-09-24",
+     "co": "2014-09-25"
+    },
+    {
+     "event": 2561101,
+     "booked_on": "2014-10-29",
+     "dest": 15207,
+     "cluster": 99,
+     "ci": "2014-11-08",
+     "co": "2014-11-09"
+    },
+    {
+     "event": 2749741,
+     "booked_on": "2014-11-29",
+     "dest": 21969,
+     "cluster": 85,
+     "ci": "2014-11-30",
+     "co": "2014-12-02"
+    }
+   ]
+  },
+  {
+   "key": "C",
+   "role": "A family with three children, check-in in December",
+   "mode": "warm",
+   "seed": 10,
+   "event": 2893136,
+   "user_id": 801932,
+   "truth": 56,
+   "n_prior": 8,
+   "matches_expected": true,
+   "fields": {
+    "dest": 8267,
+    "dest_type": 1,
+    "ci_month": 12,
+    "lead": 3,
+    "stay": 4,
+    "adults": 2,
+    "children": 3,
+    "rooms": 1,
+    "package": 0,
+    "mobile": 0,
+    "channel": 7,
+    "site": 2,
+    "posa": 3,
+    "country": 66
+   },
+   "history_events": [
+    556580,
+    604151,
+    608015,
+    611583,
+    613455,
+    641073,
+    1139739,
+    1430730
+   ],
+   "steps": {
+    "plain": {
+     "top": [
+      {
+       "cluster": 7
+      },
+      {
+       "cluster": 32
+      },
+      {
+       "cluster": 39
+      },
+      {
+       "cluster": 47
+      },
+      {
+       "cluster": 50
+      }
+     ],
+     "truth_rank": 73
+    },
+    "query": {
+     "top": [
+      {
+       "cluster": 56,
+       "prev_rank": 73,
+       "p": 0.1204
+      },
+      {
+       "cluster": 41,
+       "prev_rank": 58,
+       "p": 0.0744
+      },
+      {
+       "cluster": 77,
+       "prev_rank": 10,
+       "p": 0.0696
+      },
+      {
+       "cluster": 23,
+       "prev_rank": 16,
+       "p": 0.0695
+      },
+      {
+       "cluster": 70,
+       "prev_rank": 82,
+       "p": 0.0653
+      }
+     ],
+     "truth_rank": 1
+    },
+    "samedest": {
+     "top": [
+      {
+       "cluster": 56,
+       "prev_rank": 1,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 41,
+       "prev_rank": 2,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 77,
+       "prev_rank": 3,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 23,
+       "prev_rank": 4,
+       "samedest_share": 0.01
+      },
+      {
+       "cluster": 70,
+       "prev_rank": 5,
+       "samedest_share": 0.01
+      }
+     ],
+     "truth_rank": 1,
+     "known_destination": false,
+     "w_samedest": 0.0,
+     "alpha": 0.2,
+     "boosted_clusters": []
+    },
+    "baselines": {
+     "lr": {
+      "top": [
+       70,
+       41,
+       56,
+       98,
+       3
+      ],
+      "truth_rank": 3
+     },
+     "knn": {
+      "top": [
+       32,
+       51,
+       47,
+       76,
+       7
+      ],
+      "truth_rank": 77,
+      "note": "history only"
+     }
+    }
+   },
+   "whatif": {
+    "label": "Same search by one adult travelling alone",
+    "no_history": false,
+    "changed": {
+     "adults": 1,
+     "children": 0,
+     "rooms": 1
+    },
+    "steps": {
+     "plain": {
+      "top": [
+       {
+        "cluster": 7
+       },
+       {
+        "cluster": 32
+       },
+       {
+        "cluster": 39
+       },
+       {
+        "cluster": 47
+       },
+       {
+        "cluster": 50
+       }
+      ],
+      "truth_rank": 73
+     },
+     "query": {
+      "top": [
+       {
+        "cluster": 23,
+        "prev_rank": 16,
+        "p": 0.2131
+       },
+       {
+        "cluster": 40,
+        "prev_rank": 9,
+        "p": 0.0734
+       },
+       {
+        "cluster": 50,
+        "prev_rank": 5,
+        "p": 0.0669
+       },
+       {
+        "cluster": 77,
+        "prev_rank": 10,
+        "p": 0.0649
+       },
+       {
+        "cluster": 56,
+        "prev_rank": 73,
+        "p": 0.0536
+       }
+      ],
+      "truth_rank": 5
+     },
+     "samedest": {
+      "top": [
+       {
+        "cluster": 23,
+        "prev_rank": 1,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 40,
+        "prev_rank": 2,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 50,
+        "prev_rank": 3,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 77,
+        "prev_rank": 4,
+        "samedest_share": 0.01
+       },
+       {
+        "cluster": 56,
+        "prev_rank": 5,
+        "samedest_share": 0.01
+       }
+      ],
+      "truth_rank": 5,
+      "known_destination": false,
+      "w_samedest": 0.0,
+      "alpha": 0.2,
+      "boosted_clusters": []
+     },
+     "baselines": {
+      "lr": {
+       "top": [
+        70,
+        56,
+        41,
+        98,
+        55
+       ],
+       "truth_rank": 2
+      },
+      "knn": {
+       "top": [
+        32,
+        51,
+        47,
+        76,
+        7
+       ],
+       "truth_rank": 77,
+       "note": "history only"
+      }
+     }
+    }
+   },
+   "search": {
+    "dest": 8267,
+    "ci": "2014-12-24",
+    "co": "2014-12-27",
+    "nights": 3,
+    "adults": 2,
+    "children": 3,
+    "rooms": 1,
+    "package": 0,
+    "channel": 7,
+    "mobile": 0,
+    "party_type": "family"
+   },
+   "src_row": 2398406,
+   "booked_on": "2014-12-21",
+   "history": [
+    {
+     "event": 556580,
+     "booked_on": "2013-07-21",
+     "dest": 11320,
+     "cluster": 51,
+     "ci": "2013-07-21",
+     "co": "2013-07-22"
+    },
+    {
+     "event": 604151,
+     "booked_on": "2013-08-05",
+     "dest": 25384,
+     "cluster": 32,
+     "ci": "2013-08-05",
+     "co": "2013-08-06"
+    },
+    {
+     "event": 608015,
+     "booked_on": "2013-08-06",
+     "dest": 25384,
+     "cluster": 32,
+     "ci": "2013-08-07",
+     "co": "2013-08-08"
+    },
+    {
+     "event": 611583,
+     "booked_on": "2013-08-07",
+     "dest": 11320,
+     "cluster": 35,
+     "ci": "2013-08-07",
+     "co": "2013-08-08"
+    },
+    {
+     "event": 613455,
+     "booked_on": "2013-08-08",
+     "dest": 27671,
+     "cluster": 51,
+     "ci": "2013-08-08",
+     "co": "2013-08-14"
+    },
+    {
+     "event": 641073,
+     "booked_on": "2013-08-17",
+     "dest": 25398,
+     "cluster": 47,
+     "ci": "2013-08-17",
+     "co": "2013-08-18"
+    },
+    {
+     "event": 1139739,
+     "booked_on": "2014-02-10",
+     "dest": 25370,
+     "cluster": 76,
+     "ci": "2014-02-10",
+     "co": "2014-02-11"
+    },
+    {
+     "event": 1430730,
+     "booked_on": "2014-04-20",
+     "dest": 8244,
+     "cluster": 7,
+     "ci": "2014-04-20",
+     "co": "2014-04-22"
+    }
+   ]
+  },
+  {
+   "key": "D",
+   "role": "Where our model fails: the customer repeats an older choice",
+   "mode": "warm",
+   "seed": 2055,
+   "event": 2722615,
+   "user_id": 692648,
+   "truth": 37,
+   "n_prior": 2,
+   "matches_expected": true,
+   "fields": {
+    "dest": 12785,
+    "dest_type": 5,
+    "ci_month": 1,
+    "lead": 6,
+    "stay": 4,
+    "adults": 2,
+    "children": 0,
+    "rooms": 1,
+    "package": 0,
+    "mobile": 0,
+    "channel": 9,
+    "site": 2,
+    "posa": 3,
+    "country": 66
+   },
+   "history_events": [
+    2441448,
+    2464596
+   ],
+   "steps": {
+    "plain": {
+     "top": [
+      {
+       "cluster": 61
+      },
+      {
+       "cluster": 37
+      },
+      {
+       "cluster": 62
+      },
+      {
+       "cluster": 81
+      },
+      {
+       "cluster": 82
+      }
+     ],
+     "truth_rank": 2
+    },
+    "query": {
+     "top": [
+      {
+       "cluster": 61,
+       "prev_rank": 1,
+       "p": 0.1235
+      },
+      {
+       "cluster": 65,
+       "prev_rank": 85,
+       "p": 0.1099
+      },
+      {
+       "cluster": 31,
+       "prev_rank": 74,
+       "p": 0.0796
+      },
+      {
+       "cluster": 10,
+       "prev_rank": 16,
+       "p": 0.0688
+      },
+      {
+       "cluster": 85,
+       "prev_rank": 17,
+       "p": 0.046
+      }
+     ],
+     "truth_rank": 37
+    },
+    "samedest": {
+     "top": [
+      {
+       "cluster": 61,
+       "prev_rank": 1,
+       "samedest_share": 1.0
+      },
+      {
+       "cluster": 65,
+       "prev_rank": 2,
+       "samedest_share": 0.0
+      },
+      {
+       "cluster": 31,
+       "prev_rank": 3,
+       "samedest_share": 0.0
+      },
+      {
+       "cluster": 10,
+       "prev_rank": 4,
+       "samedest_share": 0.0
+      },
+      {
+       "cluster": 85,
+       "prev_rank": 5,
+       "samedest_share": 0.0
+      }
+     ],
+     "truth_rank": 37,
+     "known_destination": true,
+     "w_samedest": 0.75,
+     "alpha": 0.2,
+     "boosted_clusters": [
+      61
+     ]
+    },
+    "baselines": {
+     "lr": {
+      "top": [
+       31,
+       65,
+       34,
+       10,
+       42
+      ],
+      "truth_rank": 59
+     },
+     "knn": {
+      "top": [
+       61,
+       37,
+       62,
+       82,
+       30
+      ],
+      "truth_rank": 2,
+      "note": "history only"
+     }
+    }
+   },
+   "search": {
+    "dest": 12785,
+    "ci": "2015-01-14",
+    "co": "2015-01-17",
+    "nights": 3,
+    "adults": 2,
+    "children": 0,
+    "rooms": 1,
+    "package": 0,
+    "channel": 9,
+    "mobile": 0,
+    "party_type": "couple"
+   },
+   "src_row": 1178365,
+   "booked_on": "2014-11-24",
+   "history": [
+    {
+     "event": 2441448,
+     "booked_on": "2014-10-10",
+     "dest": 13559,
+     "cluster": 37,
+     "ci": "2015-01-14",
+     "co": "2015-01-17"
+    },
+    {
+     "event": 2464596,
+     "booked_on": "2014-10-14",
+     "dest": 12785,
+     "cluster": 61,
+     "ci": "2015-01-17",
+     "co": "2015-01-19"
+    }
+   ]
+  }
+ ],
+ "sanity_sample": {
+  "rows": "2000 warm test rows, numpy seed 0",
+  "plain": 0.3075,
+  "query": 0.595,
+  "samedest": 0.6115,
+  "lr": 0.498,
+  "knn": 0.29
+ },
+ "summary": {
+  "source": "results/week4_rebuild/baselines_vs_final_es.json",
+  "split": "test",
+  "seed": 2022,
+  "baselines_from": "notebook 07b",
+  "models": {
+   "plain": {
+    "name": "SMLP4Rec plain, no query token (01e, best epoch 2)",
+    "warm": {
+     "n": 213869,
+     "recall@5": 0.3214
+    },
+    "cold": {
+     "n": 49462,
+     "recall@5": 0.1307
+    }
+   },
+   "query": {
+    "name": "SMLP4Rec + query token (final, best epoch 8)",
+    "warm": {
+     "n": 213869,
+     "recall@5": 0.5965
+    },
+    "cold": {
+     "n": 49462,
+     "recall@5": 0.5252
+    }
+   },
+   "samedest": {
+    "name": "SMLP4Rec + query token + sameDest (final, best epoch 8)",
+    "warm": {
+     "n": 213869,
+     "recall@5": 0.6104
+    },
+    "cold": {
+     "n": 49462,
+     "recall@5": 0.5252
+    }
+   },
+   "lr": {
+    "name": "Logistic regression (C=1.0, pass 8, destination + context, no history)",
+    "warm": {
+     "n": 213869,
+     "recall@5": 0.4969
+    },
+    "cold": {
+     "n": 49462,
+     "recall@5": 0.4857
+    }
+   },
+   "knn": {
+    "name": "ItemKNN (cosine, K=50, history only; cold: first-booking popularity)",
+    "warm": {
+     "n": 213869,
+     "recall@5": 0.3036
+    },
+    "cold": {
+     "n": 49462,
+     "recall@5": 0.1318
+    }
+   }
+  }
+ }
+}

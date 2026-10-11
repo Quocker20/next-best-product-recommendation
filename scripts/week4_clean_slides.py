@@ -278,7 +278,7 @@ slide(
     "1 · Nhắc lại tuần trước",
     "SMLP4Rec: đoán cụm khách sạn tiếp theo từ lịch sử booking",
     f"""<div class="row">
-  <div class="panel diagram-wrap">{architecture_svg()}</div>
+  <div class="panel diagram-wrap">{architecture_svg(history_ctx=False)}</div>
   <div class="panel side steps">
     <div class="step"><span>1</span><p>Đầu vào: chuỗi các cụm đã đặt, cộng query token là lượt tìm hiện tại.</p></div>
     <div class="step"><span>2</span><p>Ba MLP song song trộn theo <b>thời gian</b>, <b>context</b>, <b>embedding</b>, lặp L lần.</p></div>

@@ -1,0 +1,193 @@
+row_set,model_key,model,checkin_month,n,distinct_recommended@10,distinct_booked,exposure_gini,small_bucket
+all,plain_all,SMLP4Rec plain (original code),01,56096,100,100,0.6201,False
+all,plain_all,SMLP4Rec plain (original code),02,18078,100,100,0.6219,False
+all,plain_all,SMLP4Rec plain (original code),03,10134,100,100,0.6231,False
+all,plain_all,SMLP4Rec plain (original code),04,6688,100,100,0.628,False
+all,plain_all,SMLP4Rec plain (original code),05,5566,100,100,0.6132,False
+all,plain_all,SMLP4Rec plain (original code),06,3670,100,100,0.6219,False
+all,plain_all,SMLP4Rec plain (original code),07,3134,100,100,0.6151,False
+all,plain_all,SMLP4Rec plain (original code),08,2021,100,99,0.6037,False
+all,plain_all,SMLP4Rec plain (original code),09,1629,100,97,0.6095,False
+all,plain_all,SMLP4Rec plain (original code),10,925,98,96,0.6115,True
+all,plain_all,SMLP4Rec plain (original code),11,21578,100,100,0.6247,False
+all,plain_all,SMLP4Rec plain (original code),12,133812,100,100,0.6256,False
+all,query_token,SMLP4Rec + query token,01,56096,100,100,0.3443,False
+all,query_token,SMLP4Rec + query token,02,18078,100,100,0.3199,False
+all,query_token,SMLP4Rec + query token,03,10134,100,100,0.3194,False
+all,query_token,SMLP4Rec + query token,04,6688,100,100,0.3299,False
+all,query_token,SMLP4Rec + query token,05,5566,100,100,0.3607,False
+all,query_token,SMLP4Rec + query token,06,3670,100,100,0.3706,False
+all,query_token,SMLP4Rec + query token,07,3134,100,100,0.3795,False
+all,query_token,SMLP4Rec + query token,08,2021,100,99,0.3738,False
+all,query_token,SMLP4Rec + query token,09,1629,100,97,0.414,False
+all,query_token,SMLP4Rec + query token,10,925,99,96,0.3793,True
+all,query_token,SMLP4Rec + query token,11,21578,100,100,0.428,False
+all,query_token,SMLP4Rec + query token,12,133812,100,100,0.405,False
+all,main,SMLP4Rec + query token + sameDest (main),01,56096,100,100,0.3436,False
+all,main,SMLP4Rec + query token + sameDest (main),02,18078,100,100,0.319,False
+all,main,SMLP4Rec + query token + sameDest (main),03,10134,100,100,0.3191,False
+all,main,SMLP4Rec + query token + sameDest (main),04,6688,100,100,0.3293,False
+all,main,SMLP4Rec + query token + sameDest (main),05,5566,100,100,0.36,False
+all,main,SMLP4Rec + query token + sameDest (main),06,3670,100,100,0.3702,False
+all,main,SMLP4Rec + query token + sameDest (main),07,3134,100,100,0.3793,False
+all,main,SMLP4Rec + query token + sameDest (main),08,2021,100,99,0.3741,False
+all,main,SMLP4Rec + query token + sameDest (main),09,1629,100,97,0.4125,False
+all,main,SMLP4Rec + query token + sameDest (main),10,925,99,96,0.3786,True
+all,main,SMLP4Rec + query token + sameDest (main),11,21578,100,100,0.4274,False
+all,main,SMLP4Rec + query token + sameDest (main),12,133812,100,100,0.4044,False
+all,itemknn,ItemKNN (K=50),01,56096,100,100,0.5791,False
+all,itemknn,ItemKNN (K=50),02,18078,100,100,0.5815,False
+all,itemknn,ItemKNN (K=50),03,10134,100,100,0.5806,False
+all,itemknn,ItemKNN (K=50),04,6688,100,100,0.5877,False
+all,itemknn,ItemKNN (K=50),05,5566,100,100,0.5781,False
+all,itemknn,ItemKNN (K=50),06,3670,100,100,0.5785,False
+all,itemknn,ItemKNN (K=50),07,3134,100,100,0.5663,False
+all,itemknn,ItemKNN (K=50),08,2021,100,99,0.5619,False
+all,itemknn,ItemKNN (K=50),09,1629,100,97,0.5628,False
+all,itemknn,ItemKNN (K=50),10,925,98,96,0.5742,True
+all,itemknn,ItemKNN (K=50),11,21578,100,100,0.5851,False
+all,itemknn,ItemKNN (K=50),12,133812,100,100,0.5852,False
+all,logreg,Logistic regression (C=1.0),01,56096,100,100,0.3948,False
+all,logreg,Logistic regression (C=1.0),02,18078,100,100,0.3698,False
+all,logreg,Logistic regression (C=1.0),03,10134,100,100,0.3768,False
+all,logreg,Logistic regression (C=1.0),04,6688,100,100,0.3833,False
+all,logreg,Logistic regression (C=1.0),05,5566,100,100,0.4138,False
+all,logreg,Logistic regression (C=1.0),06,3670,100,100,0.4113,False
+all,logreg,Logistic regression (C=1.0),07,3134,100,100,0.4186,False
+all,logreg,Logistic regression (C=1.0),08,2021,100,99,0.4263,False
+all,logreg,Logistic regression (C=1.0),09,1629,100,97,0.4482,False
+all,logreg,Logistic regression (C=1.0),10,925,99,96,0.4357,True
+all,logreg,Logistic regression (C=1.0),11,21578,100,100,0.4823,False
+all,logreg,Logistic regression (C=1.0),12,133812,100,100,0.4663,False
+warm,plain_warm,SMLP4Rec plain (original code),01,45209,100,100,0.5625,False
+warm,plain_warm,SMLP4Rec plain (original code),02,13988,100,100,0.5518,False
+warm,plain_warm,SMLP4Rec plain (original code),03,7819,100,100,0.5533,False
+warm,plain_warm,SMLP4Rec plain (original code),04,5107,100,100,0.5557,False
+warm,plain_warm,SMLP4Rec plain (original code),05,4366,100,100,0.5469,False
+warm,plain_warm,SMLP4Rec plain (original code),06,2900,100,100,0.5607,False
+warm,plain_warm,SMLP4Rec plain (original code),07,2544,100,100,0.5591,False
+warm,plain_warm,SMLP4Rec plain (original code),08,1655,100,99,0.5499,False
+warm,plain_warm,SMLP4Rec plain (original code),09,1355,100,96,0.5596,False
+warm,plain_warm,SMLP4Rec plain (original code),10,750,98,93,0.5512,True
+warm,plain_warm,SMLP4Rec plain (original code),11,17903,100,100,0.5731,False
+warm,plain_warm,SMLP4Rec plain (original code),12,110273,100,100,0.5735,False
+warm,plain_all,SMLP4Rec plain (original code),01,45209,100,100,0.5588,False
+warm,plain_all,SMLP4Rec plain (original code),02,13988,100,100,0.5476,False
+warm,plain_all,SMLP4Rec plain (original code),03,7819,100,100,0.5478,False
+warm,plain_all,SMLP4Rec plain (original code),04,5107,100,100,0.5526,False
+warm,plain_all,SMLP4Rec plain (original code),05,4366,100,100,0.5447,False
+warm,plain_all,SMLP4Rec plain (original code),06,2900,100,100,0.5562,False
+warm,plain_all,SMLP4Rec plain (original code),07,2544,100,100,0.5581,False
+warm,plain_all,SMLP4Rec plain (original code),08,1655,100,99,0.5482,False
+warm,plain_all,SMLP4Rec plain (original code),09,1355,100,96,0.5626,False
+warm,plain_all,SMLP4Rec plain (original code),10,750,98,93,0.5515,True
+warm,plain_all,SMLP4Rec plain (original code),11,17903,100,100,0.5743,False
+warm,plain_all,SMLP4Rec plain (original code),12,110273,100,100,0.5728,False
+warm,query_token,SMLP4Rec + query token,01,45209,100,100,0.3483,False
+warm,query_token,SMLP4Rec + query token,02,13988,100,100,0.3224,False
+warm,query_token,SMLP4Rec + query token,03,7819,100,100,0.3242,False
+warm,query_token,SMLP4Rec + query token,04,5107,100,100,0.3365,False
+warm,query_token,SMLP4Rec + query token,05,4366,100,100,0.3693,False
+warm,query_token,SMLP4Rec + query token,06,2900,100,100,0.3756,False
+warm,query_token,SMLP4Rec + query token,07,2544,100,100,0.3835,False
+warm,query_token,SMLP4Rec + query token,08,1655,99,99,0.3781,False
+warm,query_token,SMLP4Rec + query token,09,1355,100,96,0.4165,False
+warm,query_token,SMLP4Rec + query token,10,750,99,93,0.3861,True
+warm,query_token,SMLP4Rec + query token,11,17903,100,100,0.4252,False
+warm,query_token,SMLP4Rec + query token,12,110273,100,100,0.4062,False
+warm,main,SMLP4Rec + query token + sameDest (main),01,45209,100,100,0.3474,False
+warm,main,SMLP4Rec + query token + sameDest (main),02,13988,100,100,0.3212,False
+warm,main,SMLP4Rec + query token + sameDest (main),03,7819,100,100,0.3238,False
+warm,main,SMLP4Rec + query token + sameDest (main),04,5107,100,100,0.3358,False
+warm,main,SMLP4Rec + query token + sameDest (main),05,4366,100,100,0.3685,False
+warm,main,SMLP4Rec + query token + sameDest (main),06,2900,100,100,0.375,False
+warm,main,SMLP4Rec + query token + sameDest (main),07,2544,100,100,0.3833,False
+warm,main,SMLP4Rec + query token + sameDest (main),08,1655,99,99,0.3785,False
+warm,main,SMLP4Rec + query token + sameDest (main),09,1355,100,96,0.4147,False
+warm,main,SMLP4Rec + query token + sameDest (main),10,750,99,93,0.3851,True
+warm,main,SMLP4Rec + query token + sameDest (main),11,17903,100,100,0.4245,False
+warm,main,SMLP4Rec + query token + sameDest (main),12,110273,100,100,0.4055,False
+warm,itemknn,ItemKNN (K=50),01,45209,100,100,0.5099,False
+warm,itemknn,ItemKNN (K=50),02,13988,100,100,0.4984,False
+warm,itemknn,ItemKNN (K=50),03,7819,100,100,0.495,False
+warm,itemknn,ItemKNN (K=50),04,5107,100,100,0.5031,False
+warm,itemknn,ItemKNN (K=50),05,4366,100,100,0.503,False
+warm,itemknn,ItemKNN (K=50),06,2900,100,100,0.5036,False
+warm,itemknn,ItemKNN (K=50),07,2544,100,100,0.4999,False
+warm,itemknn,ItemKNN (K=50),08,1655,100,99,0.4985,False
+warm,itemknn,ItemKNN (K=50),09,1355,100,96,0.5083,False
+warm,itemknn,ItemKNN (K=50),10,750,98,93,0.5068,True
+warm,itemknn,ItemKNN (K=50),11,17903,100,100,0.5282,False
+warm,itemknn,ItemKNN (K=50),12,110273,100,100,0.5254,False
+warm,logreg,Logistic regression (C=1.0),01,45209,100,100,0.3999,False
+warm,logreg,Logistic regression (C=1.0),02,13988,100,100,0.3737,False
+warm,logreg,Logistic regression (C=1.0),03,7819,100,100,0.3842,False
+warm,logreg,Logistic regression (C=1.0),04,5107,100,100,0.3898,False
+warm,logreg,Logistic regression (C=1.0),05,4366,100,100,0.4229,False
+warm,logreg,Logistic regression (C=1.0),06,2900,100,100,0.4191,False
+warm,logreg,Logistic regression (C=1.0),07,2544,100,100,0.4251,False
+warm,logreg,Logistic regression (C=1.0),08,1655,99,99,0.4309,False
+warm,logreg,Logistic regression (C=1.0),09,1355,100,96,0.4506,False
+warm,logreg,Logistic regression (C=1.0),10,750,99,93,0.4439,True
+warm,logreg,Logistic regression (C=1.0),11,17903,100,100,0.4832,False
+warm,logreg,Logistic regression (C=1.0),12,110273,100,100,0.4702,False
+cold,plain_all,SMLP4Rec plain (original code),01,10887,10,100,0.9,False
+cold,plain_all,SMLP4Rec plain (original code),02,4090,10,100,0.9,False
+cold,plain_all,SMLP4Rec plain (original code),03,2315,10,99,0.9,False
+cold,plain_all,SMLP4Rec plain (original code),04,1581,10,99,0.9,False
+cold,plain_all,SMLP4Rec plain (original code),05,1200,10,100,0.9,False
+cold,plain_all,SMLP4Rec plain (original code),06,770,10,95,0.9,True
+cold,plain_all,SMLP4Rec plain (original code),07,590,10,95,0.9,True
+cold,plain_all,SMLP4Rec plain (original code),08,366,10,87,0.9,True
+cold,plain_all,SMLP4Rec plain (original code),09,274,10,79,0.9,True
+cold,plain_all,SMLP4Rec plain (original code),10,175,10,75,0.9,True
+cold,plain_all,SMLP4Rec plain (original code),11,3675,10,99,0.9,False
+cold,plain_all,SMLP4Rec plain (original code),12,23539,10,100,0.9,False
+cold,query_token,SMLP4Rec + query token,01,10887,100,100,0.3358,False
+cold,query_token,SMLP4Rec + query token,02,4090,100,100,0.3208,False
+cold,query_token,SMLP4Rec + query token,03,2315,100,99,0.3163,False
+cold,query_token,SMLP4Rec + query token,04,1581,100,99,0.3204,False
+cold,query_token,SMLP4Rec + query token,05,1200,100,100,0.3415,False
+cold,query_token,SMLP4Rec + query token,06,770,100,95,0.3611,True
+cold,query_token,SMLP4Rec + query token,07,590,100,95,0.3755,True
+cold,query_token,SMLP4Rec + query token,08,366,100,87,0.3736,True
+cold,query_token,SMLP4Rec + query token,09,274,99,79,0.4173,True
+cold,query_token,SMLP4Rec + query token,10,175,99,75,0.3709,True
+cold,query_token,SMLP4Rec + query token,11,3675,100,99,0.4506,False
+cold,query_token,SMLP4Rec + query token,12,23539,100,100,0.4058,False
+cold,main,SMLP4Rec + query token + sameDest (main),01,10887,100,100,0.3358,False
+cold,main,SMLP4Rec + query token + sameDest (main),02,4090,100,100,0.3208,False
+cold,main,SMLP4Rec + query token + sameDest (main),03,2315,100,99,0.3163,False
+cold,main,SMLP4Rec + query token + sameDest (main),04,1581,100,99,0.3204,False
+cold,main,SMLP4Rec + query token + sameDest (main),05,1200,100,100,0.3415,False
+cold,main,SMLP4Rec + query token + sameDest (main),06,770,100,95,0.3611,True
+cold,main,SMLP4Rec + query token + sameDest (main),07,590,100,95,0.3755,True
+cold,main,SMLP4Rec + query token + sameDest (main),08,366,100,87,0.3736,True
+cold,main,SMLP4Rec + query token + sameDest (main),09,274,99,79,0.4173,True
+cold,main,SMLP4Rec + query token + sameDest (main),10,175,99,75,0.3709,True
+cold,main,SMLP4Rec + query token + sameDest (main),11,3675,100,99,0.4506,False
+cold,main,SMLP4Rec + query token + sameDest (main),12,23539,100,100,0.4058,False
+cold,itemknn,ItemKNN (K=50),01,10887,10,100,0.9,False
+cold,itemknn,ItemKNN (K=50),02,4090,10,100,0.9,False
+cold,itemknn,ItemKNN (K=50),03,2315,10,99,0.9,False
+cold,itemknn,ItemKNN (K=50),04,1581,10,99,0.9,False
+cold,itemknn,ItemKNN (K=50),05,1200,10,100,0.9,False
+cold,itemknn,ItemKNN (K=50),06,770,10,95,0.9,True
+cold,itemknn,ItemKNN (K=50),07,590,10,95,0.9,True
+cold,itemknn,ItemKNN (K=50),08,366,10,87,0.9,True
+cold,itemknn,ItemKNN (K=50),09,274,10,79,0.9,True
+cold,itemknn,ItemKNN (K=50),10,175,10,75,0.9,True
+cold,itemknn,ItemKNN (K=50),11,3675,10,99,0.9,False
+cold,itemknn,ItemKNN (K=50),12,23539,10,100,0.9,False
+cold,logreg,Logistic regression (C=1.0),01,10887,100,100,0.379,False
+cold,logreg,Logistic regression (C=1.0),02,4090,100,100,0.362,False
+cold,logreg,Logistic regression (C=1.0),03,2315,100,99,0.3611,False
+cold,logreg,Logistic regression (C=1.0),04,1581,100,99,0.3701,False
+cold,logreg,Logistic regression (C=1.0),05,1200,100,100,0.3903,False
+cold,logreg,Logistic regression (C=1.0),06,770,99,95,0.3872,True
+cold,logreg,Logistic regression (C=1.0),07,590,100,95,0.3982,True
+cold,logreg,Logistic regression (C=1.0),08,366,100,87,0.417,True
+cold,logreg,Logistic regression (C=1.0),09,274,99,79,0.4472,True
+cold,logreg,Logistic regression (C=1.0),10,175,96,75,0.4193,True
+cold,logreg,Logistic regression (C=1.0),11,3675,100,99,0.4833,False
+cold,logreg,Logistic regression (C=1.0),12,23539,100,100,0.4514,False

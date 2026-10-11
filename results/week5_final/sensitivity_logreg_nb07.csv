@@ -1,0 +1,4 @@
+row_set,n,recall@5,recall@10,recall@20,ndcg@5,ndcg@10,ndcg@20,main_minus_lr07_recall@5,ci95_recall@5,main_minus_lr07_ndcg@5,ci95_ndcg@5,source
+all,263331,0.5198,0.7089,0.8724,0.3554,0.4166,0.4581,0.0745,"[0.0728, 0.0763]",0.0742,"[0.0729, 0.0754]","basic_baselines.json: results.test['Logistic regression (C=10.0, destination + context, no history)']['all events']"
+warm,213869,0.5222,0.7115,0.8739,0.3568,0.4181,0.4594,0.0882,"[0.0862, 0.0901]",0.0893,"[0.0877, 0.0909]","basic_baselines.json: results.test['Logistic regression (C=10.0, destination + context, no history)']['warm (all L>=1 targets)']"
+cold,49462,0.5096,0.6979,0.8659,0.349,0.4099,0.4526,0.0155,"[0.0121, 0.0188]",0.0088,"[0.0068, 0.011]",recomputed from basic_baselines_ranks_test.parquet

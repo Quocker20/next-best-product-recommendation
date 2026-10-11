@@ -1,0 +1,181 @@
+{
+  "split": "test",
+  "seed": 2022,
+  "models": {
+    "global popularity (warm: all training bookings; cold: first bookings)": {
+      "warm": {
+        "n": 213869,
+        "recall@5": 0.1487,
+        "recall@10": 0.2488,
+        "recall@20": 0.3968,
+        "ndcg@5": 0.0944,
+        "ndcg@10": 0.1263,
+        "ndcg@20": 0.1633
+      },
+      "cold (L=0)": {
+        "n": 49462,
+        "recall@5": 0.1318,
+        "recall@10": 0.2288,
+        "recall@20": 0.359,
+        "ndcg@5": 0.0814,
+        "ndcg@10": 0.1123,
+        "ndcg@20": 0.1449
+      },
+      "all events": {
+        "n": 263331,
+        "recall@5": 0.1455,
+        "recall@10": 0.245,
+        "recall@20": 0.3897,
+        "ndcg@5": 0.0919,
+        "ndcg@10": 0.1237,
+        "ndcg@20": 0.1599
+      }
+    },
+    "ItemKNN (cosine, K=50, history only; cold: first-booking popularity)": {
+      "warm": {
+        "n": 213869,
+        "recall@5": 0.3036,
+        "recall@10": 0.4383,
+        "recall@20": 0.6097,
+        "ndcg@5": 0.2089,
+        "ndcg@10": 0.2522,
+        "ndcg@20": 0.2954
+      },
+      "cold (L=0)": {
+        "n": 49462,
+        "recall@5": 0.1318,
+        "recall@10": 0.2288,
+        "recall@20": 0.359,
+        "ndcg@5": 0.0814,
+        "ndcg@10": 0.1123,
+        "ndcg@20": 0.1449
+      },
+      "all events": {
+        "n": 263331,
+        "recall@5": 0.2713,
+        "recall@10": 0.3989,
+        "recall@20": 0.5626,
+        "ndcg@5": 0.185,
+        "ndcg@10": 0.226,
+        "ndcg@20": 0.2671
+      }
+    },
+    "Logistic regression (C=1.0, pass 8, destination + context, no history)": {
+      "warm": {
+        "n": 213869,
+        "recall@5": 0.4969,
+        "recall@10": 0.6897,
+        "recall@20": 0.8578,
+        "ndcg@5": 0.3354,
+        "ndcg@10": 0.3978,
+        "ndcg@20": 0.4406
+      },
+      "cold (L=0)": {
+        "n": 49462,
+        "recall@5": 0.4857,
+        "recall@10": 0.6747,
+        "recall@20": 0.8482,
+        "ndcg@5": 0.3275,
+        "ndcg@10": 0.3887,
+        "ndcg@20": 0.4328
+      },
+      "all events": {
+        "n": 263331,
+        "recall@5": 0.4948,
+        "recall@10": 0.6869,
+        "recall@20": 0.856,
+        "ndcg@5": 0.3339,
+        "ndcg@10": 0.3961,
+        "ndcg@20": 0.4391
+      }
+    },
+    "SMLP4Rec plain, no query token (01e, best epoch 2)": {
+      "warm": {
+        "n": 213869,
+        "recall@5": 0.3214,
+        "recall@10": 0.4532,
+        "recall@20": 0.623,
+        "ndcg@5": 0.2277,
+        "ndcg@10": 0.2701,
+        "ndcg@20": 0.3129
+      },
+      "cold (L=0)": {
+        "n": 49462,
+        "recall@5": 0.1307,
+        "recall@10": 0.2288,
+        "recall@20": 0.3599,
+        "ndcg@5": 0.0809,
+        "ndcg@10": 0.1124,
+        "ndcg@20": 0.1454
+      },
+      "all events": {
+        "n": 263331,
+        "recall@5": 0.2856,
+        "recall@10": 0.411,
+        "recall@20": 0.5736,
+        "ndcg@5": 0.2001,
+        "ndcg@10": 0.2405,
+        "ndcg@20": 0.2814
+      }
+    },
+    "SMLP4Rec + query token (final, best epoch 8)": {
+      "warm": {
+        "n": 213869,
+        "recall@5": 0.5965,
+        "recall@10": 0.7723,
+        "recall@20": 0.9107,
+        "ndcg@5": 0.4248,
+        "ndcg@10": 0.4818,
+        "ndcg@20": 0.5171
+      },
+      "cold (L=0)": {
+        "n": 49462,
+        "recall@5": 0.5252,
+        "recall@10": 0.7137,
+        "recall@20": 0.8807,
+        "ndcg@5": 0.3578,
+        "ndcg@10": 0.4189,
+        "ndcg@20": 0.4614
+      },
+      "all events": {
+        "n": 263331,
+        "recall@5": 0.5831,
+        "recall@10": 0.7613,
+        "recall@20": 0.905,
+        "ndcg@5": 0.4122,
+        "ndcg@10": 0.47,
+        "ndcg@20": 0.5066
+      }
+    },
+    "SMLP4Rec + query token + sameDest (final, best epoch 8)": {
+      "warm": {
+        "n": 213869,
+        "recall@5": 0.6104,
+        "recall@10": 0.7786,
+        "recall@20": 0.9125,
+        "ndcg@5": 0.4461,
+        "ndcg@10": 0.5007,
+        "ndcg@20": 0.5348
+      },
+      "cold (L=0)": {
+        "n": 49462,
+        "recall@5": 0.5252,
+        "recall@10": 0.7137,
+        "recall@20": 0.8807,
+        "ndcg@5": 0.3578,
+        "ndcg@10": 0.4189,
+        "ndcg@20": 0.4614
+      },
+      "all events": {
+        "n": 263331,
+        "recall@5": 0.5944,
+        "recall@10": 0.7664,
+        "recall@20": 0.9066,
+        "ndcg@5": 0.4295,
+        "ndcg@10": 0.4853,
+        "ndcg@20": 0.521
+      }
+    }
+  },
+  "note": "learned models at their best epoch by valid NDCG@10; cold sameDest = query token alone (no history)"
+}

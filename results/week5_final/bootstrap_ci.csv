@@ -1,0 +1,65 @@
+row_set,n,a,b,comparison,metric,diff,ci95_lo,ci95_hi,note
+all,263331,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],recall@5,0.0996,0.0978,0.1015,
+all,263331,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],ndcg@5,0.0956,0.0942,0.0969,
+all,263331,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],recall@10,0.0796,0.0781,0.0811,
+all,263331,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],ndcg@10,0.0892,0.088,0.0903,
+all,263331,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],recall@5,0.323,0.321,0.3251,
+all,263331,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],ndcg@5,0.2445,0.2431,0.2461,
+all,263331,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],recall@10,0.3675,0.3652,0.3697,
+all,263331,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],ndcg@10,0.2593,0.2581,0.2607,
+all,263331,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],recall@5,0.3088,0.3066,0.3108,
+all,263331,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],ndcg@5,0.2294,0.2279,0.2309,
+all,263331,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],recall@10,0.3554,0.3533,0.3575,
+all,263331,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],ndcg@10,0.2448,0.2435,0.2462,
+all,263331,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],recall@5,0.0113,0.0108,0.0118,
+all,263331,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],ndcg@5,0.0173,0.0168,0.0178,
+all,263331,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],recall@10,0.0052,0.0048,0.0055,
+all,263331,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],ndcg@10,0.0153,0.0148,0.0157,
+all,263331,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],recall@5,0.2975,0.2954,0.2996,
+all,263331,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],ndcg@5,0.2121,0.2106,0.2136,
+all,263331,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],recall@10,0.3503,0.348,0.3524,
+all,263331,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],ndcg@10,0.2295,0.2282,0.231,
+cold,49462,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],recall@5,0.0394,0.0358,0.0433,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],ndcg@5,0.0303,0.0279,0.0327,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],recall@10,0.039,0.0357,0.0422,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],ndcg@10,0.0302,0.0279,0.0322,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],recall@5,0.3934,0.3886,0.3986,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],ndcg@5,0.2764,0.2727,0.2803,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],recall@10,0.4849,0.4797,0.4901,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],ndcg@10,0.3066,0.3031,0.3101,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],recall@5,0.3945,0.3895,0.3994,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],ndcg@5,0.2769,0.273,0.2807,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],recall@10,0.4849,0.4797,0.4901,cold: main = query token; ItemKNN = first-booking popularity
+cold,49462,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],ndcg@10,0.3065,0.303,0.31,cold: main = query token; ItemKNN = first-booking popularity
+warm,213869,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],recall@5,0.1135,0.1115,0.1153,
+warm,213869,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],ndcg@5,0.1107,0.1091,0.1122,
+warm,213869,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],recall@10,0.089,0.087,0.0907,
+warm,213869,main,logreg,SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg],ndcg@10,0.1028,0.1014,0.1041,
+warm,213869,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],recall@5,0.3068,0.3046,0.3091,
+warm,213869,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],ndcg@5,0.2372,0.2356,0.2388,
+warm,213869,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],recall@10,0.3404,0.3382,0.3428,
+warm,213869,main,itemknn,SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn],ndcg@10,0.2484,0.2471,0.25,
+warm,213869,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],recall@5,0.2889,0.2868,0.2912,
+warm,213869,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],ndcg@5,0.2184,0.2169,0.22,
+warm,213869,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],recall@10,0.3255,0.3232,0.3278,
+warm,213869,main,plain_all,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all],ndcg@10,0.2306,0.2292,0.2321,
+warm,213869,main,plain_warm,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm],recall@5,0.2892,0.287,0.2914,
+warm,213869,main,plain_warm,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm],ndcg@5,0.2187,0.2172,0.2203,
+warm,213869,main,plain_warm,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm],recall@10,0.3257,0.3235,0.3279,
+warm,213869,main,plain_warm,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm],ndcg@10,0.2309,0.2295,0.2323,
+warm,213869,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],recall@5,0.0139,0.0132,0.0145,
+warm,213869,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],ndcg@5,0.0213,0.0206,0.0219,
+warm,213869,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],recall@10,0.0064,0.006,0.0068,
+warm,213869,main,query_token,SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token],ndcg@10,0.0188,0.0183,0.0194,
+warm,213869,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],recall@5,0.275,0.2728,0.2774,
+warm,213869,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],ndcg@5,0.1971,0.1955,0.1988,
+warm,213869,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],recall@10,0.3191,0.3168,0.3214,
+warm,213869,query_token,plain_all,SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all],ndcg@10,0.2118,0.2103,0.2133,
+warm,213869,plain_all,plain_warm,SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm],recall@5,0.0003,-0.0007,0.0011,
+warm,213869,plain_all,plain_warm,SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm],ndcg@5,0.0003,-0.0002,0.0007,
+warm,213869,plain_all,plain_warm,SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm],recall@10,0.0002,-0.0007,0.0012,
+warm,213869,plain_all,plain_warm,SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm],ndcg@10,0.0003,-0.0001,0.0007,
+warm excluding re-books within_1h,206975,main,query_token,sameDest gain: main minus query token,recall@5,0.0097,0.0091,0.0102,rows removed: 6894
+warm excluding re-books within_1h,206975,main,query_token,sameDest gain: main minus query token,ndcg@5,0.0139,0.0133,0.0145,rows removed: 6894
+warm excluding re-books within_1d,205031,main,query_token,sameDest gain: main minus query token,recall@5,0.0085,0.008,0.0091,rows removed: 8838
+warm excluding re-books within_1d,205031,main,query_token,sameDest gain: main minus query token,ndcg@5,0.0119,0.0114,0.0124,rows removed: 8838

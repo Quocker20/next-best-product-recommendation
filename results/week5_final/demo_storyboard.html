@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recommendation storyboard</title>
+<style>
+:root{--bg:#ffffff;--ink:#20242a;--muted:#5c6166;--rule:#d9dadb;--main:#3b6ea5;
+--main-dark:#2f5a88;--contrast:#c27c3f;--context:#a8a79f;--alert:#a63d32}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#ffffff;color:var(--ink);overflow:hidden}
+body{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;font-size:20px;line-height:1.35;
+font-variant-numeric:tabular-nums}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#ffffff}
+#stage{width:1280px;height:720px;position:relative;padding:24px 64px 0 64px;transform-origin:center}
+h1{font-size:32px;font-weight:600;line-height:1.2}
+.sub{color:var(--muted);font-size:18px;margin-top:4px}
+.bar{display:flex;align-items:center;margin-top:12px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.steps{display:flex;gap:28px;font-size:20px;color:var(--context);white-space:nowrap}
+.steps span.done{color:var(--muted)}
+.steps span.on{color:var(--main-dark);font-weight:600}
+.cols{display:grid;grid-template-columns:500px 1fr;gap:56px;margin-top:12px}
+h2{font-size:20px;font-weight:600;margin-bottom:6px}
+.k{color:var(--muted)}
+table{border-collapse:collapse;width:100%}
+td,th{text-align:left;padding:2px 10px 2px 0;font-size:18px;font-weight:400;vertical-align:baseline}
+th{color:var(--muted);border-bottom:1px solid var(--rule)}
+td.n,th.n{text-align:right}
+tr.same td{color:var(--main-dark);font-weight:600}
+.search{margin-bottom:14px}
+.search td{font-size:19px;padding:0 10px 0 0}
+.hist td{padding:1px 10px 1px 0}
+.hist{table-layout:fixed}
+.search.off td{color:var(--context)}
+.search.off h2{color:var(--context)}
+.offnote{color:var(--muted);font-size:18px;font-weight:400;margin-top:2px}
+td.chg{color:var(--alert);font-weight:600}
+.expl{font-size:20px;margin-bottom:6px;min-height:54px}
+ol.top{list-style:none}
+ol.top li{display:grid;grid-template-columns:36px 150px 1fr;align-items:baseline;
+border-bottom:1px solid var(--rule);padding:1px 0;font-size:24px}
+ol.top li .r{color:var(--muted);font-size:20px}
+ol.top li .c{font-weight:400}
+ol.top li .m{font-size:18px;color:var(--muted);word-spacing:2px}
+ol.top li .sd{color:var(--main-dark);font-weight:600}
+ol.top li.hit .c{color:var(--main-dark);font-weight:700}
+ol.top li.hit .b{color:var(--main-dark);font-weight:700}
+.ranks{margin-top:12px}
+.ranks td{font-size:20px;padding:1px 10px 1px 0}
+.ranks tr.cur td{color:var(--main-dark);font-weight:600}
+.ranks tr.base td{color:var(--muted)}
+.ranks tr.future td.n{color:var(--context)}
+.note{font-size:18px;color:var(--ink);margin-top:10px}
+.foot{position:absolute;left:64px;right:64px;bottom:12px;font-size:18px;line-height:1.3;color:var(--muted);
+border-top:1px solid var(--rule);padding-top:6px}
+.nav{display:flex;gap:8px;flex:none;margin-left:auto;align-items:center;font-size:18px;color:var(--muted);white-space:nowrap}
+.sub.note3{color:var(--ink)}
+button{font:inherit;font-size:18px;color:var(--ink);background:#ffffff;border:1px solid var(--rule);
+border-radius:3px;padding:4px 12px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.on{border-color:var(--main-dark);color:var(--main-dark);font-weight:600}
+button:disabled{color:var(--context);cursor:default}
+.sum td,.sum th{font-size:20px;padding:6px 24px 6px 0}
+.sum tr.main td{color:var(--main-dark);font-weight:600}
+.sum tr.base td{color:var(--muted)}
+.sum{margin-top:24px;width:auto}
+.src{font-size:18px;color:var(--muted);margin-top:16px;max-width:1100px}
+</style></head>
+<body><div id="wrap"><div id="stage">
+<h1 id="title"></h1><div class="sub" id="sub"></div>
+<div class="bar"><div class="steps" id="steps"></div>
+<div class="nav"><span id="pos" style="margin-right:8px"></span>
+<button id="prev">Back</button><button id="wi">What-if</button><button id="next">Next</button></div></div>
+<div id="body"></div>
+<div class="foot">Simulation on public Expedia data; hotel_cluster = anonymous proxy for room/package category; offline evaluation.<br>Real test bookings picked for illustration; D is a miss. Baselines: notebook 07b, trained on the same rows as our model.</div>
+</div></div>
+<script type="application/json" id="data">{"dataset":"Expedia Hotel Recommendations (public), bookings, burst repeats collapsed","split":"test (global temporal 80/10/10), seed 2022","generated_by":"scripts/demo_storyboard_export.py","git_commit":"d9b41ec","models":{"plain":"SMLP4Rec, history only (notebook 01e, 2026-10-10_expedia_smlp4rec_plain-1e-clean-cold-es, best epoch 2; trained on the same rows as the final model)","query":"SMLP4Rec + query token (notebook 01d, 2026-10-10_expedia_smlp4rec_query-1d-clean-cold-es, best epoch 8), model scores only","samedest":"the same + sameDest (alpha and weights tuned on valid, results/week4_rebuild/smlprec_query_cold_train_es_run.json)","baselines":"ItemKNN and logistic regression from notebook 07b (data/interim/demo_baselines_07b.npz), the same models as the final table; real-booking ranks checked against data/interim/baselines_es_ranks_test.parquet"},"selection":"picked for illustration from seeded test draws (docs/plans/final_prep/04_demo_options.md \u00a73); D is a deliberate miss","bookings":[{"key":"A","role":"A new customer: first booking, no history","mode":"cold","seed":960,"event":2793792,"user_id":380617,"truth":23,"n_prior":0,"matches_expected":true,"fields":{"dest":8254,"dest_type":1,"ci_month":2,"lead":7,"stay":3,"adults":2,"children":0,"rooms":1,"package":0,"mobile":0,"channel":5,"site":24,"posa":2,"country":3},"history_events":[],"steps":{"plain":{"top":[{"cluster":91},{"cluster":48},{"cluster":42},{"cluster":59},{"cluster":16}],"truth_rank":79},"query":{"top":[{"cluster":23,"prev_rank":79,"p":0.0819},{"cluster":4,"prev_rank":38,"p":0.0567},{"cluster":50,"prev_rank":9,"p":0.0521},{"cluster":13,"prev_rank":29,"p":0.0483},{"cluster":39,"prev_rank":37,"p":0.0449}],"truth_rank":1},"samedest":{"top":[{"cluster":23,"prev_rank":1,"samedest_share":0.01},{"cluster":4,"prev_rank":2,"samedest_share":0.01},{"cluster":50,"prev_rank":3,"samedest_share":0.01},{"cluster":13,"prev_rank":4,"samedest_share":0.01},{"cluster":39,"prev_rank":5,"samedest_share":0.01}],"truth_rank":1,"known_destination":false,"w_samedest":0.0,"alpha":0.2,"boosted_clusters":[]},"baselines":{"lr":{"top":[4,98,41,97,70],"truth_rank":37},"knn":{"top":[91,48,42,59,28],"truth_rank":79,"note":"history only (empty: popularity)"}}},"whatif":{"label":"Same search by a family (2 adults, 2 children)","no_history":false,"changed":{"adults":2,"children":2,"rooms":1},"steps":{"plain":{"top":[{"cluster":91},{"cluster":48},{"cluster":42},{"cluster":59},{"cluster":16}],"truth_rank":79},"query":{"top":[{"cluster":98,"prev_rank":12,"p":0.0697},{"cluster":4,"prev_rank":38,"p":0.0479},{"cluster":13,"prev_rank":29,"p":0.0476},{"cluster":19,"prev_rank":34,"p":0.0467},{"cluster":50,"prev_rank":9,"p":0.0434}],"truth_rank":7},"samedest":{"top":[{"cluster":98,"prev_rank":1,"samedest_share":0.01},{"cluster":4,"prev_rank":2,"samedest_share":0.01},{"cluster":13,"prev_rank":3,"samedest_share":0.01},{"cluster":19,"prev_rank":4,"samedest_share":0.01},{"cluster":50,"prev_rank":5,"samedest_share":0.01}],"truth_rank":7,"known_destination":false,"w_samedest":0.0,"alpha":0.2,"boosted_clusters":[]},"baselines":{"lr":{"top":[4,98,70,41,18],"truth_rank":42},"knn":{"top":[91,48,42,59,28],"truth_rank":79,"note":"history only (empty: popularity)"}}}},"search":{"dest":8254,"ci":"2015-02-06","co":"2015-02-08","nights":2,"adults":2,"children":0,"rooms":1,"package":0,"channel":5,"mobile":0,"party_type":"couple"},"src_row":2980771,"booked_on":"2014-12-05","history":[]},{"key":"B","role":"A returning customer, back at the destination of an earlier trip","mode":"warm","seed":385,"event":2934572,"user_id":831510,"truth":56,"n_prior":10,"matches_expected":true,"fields":{"dest":12269,"dest_type":6,"ci_month":1,"lead":5,"stay":5,"adults":2,"children":2,"rooms":1,"package":0,"mobile":0,"channel":9,"site":2,"posa":3,"country":215},"history_events":[38634,434499,930845,971930,1608237,1650776,2017114,2316569,2561101,2749741],"steps":{"plain":{"top":[{"cluster":82},{"cluster":30},{"cluster":85},{"cluster":62},{"cluster":81}],"truth_rank":58},"query":{"top":[{"cluster":19,"prev_rank":73,"p":0.253},{"cluster":70,"prev_rank":64,"p":0.0749},{"cluster":95,"prev_rank":61,"p":0.0727},{"cluster":37,"prev_rank":31,"p":0.0723},{"cluster":21,"prev_rank":27,"p":0.0632}],"truth_rank":7},"samedest":{"top":[{"cluster":56,"prev_rank":7,"samedest_share":1.0},{"cluster":19,"prev_rank":1,"samedest_share":0.0},{"cluster":70,"prev_rank":2,"samedest_share":0.0},{"cluster":95,"prev_rank":3,"samedest_share":0.0},{"cluster":37,"prev_rank":4,"samedest_share":0.0}],"truth_rank":1,"known_destination":true,"w_samedest":0.75,"alpha":0.2,"boosted_clusters":[56]},"baselines":{"lr":{"top":[19,70,56,41,98],"truth_rank":3},"knn":{"top":[82,30,61,81,25],"truth_rank":10,"note":"history only"}}},"whatif":{"label":"Same search, earlier bookings removed","no_history":true,"changed":{},"steps":{"plain":{"top":[{"cluster":91},{"cluster":48},{"cluster":42},{"cluster":59},{"cluster":16}],"truth_rank":54},"query":{"top":[{"cluster":19,"prev_rank":34,"p":0.3036},{"cluster":95,"prev_rank":6,"p":0.0793},{"cluster":70,"prev_rank":39,"p":0.0721},{"cluster":41,"prev_rank":13,"p":0.0721},{"cluster":37,"prev_rank":20,"p":0.0578}],"truth_rank":8},"samedest":{"top":[{"cluster":19,"prev_rank":1,"samedest_share":0.01},{"cluster":95,"prev_rank":2,"samedest_share":0.01},{"cluster":70,"prev_rank":3,"samedest_share":0.01},{"cluster":41,"prev_rank":4,"samedest_share":0.01},{"cluster":37,"prev_rank":5,"samedest_share":0.01}],"truth_rank":8,"known_destination":false,"w_samedest":0.0,"alpha":0.2,"boosted_clusters":[]},"baselines":{"lr":{"top":[19,70,56,41,98],"truth_rank":3},"knn":{"top":[91,48,42,59,28],"truth_rank":45,"note":"history only (empty: popularity)"}}}},"search":{"dest":12269,"ci":"2015-01-17","co":"2015-01-21","nights":4,"adults":2,"children":2,"rooms":1,"package":0,"channel":9,"mobile":0,"party_type":"family"},"src_row":2182442,"booked_on":"2014-12-29","history":[{"event":38634,"booked_on":"2013-01-21","dest":12269,"cluster":56,"ci":"2013-01-22","co":"2013-01-27"},{"event":434499,"booked_on":"2013-06-10","dest":14882,"cluster":82,"ci":"2013-06-10","co":"2013-06-11"},{"event":930845,"booked_on":"2013-11-28","dest":14882,"cluster":81,"ci":"2013-11-28","co":"2013-11-29"},{"event":971930,"booked_on":"2013-12-15","dest":14882,"cluster":3,"ci":"2013-12-15","co":"2013-12-16"},{"event":1608237,"booked_on":"2014-05-27","dest":55898,"cluster":61,"ci":"2014-05-28","co":"2014-05-30"},{"event":1650776,"booked_on":"2014-06-04","dest":8253,"cluster":25,"ci":"2014-06-07","co":"2014-06-10"},{"event":2017114,"booked_on":"2014-08-05","dest":12267,"cluster":72,"ci":"2014-11-09","co":"2014-11-10"},{"event":2316569,"booked_on":"2014-09-22","dest":20322,"cluster":30,"ci":"2014-09-24","co":"2014-09-25"},{"event":2561101,"booked_on":"2014-10-29","dest":15207,"cluster":99,"ci":"2014-11-08","co":"2014-11-09"},{"event":2749741,"booked_on":"2014-11-29","dest":21969,"cluster":85,"ci":"2014-11-30","co":"2014-12-02"}]},{"key":"C","role":"A family with three children, check-in in December","mode":"warm","seed":10,"event":2893136,"user_id":801932,"truth":56,"n_prior":8,"matches_expected":true,"fields":{"dest":8267,"dest_type":1,"ci_month":12,"lead":3,"stay":4,"adults":2,"children":3,"rooms":1,"package":0,"mobile":0,"channel":7,"site":2,"posa":3,"country":66},"history_events":[556580,604151,608015,611583,613455,641073,1139739,1430730],"steps":{"plain":{"top":[{"cluster":7},{"cluster":32},{"cluster":39},{"cluster":47},{"cluster":50}],"truth_rank":73},"query":{"top":[{"cluster":56,"prev_rank":73,"p":0.1204},{"cluster":41,"prev_rank":58,"p":0.0744},{"cluster":77,"prev_rank":10,"p":0.0696},{"cluster":23,"prev_rank":16,"p":0.0695},{"cluster":70,"prev_rank":82,"p":0.0653}],"truth_rank":1},"samedest":{"top":[{"cluster":56,"prev_rank":1,"samedest_share":0.01},{"cluster":41,"prev_rank":2,"samedest_share":0.01},{"cluster":77,"prev_rank":3,"samedest_share":0.01},{"cluster":23,"prev_rank":4,"samedest_share":0.01},{"cluster":70,"prev_rank":5,"samedest_share":0.01}],"truth_rank":1,"known_destination":false,"w_samedest":0.0,"alpha":0.2,"boosted_clusters":[]},"baselines":{"lr":{"top":[70,41,56,98,3],"truth_rank":3},"knn":{"top":[32,51,47,76,7],"truth_rank":77,"note":"history only"}}},"whatif":{"label":"Same search by one adult travelling alone","no_history":false,"changed":{"adults":1,"children":0,"rooms":1},"steps":{"plain":{"top":[{"cluster":7},{"cluster":32},{"cluster":39},{"cluster":47},{"cluster":50}],"truth_rank":73},"query":{"top":[{"cluster":23,"prev_rank":16,"p":0.2131},{"cluster":40,"prev_rank":9,"p":0.0734},{"cluster":50,"prev_rank":5,"p":0.0669},{"cluster":77,"prev_rank":10,"p":0.0649},{"cluster":56,"prev_rank":73,"p":0.0536}],"truth_rank":5},"samedest":{"top":[{"cluster":23,"prev_rank":1,"samedest_share":0.01},{"cluster":40,"prev_rank":2,"samedest_share":0.01},{"cluster":50,"prev_rank":3,"samedest_share":0.01},{"cluster":77,"prev_rank":4,"samedest_share":0.01},{"cluster":56,"prev_rank":5,"samedest_share":0.01}],"truth_rank":5,"known_destination":false,"w_samedest":0.0,"alpha":0.2,"boosted_clusters":[]},"baselines":{"lr":{"top":[70,56,41,98,55],"truth_rank":2},"knn":{"top":[32,51,47,76,7],"truth_rank":77,"note":"history only"}}}},"search":{"dest":8267,"ci":"2014-12-24","co":"2014-12-27","nights":3,"adults":2,"children":3,"rooms":1,"package":0,"channel":7,"mobile":0,"party_type":"family"},"src_row":2398406,"booked_on":"2014-12-21","history":[{"event":556580,"booked_on":"2013-07-21","dest":11320,"cluster":51,"ci":"2013-07-21","co":"2013-07-22"},{"event":604151,"booked_on":"2013-08-05","dest":25384,"cluster":32,"ci":"2013-08-05","co":"2013-08-06"},{"event":608015,"booked_on":"2013-08-06","dest":25384,"cluster":32,"ci":"2013-08-07","co":"2013-08-08"},{"event":611583,"booked_on":"2013-08-07","dest":11320,"cluster":35,"ci":"2013-08-07","co":"2013-08-08"},{"event":613455,"booked_on":"2013-08-08","dest":27671,"cluster":51,"ci":"2013-08-08","co":"2013-08-14"},{"event":641073,"booked_on":"2013-08-17","dest":25398,"cluster":47,"ci":"2013-08-17","co":"2013-08-18"},{"event":1139739,"booked_on":"2014-02-10","dest":25370,"cluster":76,"ci":"2014-02-10","co":"2014-02-11"},{"event":1430730,"booked_on":"2014-04-20","dest":8244,"cluster":7,"ci":"2014-04-20","co":"2014-04-22"}]},{"key":"D","role":"Where our model fails: the customer repeats an older choice","mode":"warm","seed":2055,"event":2722615,"user_id":692648,"truth":37,"n_prior":2,"matches_expected":true,"fields":{"dest":12785,"dest_type":5,"ci_month":1,"lead":6,"stay":4,"adults":2,"children":0,"rooms":1,"package":0,"mobile":0,"channel":9,"site":2,"posa":3,"country":66},"history_events":[2441448,2464596],"steps":{"plain":{"top":[{"cluster":61},{"cluster":37},{"cluster":62},{"cluster":81},{"cluster":82}],"truth_rank":2},"query":{"top":[{"cluster":61,"prev_rank":1,"p":0.1235},{"cluster":65,"prev_rank":85,"p":0.1099},{"cluster":31,"prev_rank":74,"p":0.0796},{"cluster":10,"prev_rank":16,"p":0.0688},{"cluster":85,"prev_rank":17,"p":0.046}],"truth_rank":37},"samedest":{"top":[{"cluster":61,"prev_rank":1,"samedest_share":1.0},{"cluster":65,"prev_rank":2,"samedest_share":0.0},{"cluster":31,"prev_rank":3,"samedest_share":0.0},{"cluster":10,"prev_rank":4,"samedest_share":0.0},{"cluster":85,"prev_rank":5,"samedest_share":0.0}],"truth_rank":37,"known_destination":true,"w_samedest":0.75,"alpha":0.2,"boosted_clusters":[61]},"baselines":{"lr":{"top":[31,65,34,10,42],"truth_rank":59},"knn":{"top":[61,37,62,82,30],"truth_rank":2,"note":"history only"}}},"search":{"dest":12785,"ci":"2015-01-14","co":"2015-01-17","nights":3,"adults":2,"children":0,"rooms":1,"package":0,"channel":9,"mobile":0,"party_type":"couple"},"src_row":1178365,"booked_on":"2014-11-24","history":[{"event":2441448,"booked_on":"2014-10-10","dest":13559,"cluster":37,"ci":"2015-01-14","co":"2015-01-17"},{"event":2464596,"booked_on":"2014-10-14","dest":12785,"cluster":61,"ci":"2015-01-17","co":"2015-01-19"}]}],"sanity_sample":{"rows":"2000 warm test rows, numpy seed 0","plain":0.3075,"query":0.595,"samedest":0.6115,"lr":0.498,"knn":0.29},"summary":{"source":"results/week4_rebuild/baselines_vs_final_es.json","split":"test","seed":2022,"baselines_from":"notebook 07b","models":{"plain":{"name":"SMLP4Rec plain, no query token (01e, best epoch 2)","warm":{"n":213869,"recall@5":0.3214},"cold":{"n":49462,"recall@5":0.1307}},"query":{"name":"SMLP4Rec + query token (final, best epoch 8)","warm":{"n":213869,"recall@5":0.5965},"cold":{"n":49462,"recall@5":0.5252}},"samedest":{"name":"SMLP4Rec + query token + sameDest (final, best epoch 8)","warm":{"n":213869,"recall@5":0.6104},"cold":{"n":49462,"recall@5":0.5252}},"lr":{"name":"Logistic regression (C=1.0, pass 8, destination + context, no history)","warm":{"n":213869,"recall@5":0.4969},"cold":{"n":49462,"recall@5":0.4857}},"knn":{"name":"ItemKNN (cosine, K=50, history only; cold: first-booking popularity)","warm":{"n":213869,"recall@5":0.3036},"cold":{"n":49462,"recall@5":0.1318}}}}}</script>
+<script type="application/json" id="text">{"ui":{"adult1":"adult","adultN":"adults","child1":"child","childN":"children","room1":"room","roomN":"rooms","night1":"night","nightN":"nights","current_search":"Current search","destination":"Destination","checkin":"Check-in","party":"Party","package":"Package","yes":"yes","no":"no","known_dest":" (booked here before)","new_dest":" (new for this customer)","channel":"sales channel","mobile":", mobile","earlier":"Earlier bookings","booked_on":"Booked on","cluster":"Cluster","not_shown":"{n} earlier not shown","same_dest":"same destination","up_from":"up from {n}","down_from":"down from {n}","booked_here":"booked here before","booked":"booked","cluster_lc":"cluster","rank":"Rank","top5":"Top 5 clusters","real_booking":"Real test booking: user {user}, booked cluster {truth} on {on}","whatif_sub":"What-if: {label}. Booked cluster stays {truth}.","back_real":"Back to the real search","whatif":"What-if","no_whatif":"No what-if","summary_sub":"Expedia, {split} split, seed {seed}, full ranking over 100 clusters","model":"Model","recall_warm":"Recall@5, returning (n = {n})","recall_cold":"Recall@5, first booking (n = {n})","source_line":"Source: {source} (baselines there: {base}).","summary":"Summary","pos":"Booking {b}/{n}, step {s}/3","back":"Back","next":"Next"},"roles":{},"whatif_labels":{},"bar_names":["Original SMLP4Rec","+ query token","+ sameDest"],"step_names":["Original SMLP4Rec (history only)","+ query token","+ sameDest (our model)"],"expl":["The original model reads only the earlier clusters; it cannot see the search.","The current search becomes one extra token that the model mixes with the history.","sameDest adds clusters this customer booked before at the searched destination."],"expl_cold":"No earlier bookings: the original model gives every new customer the same list.","expl_newdest":"Destination is new for this customer, so sameDest changes nothing here.","search_unused":"not used by the original model","no_history":"none: this is the customer's first booking","history_removed":"removed for this what-if (treated as a new customer)","rank_head":"Rank of the booked cluster (of 100)","lr_name":"Logistic regression (search, no history)","knn_name":"ItemKNN (history only)","lr_name_short":"Logistic regression","knn_name_short":"ItemKNN","notes":{"A":"Without history the original model shows every new customer the same list (booked cluster at rank 79); the search alone moves it to rank 1.","B":"The customer booked cluster 56 at destination 12269 on 2013-01-21; sameDest brings it back to rank 1.","C":"No earlier trip to this destination: the family search alone ranks cluster 56 at 1.","D":"Miss: cluster 37 repeats another trip; history-only models rank it 2 and 2, ours puts 61 first."},"summary_title":"On all test bookings, the query token adds most; sameDest helps returning customers","summary_note":"The four bookings were picked for illustration; these are the measured numbers on every test booking."}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const T = JSON.parse(document.getElementById('text').textContent);
+const U = T.ui;
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
+const B = D.bookings;
+const frames = [];
+B.forEach((b, i) => { for (let s = 1; s <= 3; s++) frames.push({b: i, s: s}); });
+frames.push({summary: true});
+let cur = 0, whatif = false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STEP_KEYS = ['plain', 'query', 'samedest'];
+const STEP_NAMES = T.step_names;
+
+function fit() {
+  const s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  $('stage').style.transform = 'scale(' + s + ')';
+}
+
+function party(sr) {
+  const a = sr.adults, c = sr.children, r = sr.rooms;
+  return `${a} ${a === 1 ? U.adult1 : U.adultN}, ${c} ${c === 1 ? U.child1 : U.childN}, ${r} ${r === 1 ? U.room1 : U.roomN}`;
+}
+
+function searchBlock(b, step, wi) {
+  const sr = Object.assign({}, b.search);
+  const chg = wi && wi.changed ? wi.changed : {};
+  for (const k in chg) sr[k] = chg[k];
+  const pc = ('adults' in chg || 'children' in chg || 'rooms' in chg) ? ' class=chg' : '';
+  const known = b.steps.samedest.known_destination;
+  const off = step === 1;
+  let h = `<div class="search${off ? ' off' : ''}"><h2>${esc(U.current_search)}${off ? `&emsp;<span class=offnote>${esc(T.search_unused)}</span>` : ''}</h2>`;
+  h += '<table>';
+  const hasHist = b.n_prior && !(wi && wi.no_history);
+  h += `<tr><td class=k>${esc(U.destination)}</td><td>${sr.dest}${hasHist ? (known ? U.known_dest : U.new_dest) : ''}</td></tr>`;
+  h += `<tr><td class=k>${esc(U.checkin)}</td><td>${esc(sr.ci)}, ${sr.nights} ${sr.nights === 1 ? U.night1 : U.nightN}</td></tr>`;
+  h += `<tr><td class=k>${esc(U.party)}</td><td${pc}>${party(sr)}</td></tr>`;
+  h += `<tr><td class=k>${esc(U.package)}</td><td>${sr.package ? U.yes : U.no} (${U.channel} ${sr.channel}${sr.mobile ? U.mobile : ''})</td></tr>`;
+  return h + '</table></div>';
+}
+
+function historyBlock(b, step, wi) {
+  const MAXR = 10;
+  let h = `<h2>${esc(U.earlier)}</h2>`;
+  if (wi && wi.no_history) return h + `<div class=offnote>${esc(T.history_removed)}</div>`;
+  if (!b.history.length) return h + `<div class=offnote>${esc(T.no_history)}</div>`;
+  const dest = b.search.dest;
+  const mark = step === 3 && b.steps.samedest.w_samedest > 0;
+  const rows = b.history.slice(-MAXR);
+  h += '<table class=hist><colgroup><col style="width:130px"><col style="width:120px"><col style="width:90px"><col></colgroup>';
+  h += `<tr><th>${esc(U.booked_on)}</th><th class=n>${esc(U.destination)}</th><th class=n>${esc(U.cluster)}</th><th></th></tr>`;
+  if (b.history.length > MAXR) h += `<tr><td class=k colspan=4>${fmt(U.not_shown, {n: b.history.length - MAXR})}</td></tr>`;
+  for (const r of rows) {
+    const same = mark && r.dest === dest;
+    h += `<tr${same ? ' class=same' : ''}><td>${esc(r.booked_on)}</td><td class=n>${r.dest}</td><td class=n>${r.cluster}</td><td>${same ? esc(U.same_dest) : ''}</td></tr>`;
+  }
+  return h + '</table>';
+}
+
+function topBlock(b, st, step) {
+  const key = STEP_KEYS[step - 1];
+  const s = st[key];
+  const boosted = new Set(st.samedest.boosted_clusters);
+  let h = '<ol class=top>';
+  for (let i = 0; i < s.top.length; i++) {
+    const t = s.top[i];
+    const hit = t.cluster === b.truth;
+    let m = '';
+    if (step > 1 && t.prev_rank !== i + 1) m = fmt(t.prev_rank > i + 1 ? U.up_from : U.down_from, {n: t.prev_rank});
+    let tag = '';
+    if (step === 3 && boosted.has(t.cluster)) tag = `<span class=sd>${esc(U.booked_here)}</span>`;
+    const parts = [hit ? `<span class=b>${esc(U.booked)}</span>` : '', tag, m ? `<span>${m}</span>` : ''].filter(x => x);
+    h += `<li class="${hit ? 'hit' : ''}"><span class=r>${i + 1}</span><span class=c>${esc(U.cluster_lc)} ${t.cluster}</span><span class=m>${parts.join('&emsp;')}</span></li>`;
+  }
+  return h + '</ol>';
+}
+
+function rankBlock(st, step) {
+  let h = `<table class=ranks><tr><th>${esc(T.rank_head)}</th><th class=n>${esc(U.rank)}</th></tr>`;
+  STEP_KEYS.forEach((k, i) => {
+    const cls = i + 1 === step ? 'cur' : (i + 1 > step ? 'future' : '');
+    const v = i + 1 <= step ? st[k].truth_rank : '';
+    h += `<tr class="${cls}"><td>${esc(STEP_NAMES[i])}</td><td class=n>${v}</td></tr>`;
+  });
+  h += `<tr class=base><td>${esc(T.lr_name)}</td><td class=n>${st.baselines.lr.truth_rank}</td></tr>`;
+  h += `<tr class=base><td>${esc(T.knn_name)}</td><td class=n>${st.baselines.knn.truth_rank}</td></tr>`;
+  return h + '</table>';
+}
+
+function explanation(b, st, step, wi) {
+  if (step === 1) return b.history.length && !(wi && wi.no_history) ? T.expl[0] : T.expl_cold;
+  if (step === 2) return T.expl[1];
+  return st.samedest.w_samedest > 0 ? T.expl[2] : T.expl_newdest;
+}
+
+function renderBooking(f) {
+  const b = B[f.b], step = f.s;
+  const wi = whatif && b.whatif ? b.whatif : null;
+  const st = wi ? wi.steps : b.steps;
+  $('title').textContent = `${b.key}. ${T.roles[b.key] || b.role}`;
+  let sub = fmt(U.real_booking, {user: b.user_id, truth: b.truth, on: b.booked_on});
+  if (wi) sub = fmt(U.whatif_sub, {label: T.whatif_labels[b.key] || wi.label, truth: b.truth});
+  const n3 = step === 3 && !wi && T.notes[b.key];
+  if (n3) sub = T.notes[b.key];
+  $('sub').textContent = sub;
+  $('sub').classList.toggle('note3', !!n3);
+  $('steps').innerHTML = T.bar_names.map((n, i) =>
+    `<span class="${i + 1 === step ? 'on' : (i + 1 < step ? 'done' : '')}">${i + 1}&ensp;${esc(n)}</span>`).join('');
+  $('body').innerHTML = `<div class=cols><div>${searchBlock(b, step, wi)}${historyBlock(b, step, wi)}</div>
+    <div><h2>${esc(U.top5)}</h2><div class=expl>${esc(explanation(b, st, step, wi))}</div>
+    ${topBlock(b, st, step)}${rankBlock(st, step)}</div></div>`;
+  $('wi').disabled = !b.whatif;
+  $('wi').classList.toggle('on', !!wi);
+  $('wi').textContent = b.whatif ? (wi ? U.back_real : U.whatif) : U.no_whatif;
+}
+
+function renderSummary() {
+  const S = D.summary;
+  $('title').textContent = T.summary_title;
+  $('sub').classList.remove('note3');
+  $('sub').textContent = fmt(U.summary_sub, {split: S.split, seed: S.seed});
+  $('steps').innerHTML = '';
+  const rows = [['plain', STEP_NAMES[0], ''], ['query', STEP_NAMES[1], ''], ['samedest', STEP_NAMES[2], 'main'],
+                ['lr', T.lr_name_short, 'base'], ['knn', T.knn_name_short, 'base']];
+  const m = S.models;
+  let h = `<table class=sum><tr><th>${esc(U.model)}</th><th class=n>${fmt(U.recall_warm, {n: m.samedest.warm.n.toLocaleString('en-US')})}</th>
+    <th class=n>${fmt(U.recall_cold, {n: m.samedest.cold.n.toLocaleString('en-US')})}</th></tr>`;
+  for (const [k, name, cls] of rows)
+    h += `<tr class="${cls}"><td>${esc(name)}</td><td class=n>${m[k].warm['recall@5'].toFixed(3)}</td><td class=n>${m[k].cold['recall@5'].toFixed(3)}</td></tr>`;
+  h += '</table>';
+  h += `<div class=src>${esc(T.summary_note)} ${fmt(U.source_line, {source: esc(S.source), base: esc(S.baselines_from)})}</div>`;
+  $('body').innerHTML = h;
+  $('wi').disabled = true; $('wi').classList.remove('on'); $('wi').textContent = U.no_whatif;
+}
+
+function render() {
+  const f = frames[cur];
+  if (f.summary) renderSummary(); else renderBooking(f);
+  $('pos').textContent = f.summary ? U.summary : fmt(U.pos, {b: f.b + 1, n: B.length, s: f.s});
+  $('prev').disabled = cur === 0;
+  $('next').disabled = cur === frames.length - 1;
+}
+
+function go(i) {
+  i = Math.max(0, Math.min(frames.length - 1, i));
+  if (frames[i].b !== frames[cur].b) whatif = false;
+  cur = i; render();
+}
+
+document.addEventListener('keydown', e => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { go(cur + 1); e.preventDefault(); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { go(cur - 1); e.preventDefault(); }
+  else if (e.key === 'w' || e.key === 'W') toggleWhatif();
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 's' || e.key === 'S' || e.key === 'End') go(frames.length - 1);
+  else if (/^[1-9]$/.test(e.key) && +e.key <= B.length) go((+e.key - 1) * 3);
+});
+
+function toggleWhatif() {
+  const f = frames[cur];
+  if (f.summary || !B[f.b].whatif) return;
+  whatif = !whatif; render();
+}
+
+$('prev').onclick = () => go(cur - 1);
+$('next').onclick = () => go(cur + 1);
+$('wi').onclick = toggleWhatif;
+window.addEventListener('resize', fit);
+fit(); render();
+</script>
+</body></html>

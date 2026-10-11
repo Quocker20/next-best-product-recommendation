@@ -124,8 +124,11 @@ def line_chart(
     return "".join(out)
 
 
-def architecture_svg():
-    """SMLP4Rec adapted to Expedia (query market derived from train, same-dest flag on history)."""
+def architecture_svg(history_ctx=True):
+    """SMLP4Rec adapted to Expedia (query market derived from train, same-dest flag on history).
+
+    history_ctx=False draws history bookings with only cluster ID and timestamp (no context rows).
+    """
 
     def row(y, text, kind):
         fill, stroke, col = {
@@ -141,23 +144,28 @@ def architecture_svg():
     s = [
         '<svg viewBox="0 0 900 500" width="900" height="500" class="diagram">',
         '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker></defs>',
-        '<rect x="24" y="14" width="270" height="452" rx="14" fill="none" stroke="#94a3b8"/>',
+        f'<rect x="24" y="14" width="270" height="{452 if history_ctx else 416}" rx="14" fill="none" stroke="#94a3b8"/>',
         '<text x="159" y="40" class="d">Lịch sử booking (left-pad)</text>',
     ]
     y = 52
     for label in ("Booking 1: cluster ID", "Booking t: cluster ID"):
-        s += [
-            row(y, label, "id"),
-            row(y + 26, "Destination, market", "ctx"),
-            row(y + 52, "Party, package, tháng", "ctx"),
-            row(y + 78, "Lead time, số đêm", "ctx"),
-        ]
+        if history_ctx:
+            s += [
+                row(y, label, "id"),
+                row(y + 26, "Destination, market", "ctx"),
+                row(y + 52, "Party, package, tháng", "ctx"),
+                row(y + 78, "Lead time, số đêm", "ctx"),
+            ]
+            arrow_y, dots_y, pitch = y + 52, y + 124, 136
+        else:
+            s += [row(y, label, "id"), row(y + 26, "Timestamp", "ctx")]
+            arrow_y, dots_y, pitch = y + 26, y + 80, 100
         s.append(
-            f'<line x1="278" y1="{y + 52}" x2="304" y2="{y + 52}" stroke="#64748b" marker-end="url(#ar)"/>'
+            f'<line x1="278" y1="{arrow_y}" x2="304" y2="{arrow_y}" stroke="#64748b" marker-end="url(#ar)"/>'
         )
         if label.startswith("Booking 1"):
-            s.append(f'<text x="159" y="{y + 124}" class="d">…</text>')
-        y += 136
+            s.append(f'<text x="159" y="{dots_y}" class="d">…</text>')
+        y += pitch
     s += [
         f'<text x="159" y="{y + 6}" class="d">Query: lượt search hiện tại</text>',
         f'<rect x="33" y="{y + 14}" width="252" height="114" rx="6" fill="none" stroke="#ea580c" stroke-dasharray="5 4" stroke-width="1.5"/>',
