@@ -1,0 +1,11 @@
+Skill:        frontend-design (Anthropic official)
+Source repo:  https://github.com/anthropics/skills (skills/frontend-design)
+File URLs:    https://raw.githubusercontent.com/anthropics/skills/main/skills/frontend-design/SKILL.md
+              https://raw.githubusercontent.com/anthropics/skills/main/skills/frontend-design/LICENSE.txt
+License:      Apache License 2.0 (LICENSE.txt in the skill folder)
+Author:       Anthropic
+Repo stats:   ~180k stars; last commit touching this skill 2026-09-03 (GitHub API, 2026-10-11)
+Fetch date:   2026-10-11
+Files:        SKILL.md, LICENSE.txt (copied byte-for-byte, unmodified)
+Notes:        Text only, no scripts. Written for web UI, not slides, but its list of
+              "AI-generated design clusters" and typographic tells applies directly to HTML decks.

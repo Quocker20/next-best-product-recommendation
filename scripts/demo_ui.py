@@ -1,13 +1,16 @@
 """Quick demo UI: simulate a user and a search, get the top-5 clusters from the main model.
 
-Main model = SMLP4Rec + query token trained with the first bookings (notebook 01d), plus the
-sameDest term with the weights tuned on valid (`samedest_hybrid` in the run json). Offline demo,
-nothing is written to the data. Cluster ids are anonymous (proxy of room category / package).
+Main model = SMLP4Rec + query token trained with the first bookings (notebook 01d, early stopping,
+best epoch 8), plus the sameDest term with the weights tuned on valid (`samedest_hybrid` in the run
+json). Baselines = ItemKNN and logistic regression of notebook 07b (same training rows as the main
+model). Offline demo, nothing is written to the data. Cluster ids are anonymous (proxy of room
+category / package).
 
-Inputs: a user id (blank = new user, empty history) and the 14 query fields of the search.
-"Random test booking" fills the form from a booking of the test split (seed taken from the clock, shown on the page);
-the actual booking is then shown next to the recommendation. The history of a user is the
-bookings before the chosen event (a typed user id without an event uses the full history).
+Inputs: a user id (blank = new anonymous user, empty history) and the 14 query fields of the search.
+A user id that has bookings in the test split can load one of them (fields + actual cluster); the
+history is then the bookings before that event. "Random" draws a test booking with a seed taken from
+the clock (shown on the page). The actual cluster is highlighted in every top 5 with its rank.
+The page itself is `scripts/demo_ui_page.html` (re-read on every reload).
 
 Usage (smlp4rec venv, Python 3.11):
     C:/Users/quoca/.venvs/smlp4rec/Scripts/python.exe scripts/demo_ui.py [--port 8765]
@@ -42,16 +45,15 @@ RECENCY = 0.7
 N_CLUSTERS = 100
 INTER = ROOT / "data" / "interim" / "recbole" / "expedia_clean_rowid" / "expedia_clean_rowid.inter"
 CODES = ROOT / "data" / "interim" / "expedia_query_codes_clean.npz"
-RUNS = {  # model seed -> (experiment folder, run json)
-    2022: ("2026-10-09_expedia_smlp4rec_query-1d-clean-cold", "smlprec_query_cold_train_run.json"),
-    2023: ("2026-10-09_expedia_smlp4rec_query-1d-clean-cold-s2023", "smlprec_query_cold_train_run_seed2023.json"),
-    2024: ("2026-10-09_expedia_smlp4rec_query-1d-clean-cold-s2024", "smlprec_query_cold_train_run_seed2024.json"),
+RUNS = {  # model seed -> (experiment folder, run json); early-stopping run, seed 2022 only
+    2022: ("2026-10-10_expedia_smlp4rec_query-1d-clean-cold-es", "smlprec_query_cold_train_es_run.json"),
 }
+PAGE_FILE = Path(__file__).with_name("demo_ui_page.html")
 SMALL = {"dest_type", "ci_month", "lead", "stay", "adults", "children", "rooms", "package",
          "mobile", "channel", "site", "posa"}  # dropdowns; dest and country are free numbers
 
 
-BASELINES = ROOT / "data" / "interim" / "demo_baselines.npz"  # scripts/export_baselines_for_demo.py
+BASELINES = ROOT / "data" / "interim" / "demo_baselines_07b.npz"  # export_baselines_for_demo.py --source 07b
 LR_ORDER = ["dest", "dest_type", "ci_month", "stay", "lead", "adults", "children", "rooms",
             "package", "channel", "mobile", "site", "posa", "country"]  # notebook 07 LR_FEATURES
 
@@ -94,7 +96,7 @@ class Baselines:
         for name, score, note in (("ItemKNN", knn_score, "history only" + ("" if hist_clusters else " (empty: popularity)")),
                                   ("Logistic regression", lr_p, "destination + context, no history")):
             order = self._rank(np.asarray(score, np.float64))
-            e = {"note": note, "top": order[:TOP_K]}
+            e = {"note": note, "top": order[:TOP_K], "all_ranking": [{"rank": i + 1, "cluster": int(c)} for i, c in enumerate(order)]}
             if truth is not None:
                 e["truth_rank"] = order.index(truth) + 1
             out[name] = e
@@ -214,7 +216,10 @@ class Runner:
         top = [{"rank": i + 1, "cluster": int(c), "score": round(float(final[c]), 4),
                 "model_p": round(float(p[0, c]), 4), "samedest_share": round(float(sd_p[0, c]), 4)}
                for i, c in enumerate(order[:TOP_K])]
-        out = {"top": top, "known_destination": known, "w_samedest": ws, "alpha": self.alpha,
+        all_ranking = [{"rank": i + 1, "cluster": int(c), "score": round(float(final[c]), 4),
+                        "model_p": round(float(p[0, c]), 4), "samedest_share": round(float(sd_p[0, c]), 4)}
+                       for i, c in enumerate(order)]
+        out = {"top": top, "all_ranking": all_ranking, "known_destination": known, "w_samedest": ws, "alpha": self.alpha,
                "history_len": int(length), "dest_in_vocab": bool(encode(codes, self.vocab)[0, 0] > 0)}
         if truth is not None:
             out["truth"] = {"cluster": truth, "rank": int(np.flatnonzero(order == truth)[0]) + 1,
@@ -231,18 +236,18 @@ def field_meta(vocab: list[np.ndarray]) -> list[dict]:
             opts = []
             for c in [0] + [int(x) for x in v if int(x) != 0]:
                 if f == "lead":
-                    lab = ("unknown" if c == 0 else f"{LEAD_BINS[c - 1] + 1}-{LEAD_BINS[c]} days"
-                           if LEAD_BINS[c] < 10_000 else f">{LEAD_BINS[c - 1]} days")
+                    lab = ("không rõ" if c == 0 else f"{LEAD_BINS[c - 1] + 1}-{LEAD_BINS[c]} ngày"
+                           if LEAD_BINS[c] < 10_000 else f">{LEAD_BINS[c - 1]} ngày")
                 elif f == "stay":
-                    lab = "unknown" if c == 0 else f"{c - 1} nights"
+                    lab = "không rõ" if c == 0 else f"{c - 1} đêm"
                 elif f == "ci_month":
-                    lab = "unknown" if c == 0 else f"month {c}"
+                    lab = "không rõ" if c == 0 else f"tháng {c}"
                 else:
-                    lab = "unknown/0" if c == 0 else str(c)
+                    lab = "không rõ / 0" if c == 0 else str(c)
                 opts.append([c, f"{c}: {lab}"])
             e["options"] = opts
         else:
-            e["hint"] = f"{len(v)} ids in the model vocabulary; others map to 'unknown'"
+            e["hint"] = f"{len(v)} id trong từ vựng của mô hình; id khác = 'không rõ'"
             e["datalist"] = [int(x) for x in v[:400]]
         out.append(e)
     return out
@@ -280,12 +285,28 @@ def api_seed(req: dict) -> dict:
             "fields": {f: int(c) for f, c in zip(QUERY_FIELDS, d.codes[e])}}
 
 
+def api_user(req: dict) -> dict:
+    """Test-split bookings of one user (up to 50), each with its search fields and actual cluster."""
+    d: Data = STATE["data"]
+    uid = int(req["user_id"])
+    if uid not in d.u_start:
+        raise ValueError(f"không tìm thấy user {uid}")
+    first = get_runner(min(RUNS)).test_first
+    a, b = d.u_start[uid]
+    ev = d.by_user[a:b]
+    tests = ev[ev >= first]
+    return {"user_id": uid, "n_total": int(len(ev)), "n_test": int(len(tests)),
+            "tests": [{"event": int(e), "truth": int(d.item[e]), "n_prior": int(d.n_prior[e]),
+                       "fields": {f: int(c) for f, c in zip(QUERY_FIELDS, d.codes[e])}}
+                      for e in tests[:50]]}
+
+
 def api_recommend(req: dict) -> dict:
     d: Data = STATE["data"]
     uid = req.get("user_id")
     uid = int(uid) if uid not in (None, "") else None
     if uid is not None and uid not in d.u_start:
-        raise ValueError(f"user {uid} not found")
+        raise ValueError(f"không tìm thấy user {uid}")
     event = req.get("event")
     event = int(event) if event not in (None, "") else None
     fields = {f: int(req["fields"][f]) for f in QUERY_FIELDS}
@@ -293,86 +314,13 @@ def api_recommend(req: dict) -> dict:
     r = get_runner(int(req.get("model_seed", 2022)))
     hist = d.history(uid, event)
     out = r.recommend(hist, fields, int(truth) if truth not in (None, "") else None)
-    out["history"] = [{"event": int(e), "cluster": int(d.item[e]), "dest": int(d.codes[e, 0])}
-                      for e in hist[-r.s_len:]]
+    out["history"] = [{"seq": i + 1, "event": int(e), "cluster": int(d.item[e]), "dest": int(d.codes[e, 0])}
+                      for i, e in enumerate(hist[-r.s_len:])]
+    out["total_history_count"] = len(hist)
     out["model_seed"] = r.seed
     out["baselines"] = STATE["baselines"].recommend(
         [int(d.item[e]) for e in hist], fields, int(truth) if truth not in (None, "") else None)
     return out
-
-
-PAGE = """<!doctype html><meta charset=utf-8><title>NBP demo</title>
-<style>body{font-family:sans-serif;max-width:980px;margin:16px auto;padding:0 12px}
-fieldset{margin:8px 0}label{display:inline-block;margin:3px 10px 3px 0}
-input,select{width:150px}table{border-collapse:collapse}td,th{border:1px solid #bbb;padding:3px 8px}
-.hit{background:#cfc}.err{color:#b00}.note{color:#555;font-size:90%}</style>
-<h2>Next-best hotel cluster: user simulator</h2>
-<p class=note>Offline demo. Main model: SMLP4Rec + query token (trained with first bookings) + sameDest; plus the two baselines. Clusters are
-anonymous ids (proxy of room category / package). Nothing is saved. Top-5 fixed.</p>
-<fieldset><legend>User</legend>
-<label>user id (blank = new user) <input id=user_id></label>
-<label>history before event (blank = all) <input id=event></label>
-<label>model seed <select id=model_seed></select></label>
-<label>actual cluster (test) <input id=truth readonly></label></fieldset>
-<fieldset><legend>Test-split seed</legend>
-<label>rows <select id=mode><option>any<option>warm<option>cold</select></label>
-<label>seed (auto: time) <input id=split_seed placeholder="auto (clock)" title="Tự động lấy seed theo thời gian thực (để trống để tự đổi)"></label>
-<button onclick="pick(true)">Random test booking</button>
-<label style="width:auto;margin-left:8px"><input id=auto_cycle type=checkbox style="width:auto" onchange="toggleAuto()"> auto-change every 5s</label>
-<span class=note id=seedinfo></span></fieldset>
-<fieldset><legend>Search (query fields)</legend><div id=form></div></fieldset>
-<button onclick=rec()>Recommend top 5</button> <span id=msg class=err></span>
-<div id=out></div>
-<script>
-let META=null, autoTimer=null;
-const $=id=>document.getElementById(id);
-async function api(path,body){const r=await fetch(path,{method:body?'POST':'GET',
- body:body?JSON.stringify(body):undefined});const j=await r.json();if(j.error)throw new Error(j.error);return j}
-function fieldVals(){const o={};for(const f of META.fields)o[f.name]=$('f_'+f.name).value;return o}
-function toggleAuto(){
- if($('auto_cycle').checked){if(!autoTimer)autoTimer=setInterval(()=>{if($('auto_cycle').checked)pick(true)},5000)}
- else{if(autoTimer){clearInterval(autoTimer);autoTimer=null}}
-}
-async function init(){META=await api('/api/meta');
- $('model_seed').innerHTML=META.seeds.map(s=>`<option>${s}`).join('');
- let h='';for(const f of META.fields){h+=`<label>${f.name} `;
-  if(f.options)h+=`<select id=f_${f.name}>${f.options.map(o=>`<option value=${o[0]}>${o[1]}`).join('')}</select>`;
-  else h+=`<input id=f_${f.name} type=number value=0 list=dl_${f.name} title="${f.hint}"><datalist id=dl_${f.name}>${f.datalist.map(x=>`<option value=${x}>`).join('')}</datalist>`;
-  h+='</label>'}
- $('form').innerHTML=h;
- for(const f of META.fields)$('f_'+f.name).addEventListener('input',()=>{$('truth').value='';$('seedinfo').textContent='(form edited: no comparison)'});
- await pick(true)}
-async function pick(forceNewTime=false){try{$('msg').textContent='';
- if(forceNewTime)$('split_seed').value='';
- const s=$('split_seed').value.trim();
- const body={mode:$('mode').value};
- if(s)body.seed=parseInt(s,10);
- const j=await api('/api/seed',body);
- $('split_seed').value=j.seed;
- $('user_id').value=j.user_id;$('event').value=j.event;$('truth').value=j.truth;
- for(const k in j.fields)$('f_'+k).value=j.fields[k];
- const note=j.seed_type==='time'?`auto time (${new Date().toLocaleTimeString()})`:'manual';
- $('seedinfo').textContent=`seed ${j.seed} [${note}], event ${j.event}, user ${j.user_id}, ${j.n_prior} earlier bookings`;
- await rec()}catch(e){$('msg').textContent=e.message}}
-async function rec(){try{$('msg').textContent='';
- const j=await api('/api/recommend',{user_id:$('user_id').value,event:$('event').value,
-  truth:$('truth').value,model_seed:$('model_seed').value,fields:fieldVals()});
- const t=j.truth?j.truth.cluster:null;
- let h=`<h3>Top 5 (history ${j.history_len} bookings, model seed ${j.model_seed})</h3>
- <p class=note>destination ${j.known_destination?'is':'is not'} in the user's history, sameDest weight ${j.w_samedest}${j.dest_in_vocab?'':'; destination outside model vocabulary'}</p>
- <table><tr><th>rank<th>cluster<th>final score<th>model p<th>sameDest share</tr>`;
- for(const r of j.top)h+=`<tr class="${r.cluster===t?'hit':''}"><td>${r.rank}<td>${r.cluster}<td>${r.score}<td>${r.model_p}<td>${r.samedest_share}</tr>`;
- h+='</table>';
- if(j.truth)h+=`<p><b>Actual booking: cluster ${t}</b> - ${j.truth.in_top?'in the top 5':'not in the top 5'}, rank ${j.truth.rank} of 100.</p>`;
- h+='<h3>History used (oldest first, last 20)</h3>';
- h+=j.history.length?'<table><tr><th>event<th>cluster<th>destination</tr>'+j.history.map(x=>`<tr><td>${x.event}<td>${x.cluster}<td>${x.dest}</tr>`).join('')+'</table>':'<p>empty (new user)</p>';
- h+='<h3>Baselines (top 5)</h3><table><tr><th>baseline<th>input<th>top 5 clusters<th>actual rank</tr>';
- for(const k in j.baselines){const b=j.baselines[k];
-  h+=`<tr><td>${k}<td>${b.note}<td>${b.top.map(c=>c===t?`<b class=hit>${c}</b>`:c).join(', ')}<td>${b.truth_rank===undefined?'':b.truth_rank}</tr>`}
- h+='</table>';
- $('out').innerHTML=h}catch(e){$('msg').textContent=e.message}}
-init();
-</script>"""
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -389,13 +337,14 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps({"fields": field_meta(r.vocab), "seeds": list(RUNS)})
             self._send(200, body.encode(), "application/json")
         else:
-            self._send(200, PAGE.encode("utf-8"), "text/html; charset=utf-8")
+            self._send(200, PAGE_FILE.read_bytes(), "text/html; charset=utf-8")
 
     def do_POST(self) -> None:  # noqa: N802
         try:
             req = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             with LOCK:
-                out = {"/api/seed": api_seed, "/api/recommend": api_recommend}[self.path](req)
+                out = {"/api/seed": api_seed, "/api/user": api_user,
+                       "/api/recommend": api_recommend}[self.path](req)
         except Exception as e:  # shown in the page
             out = {"error": f"{type(e).__name__}: {e}"}
         self._send(200, json.dumps(out).encode(), "application/json")

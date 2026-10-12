@@ -1,0 +1,24 @@
+Skill:        impeccable (partial copy: SKILL.md + 6 of ~45 reference files)
+Source repo:  https://github.com/pbakaus/impeccable  (path .agent/skills/impeccable/)
+File URLs:    https://raw.githubusercontent.com/pbakaus/impeccable/main/.agent/skills/impeccable/SKILL.md
+              https://raw.githubusercontent.com/pbakaus/impeccable/main/.agent/skills/impeccable/reference/<name>.md
+              https://raw.githubusercontent.com/pbakaus/impeccable/main/LICENSE
+License:      Apache License 2.0 (repo LICENSE; SKILL.md frontmatter "license: Apache 2.0")
+Author:       Paul Bakaus
+Repo stats:   79,313 stars, last push 2026-10-09 (GitHub API, 2026-10-11); skill version 4.5.2
+Fetch date:   2026-10-11
+Files:        SKILL.md, LICENSE, reference/{craft-floor,typeset,layout,quieter,distill,mode-read}.md
+              (copied byte-for-byte, unmodified)
+NOT fetched:  scripts/ (launcher, a self-contained binary downloaded on first run, JS files),
+              the other reference files, .claude/agents/, hooks.
+
+WARNINGS (read before installing):
+- SKILL.md "Setup" tells the agent to run scripts/impeccable, which downloads and runs a binary.
+  The scripts were deliberately not staged, so this copy cannot run that step as is
+  (the skill has a "launcher unavailable" fallback). Do not fetch the scripts without
+  reviewing them.
+- SKILL.md frontmatter has `allowed-tools: Bash(npx impeccable *)` and
+  `Bash(.agent/skills/impeccable/scripts/impeccable *)`; installing the skill would pre-approve
+  those commands while the skill is active. Delete those two lines if installing this copy.
+- reference/layout.md and reference/typeset.md also call `scripts/impeccable detect`.
+- It is built for web/app UI; use it for its bans and craft floor, not its full workflow.
