@@ -563,81 +563,88 @@ input:focus, select:focus {
   background: #ffffff;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 12px;
+  padding: 12px 14px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  transition: transform 0.15s, box-shadow 0.15s;
-  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  cursor: pointer;
 }
 .rec-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: var(--primary);
 }
 .rec-card.hit {
   border: 2px solid var(--hit);
-  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
-  padding-bottom: 26px;
+  background: #f0fdf4;
 }
-.rec-card-rank-watermark {
-  position: absolute;
-  top: 2px;
-  right: 8px;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #e2e8f0;
-  line-height: 1;
-  pointer-events: none;
-}
-.rec-card.hit .rec-card-rank-watermark {
-  color: #bbf7d0;
-}
-.rec-card-cluster-row {
+.rec-card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   margin-bottom: 8px;
 }
-.rec-card-meter {
-  height: 5px;
-  background: #e2e8f0;
-  border-radius: 999px;
-  overflow: hidden;
-  margin: 8px 0;
-}
-.rec-card-meter-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 999px;
-}
-.rec-card.hit .rec-card-meter-fill {
-  background: var(--hit);
-}
-.rec-card-stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
+.rec-rank-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
   color: var(--muted);
-}
-.rec-card-stats b {
-  color: var(--ink);
   font-family: var(--mono);
 }
-.rec-card-breakdown {
-  font-size: 0.70rem;
-  color: var(--muted);
-  margin-top: 4px;
+.rec-card.hit .rec-rank-tag {
+  color: var(--hit);
 }
-.rec-card-hit-badge {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--hit);
-  color: #fff;
-  font-size: 0.68rem;
+.rec-score-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--ink);
+}
+.rec-card.hit .rec-score-val {
+  color: var(--hit-text);
+}
+.rec-card-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rec-cluster-title {
   font-weight: 700;
-  text-align: center;
-  padding: 3px 0;
-  letter-spacing: 0.05em;
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+.rec-hit-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--hit-text);
+  background: var(--hit-bg);
+  border: 1px solid var(--hit-border);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+
+/* Truth Summary Bar */
+.truth-summary-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+}
+.truth-summary-bar.miss {
+  background: #fff7ed;
+  border-color: var(--miss-border);
+  color: var(--miss-text);
+}
+.truth-summary-bar.hit {
+  background: #f0fdf4;
+  border-color: var(--hit-border);
+  color: var(--hit-text);
 }
 
 /* Baselines Comparison View */
@@ -1836,45 +1843,43 @@ function renderArchitectureSvg(data) {
 function renderTop5Detail(data) {
   const top = data.top || [];
   const truth = data.truth ? data.truth.cluster : null;
-  const maxScore = Math.max(...top.map(r => r.score), 0.0001);
 
   let cardsHtml = '';
   top.forEach(item => {
     const isTruth = item.cluster === truth;
-    const barWidth = Math.max(4, (item.score / maxScore) * 100);
-    cardsHtml += `<div class="rec-card ${isTruth ? 'hit' : ''}" onclick="openAll100Modal()">
-      <div class="rec-card-rank-watermark">#${item.rank}</div>
-      <div class="rec-card-cluster-row">
+    cardsHtml += `<div class="rec-card ${isTruth ? 'hit' : ''}" onclick="openAll100Modal()" title="Bấm để xem danh sách 100 cluster">
+      <div class="rec-card-header">
+        <span class="rec-rank-tag">#${item.rank}</span>
+        <span class="rec-score-val">${fmtScore(item.score)}</span>
+      </div>
+      <div class="rec-card-main">
         ${chip(item.cluster, 'lg')}
         <div>
-          <div style="font-weight:700;font-size:0.95rem;">Cluster ${item.cluster}</div>
-          <div style="font-size:0.7rem;color:var(--muted)">Hạng ${item.rank} / 100</div>
+          <div class="rec-cluster-title">Cluster ${item.cluster}</div>
+          ${isTruth ? `<div class="rec-hit-pill">&#10004; Khách đã đặt</div>` : ''}
         </div>
       </div>
-      <div class="rec-card-meter">
-        <div class="rec-card-meter-fill" style="width:${barWidth}%;"></div>
-      </div>
-      <div class="rec-card-stats">
-        <span>Điểm kết hợp:</span>
-        <b>${fmtScore(item.score)}</b>
-      </div>
-      <div class="rec-card-breakdown">
-        SMLP4Rec: <b>${fmtPct(item.model_p)}</b> &middot; sameDest: <b>${fmtPct(item.samedest_share)}</b>
-      </div>
-      ${isTruth ? `<div class="rec-card-hit-badge">&#10004; BOOKING THẬT CỦA KHÁCH</div>` : ''}
     </div>`;
   });
   $('top5CardsGrid').innerHTML = cardsHtml;
 
-  // Truth miss alert
+  // 1 dòng bên dưới ghi cluster trúng & rank thật
   const alertEl = $('truthMissAlert');
-  if (truth !== null && !data.truth.in_top) {
+  if (truth !== null) {
+    const isHit = data.truth.in_top;
     alertEl.style.display = 'block';
-    alertEl.className = 'error-msg';
-    alertEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;background:var(--miss-bg);padding:6px 12px;border-radius:6px;border:1px solid var(--miss-border);color:var(--miss-text);">
-      ${chip(truth)} Cụm thực tế khách đặt là <b>Cluster #${truth}</b>, được mô hình chấm ở <b>Hạng #${data.truth.rank} / 100</b> (nằm ngoài Top 5).
-      <button class="btn btn-outline" style="padding:2px 8px;font-size:0.75rem;margin-left:8px;" onclick="openAll100Modal()">Xem vị trí trong bảng 100</button>
-    </span>`;
+    if (isHit) {
+      alertEl.innerHTML = `<div class="truth-summary-bar hit">
+        ${chip(truth)}
+        <span>Khách thực tế đặt: <b>Cluster #${truth}</b> &middot; Dự đoán trúng ở <b>Hạng #${data.truth.rank} / 100</b> (Top 5)</span>
+      </div>`;
+    } else {
+      alertEl.innerHTML = `<div class="truth-summary-bar miss">
+        ${chip(truth)}
+        <span>Khách thực tế đặt: <b>Cluster #${truth}</b> &middot; Hạng dự đoán: <b>#${data.truth.rank} / 100</b></span>
+        <button class="btn btn-outline" style="padding:2px 8px;font-size:0.75rem;margin-left:auto;background:#fff;" onclick="openAll100Modal()">Xem bảng 100</button>
+      </div>`;
+    }
   } else {
     alertEl.style.display = 'none';
   }
