@@ -149,6 +149,23 @@ class Data:
         return ev
 
 
+def tensor_summary(t: torch.Tensor | np.ndarray, max_samples: int = 16) -> dict:
+    if isinstance(t, torch.Tensor):
+        arr = t.detach().cpu().numpy()
+    else:
+        arr = np.asarray(t)
+    flat = arr.flatten().astype(float)
+    return {
+        "shape": list(arr.shape),
+        "min": round(float(np.min(flat)), 4),
+        "max": round(float(np.max(flat)), 4),
+        "mean": round(float(np.mean(flat)), 4),
+        "std": round(float(np.std(flat)), 4),
+        "l2_norm": round(float(np.linalg.norm(flat)), 4),
+        "sample": [round(float(x), 4) for x in flat[:max_samples]],
+    }
+
+
 class Runner:
     """One trained checkpoint + its sameDest weights."""
 
@@ -180,9 +197,7 @@ class Runner:
     def score_all(self, hist_events: np.ndarray, fields: dict[str, int]) -> dict:
         """Scores of all 100 clusters (raw cluster order) for one history + search.
 
-        Returns `p` (model softmax, query token, no sameDest), `sd_p` (sameDest distribution),
-        `score` (final log-score = model + sameDest), `known` (destination in the history),
-        `ws` (sameDest weight used), `length` (history length used), `codes` (1, F) query codes.
+        Also extracts real runtime intermediate activations for every layer in the Stage 3 architecture.
         """
         d = self.data
         ev = hist_events[-self.s_len:]
@@ -193,9 +208,36 @@ class Runner:
         h_dest[0, :length] = d.codes[ev, 0]
         codes = np.array([[fields[f] for f in QUERY_FIELDS]], np.int32)
         q_idx = torch.from_numpy(encode(codes, self.vocab)).long()
-        s = self.model.scores(torch.from_numpy(seq), q_idx)
+
+        # Step-by-step model introspection
+        item_seq_t = torch.from_numpy(seq)
+        h = self.model.item_embedding(item_seq_t)  # (1, S, H)
+        qv = self.model.query_vector(q_idx)  # (1, H)
+        x_cat = torch.cat([h, qv.unsqueeze(1)], dim=1)  # (1, S+1, H)
+        x_tensor = x_cat.unsqueeze(2).transpose(1, 2).contiguous()  # (1, 1, S+1, H)
+
+        smlp = self.model.layers[0]
+        xn = smlp.norm2(x_tensor)  # LayerNorm
+        x0 = (smlp.c(xn.transpose(1, 3).contiguous())).transpose(3, 1).contiguous()  # Feature mixing
+        x1 = (smlp.h(xn.transpose(2, 3).contiguous())).transpose(3, 2).contiguous()  # Sequence mixing
+        x2 = smlp.w(xn)  # Channel mixing
+        y1 = x0 + x1 + x2
+
+        # 2nd layer pass
+        xn2 = smlp.norm2(y1)
+        x0_2 = (smlp.c(xn2.transpose(1, 3).contiguous())).transpose(3, 1).contiguous()
+        x1_2 = (smlp.h(xn2.transpose(2, 3).contiguous())).transpose(3, 2).contiguous()
+        x2_2 = smlp.w(xn2)
+        y2 = x0_2 + x1_2 + x2_2
+
+        out_query = y2.transpose(1, 0).contiguous()[0][:, -1]  # query position hidden vector (1, H)
+        out_norm = self.model.LayerNorm(out_query)
+        logits = out_norm @ self.model.item_embedding.weight.T
+        s = logits.clone()
         s[:, 0] = float("-inf")
         p = torch.softmax(s, dim=1).numpy()[:, d.cluster_ids]  # (1, 100) in raw cluster order
+
+        # sameDest
         q_dest = np.array([fields["dest"]], np.int64)
         sd = same_dest_scores(seq, np.array([length]), h_dest, q_dest, self.n_items,
                               base=RECENCY, normalize=True)[:, d.cluster_ids]
@@ -203,8 +245,81 @@ class Runner:
         ws = self.ws[1 if known else 0]
         sd_p = same_dest_distribution(sd)
         score = smoothed_log(p, self.alpha) + ws * smoothed_log(sd_p, self.alpha)
+
+        activations = {
+            "embedding": {
+                "name": "Lớp Embedding",
+                "role": "Ánh xạ chuỗi lịch sử (item_id) và 14 trường tìm kiếm thành các vector không gian ẩn H=64.",
+                "formula": "h = ItemEmb(seq) || QueryVector(q_idx)",
+                "history_emb": tensor_summary(h),
+                "query_vec": tensor_summary(qv),
+                "combined": tensor_summary(x_cat),
+            },
+            "tensor3d": {
+                "name": "Tensor 3D/4D Đầu vào",
+                "role": "Cấu trúc tensor đa chiều [Batch=1, Channel=1, Sequence=21, Hidden=64] đưa vào Mixer block.",
+                "formula": "X \\in \\mathbb{R}^{B \\times 1 \\times (S+1) \\times H}",
+                "tensor": tensor_summary(x_tensor),
+            },
+            "layernorm": {
+                "name": "Chuẩn hóa Layer Norm",
+                "role": "Chuẩn hóa phân phối kích hoạt trên chiều đặc trưng ẩn trước khi trộn (Mean ≈ 0, Std ≈ 1).",
+                "formula": "X_{norm} = \\mathrm{LayerNorm}(X)",
+                "tensor": tensor_summary(xn),
+            },
+            "seq_mix": {
+                "name": "Sequence Mixing (Trộn chuỗi)",
+                "role": "MLP biến đổi dọc theo chiều chuỗi thời gian (21 vị trí) để học mối tương quan giữa các booking và query.",
+                "formula": "X_{seq} = \\mathrm{MLP}_{seq}(X_{norm})",
+                "tensor": tensor_summary(x1),
+            },
+            "feat_mix": {
+                "name": "Feature Mixing (Trộn đặc trưng)",
+                "role": "MLP biến đổi dọc theo chiều kênh/đặc trưng (channel dimension).",
+                "formula": "X_{feat} = \\mathrm{MLP}_{feat}(X_{norm})",
+                "tensor": tensor_summary(x0),
+            },
+            "chan_mix": {
+                "name": "Channel Mixing (Trộn chiều ẩn)",
+                "role": "MLP biến đổi giữa các đơn vị biểu diễn ẩn (hidden units H=64) để học đặc trưng trừu tượng cao cấp.",
+                "formula": "X_{chan} = \\mathrm{MLP}_{chan}(X_{norm})",
+                "tensor": tensor_summary(x2),
+            },
+            "merge": {
+                "name": "Hợp nhất & Lặp 2 tầng",
+                "role": "Cộng tổng kết quả từ 3 nhánh trộn (x0 + x1 + x2), chuyển tiếp qua khối Mixer thứ 2.",
+                "formula": "Y = X_{seq} + X_{feat} + X_{chan} \\quad (\\times 2 \\text{ layers})",
+                "layer1": tensor_summary(y1),
+                "layer2": tensor_summary(y2),
+            },
+            "output": {
+                "name": "Lớp đầu ra (Query Position)",
+                "role": "Trích xuất biểu diễn ẩn tại vị trí cuối cùng (Query Token), chuẩn hóa LayerNorm và nhân ma trận với Embedding Table để ra Logits 100 cụm.",
+                "formula": "\\mathrm{logits} = \\mathrm{LayerNorm}(Y_{query}) \\cdot W_{emb}^T",
+                "query_hidden": tensor_summary(out_norm),
+                "logits": tensor_summary(s[0, d.cluster_ids]),
+                "model_softmax_p": tensor_summary(p[0]),
+            },
+            "samedest": {
+                "name": "Thành phần sameDest",
+                "role": "Phân phối xác suất tiền nghiệm dựa trên các cụm đã từng đặt trước đó tại cùng điểm đến đang tìm kiếm.",
+                "formula": "p_{\\mathrm{sameDest}} \\propto \\sum_{t: \\mathrm{dest}_t = \\mathrm{dest}_q} \\gamma^{L-t}",
+                "active": known,
+                "weight_w": ws,
+                "distribution": tensor_summary(sd_p[0]),
+            },
+            "fusion": {
+                "name": "Khối Dung hợp (Score Fusion)",
+                "role": "Kết hợp log-score làm mịn giữa SMLP4Rec và sameDest theo trọng số w, sinh ra phân phối xác suất cuối cùng.",
+                "formula": "\\mathrm{Score} = \\log(p_{\\mathrm{model}} + \\alpha) + w \\cdot \\log(p_{\\mathrm{sameDest}} + \\alpha)",
+                "alpha": self.alpha,
+                "weight_w": ws,
+                "final_scores": tensor_summary(score[0]),
+            },
+        }
+
         return {"p": p, "sd_p": sd_p, "score": score, "known": known, "ws": ws,
-                "length": length, "codes": codes}
+                "length": length, "codes": codes, "activations": activations}
 
     def recommend(self, hist_events: np.ndarray, fields: dict[str, int], truth: int | None) -> dict:
         r = self.score_all(hist_events, fields)
@@ -220,7 +335,8 @@ class Runner:
                         "model_p": round(float(p[0, c]), 4), "samedest_share": round(float(sd_p[0, c]), 4)}
                        for i, c in enumerate(order)]
         out = {"top": top, "all_ranking": all_ranking, "known_destination": known, "w_samedest": ws, "alpha": self.alpha,
-               "history_len": int(length), "dest_in_vocab": bool(encode(codes, self.vocab)[0, 0] > 0)}
+               "history_len": int(length), "dest_in_vocab": bool(encode(codes, self.vocab)[0, 0] > 0),
+               "activations": r["activations"]}
         if truth is not None:
             out["truth"] = {"cluster": truth, "rank": int(np.flatnonzero(order == truth)[0]) + 1,
                             "in_top": any(t["cluster"] == truth for t in top)}

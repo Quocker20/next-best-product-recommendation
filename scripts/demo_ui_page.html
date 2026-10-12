@@ -33,8 +33,8 @@
   --miss-border: #fed7aa;
   --miss-text: #9a3412;
   
-  --radius: 12px;
-  --radius-sm: 8px;
+  --radius: 0px;
+  --radius-sm: 0px;
   --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
   --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
@@ -132,7 +132,6 @@ header .wrap {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
 }
 .card-header {
   padding: 14px 18px;
@@ -157,20 +156,9 @@ header .wrap {
 
 /* Sidebar: Input Control Panel */
 aside.sidebar {
-  position: sticky;
-  top: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  padding-right: 2px;
-}
-@media (max-width: 1100px) {
-  aside.sidebar {
-    position: static;
-    max-height: none;
-  }
 }
 
 /* Forms & Controls */
@@ -854,16 +842,102 @@ input:focus, select:focus {
   display: flex;
 }
 
-/* Footer note */
-footer.app-footer {
-  max-width: 1500px;
-  margin: 20px auto 40px;
-  padding: 0 20px;
+/* Inspector Modal Styles */
+.inspect-role-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 0.86rem;
+}
+.inspect-formula {
+  background: #1e293b;
+  color: #38bdf8;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  margin: 6px 0 0;
+  display: inline-block;
+  font-weight: 600;
+}
+.inspect-tensor-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.inspect-tensor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+.inspect-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.inspect-stat-box {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 6px 10px;
+  text-align: center;
+}
+.inspect-stat-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
   color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.inspect-stat-val {
+  font-size: 0.95rem;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.inspect-bars-container {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 3px;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+  overflow-x: auto;
+}
+.inspect-bar-col {
+  flex: 1;
+  min-width: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.inspect-sample-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--mono);
   font-size: 0.78rem;
-  line-height: 1.6;
-  border-top: 1px solid var(--line);
-  padding-top: 14px;
+}
+.inspect-sample-chip {
+  background: #f1f5f9;
+  border: 1px solid var(--line2);
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: #334155;
 }
 </style>
 </head>
@@ -880,12 +954,6 @@ footer.app-footer {
         <h1>Next-Best Product Recommendation</h1>
         <p>Gợi ý cụm khách sạn tiếp theo cho đặt phòng nghỉ dưỡng &middot; SMLP4Rec + Query Token + sameDest</p>
       </div>
-    </div>
-    <div class="header-badges">
-      <span class="h-badge">Dữ liệu Expedia công khai</span>
-      <span class="h-badge">100 Hotel Clusters</span>
-      <span class="h-badge">Time-Split 80/10/10</span>
-      <span class="h-badge">Đánh giá Offline</span>
     </div>
   </div>
 </header>
@@ -923,19 +991,6 @@ footer.app-footer {
           <button data-mode="warm" title="Booking của khách đã có lịch sử trước đó (L >= 1)">Có lịch sử</button>
           <button data-mode="cold" title="Lượt đặt đầu tiên của khách (L = 0)">Khách mới</button>
         </div>
-
-        <div style="margin-top: 10px;">
-          <label class="field-label" for="inputSeed">Seed ngẫu nhiên (để trống = time real-time)</label>
-          <div style="display:flex;gap:6px;">
-            <input type="text" id="inputSeed" inputmode="numeric" placeholder="tự động lấy theo time()">
-            <button class="btn btn-outline" id="btnApplySeed" style="flex:0 0 auto;">Áp dụng</button>
-          </div>
-        </div>
-
-        <label class="custom-checkbox">
-          <input type="checkbox" id="chkAutoCycle"> Tự đổi booking mỗi 6 giây
-        </label>
-        <div class="hint-text" id="sampleStatusInfo">Đang nạp dữ liệu...</div>
       </div>
     </div>
 
@@ -961,12 +1016,6 @@ footer.app-footer {
           <label class="field-label" for="selectTestBooking">Chọn booking trong tập test của user</label>
           <select id="selectTestBooking"></select>
         </div>
-
-        <label class="custom-checkbox">
-          <input type="checkbox" id="chkIgnoreHistory"> Mô phỏng Cold-start (bỏ qua lịch sử)
-        </label>
-
-        <div class="hint-text" id="userStatusInfo">User trống: xem như khách mới, chuỗi lịch sử tương tác để trống.</div>
       </div>
     </div>
 
@@ -1051,11 +1100,6 @@ footer.app-footer {
           <span class="rank-track-val" id="valKnn">#18</span>
         </div>
       </div>
-
-      <div style="font-size:0.75rem;color:var(--muted);text-align:right;">
-        <span style="display:inline-block;width:10px;height:10px;background:#86efac;border-radius:2px;vertical-align:middle;margin-right:3px;"></span>
-        Vùng xanh = Top 5 / 100 cluster
-      </div>
     </div>
 
     <!-- KHỐI 1: MÔ HÌNH CHÍNH (MAIN MODEL VIEW) -->
@@ -1068,14 +1112,8 @@ footer.app-footer {
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
-            Khối 1 &middot; Mô hình chính: SMLP4Rec + Query Token + sameDest (Kiến trúc Stage 3)
+            SMLP4Rec + Query Token + sameDest (Kiến trúc Stage 3)
           </h2>
-          <p>Các khối tương tác được tách rời &middot; Bấm vào khối để mở modal xem chi tiết chuỗi L booking, 14 feature fields, hoặc toàn bộ 100 cluster</p>
-        </div>
-        <div class="arch-legend-strip">
-          <span class="arch-legend-item"><span class="arch-legend-dot" style="background:#f2f2f1;border:1px solid #5c6166;"></span> Lịch sử booking</span>
-          <span class="arch-legend-item"><span class="arch-legend-dot" style="background:#3b6ea5;"></span> Query token</span>
-          <span class="arch-legend-item"><span class="arch-legend-dot" style="background:#ffffff;border:1px solid #3b6ea5;"></span> sameDest &amp; Output</span>
         </div>
       </div>
 
@@ -1088,10 +1126,7 @@ footer.app-footer {
       <!-- Khối Output / Công thức & Ranking (Top 5 chi tiết) -->
       <div class="top5-detail-section" id="outputRankingBlock">
         <div class="top5-detail-header">
-          <h3>
-            Dự đoán Top 5 cụm từ mô hình chính:
-            <span style="font-weight:400;color:var(--muted);font-size:0.8rem;margin-left:6px;" id="fusionMetaSpan"></span>
-          </h3>
+          <h3>Top 5 Gợi ý</h3>
           <button class="btn btn-outline" id="btnOpen100Modal" style="padding:4px 10px;font-size:0.78rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
@@ -1105,7 +1140,7 @@ footer.app-footer {
       </div>
     </div>
 
-    <!-- KHỐI 2: KẾT QUẢ ĐỐI CHIẾU VỚI 2 MÔ HÌNH BASELINE (BASELINE COMPARISON VIEW) -->
+    <!-- KHỐI 2: KẾT QUẢ ĐỐI CHIẾU VỚI 2 MÔ HÌNH BASELINE -->
     <div class="card" id="baselineComparisonView">
       <div class="card-header">
         <h3>
@@ -1114,9 +1149,8 @@ footer.app-footer {
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
           </svg>
-          Khối 2 &middot; Kết quả đối chiếu với 2 mô hình Baseline (ItemKNN &amp; Logistic Regression)
+          Đối chiếu Baseline (ItemKNN &amp; Logistic Regression)
         </h3>
-        <span style="font-size:0.75rem;color:var(--muted);">Cùng tập test &middot; Cùng 100 hotel_cluster</span>
       </div>
       <div class="card-body">
         <div class="baselines-grid">
@@ -1125,10 +1159,9 @@ footer.app-footer {
           <div class="baseline-card" id="cardItemKnn">
             <div class="baseline-card-header">
               <h3>
-                ItemKNN (Baseline 1)
+                ItemKNN
                 <span class="cluster-chip sm" style="background:#ede9fe;color:#6b21a8;">History-only</span>
               </h3>
-              <div class="baseline-desc" id="knnNote">Chỉ dùng lịch sử tương tác (chuỗi booking)</div>
             </div>
             <table class="baseline-table">
               <thead>
@@ -1147,10 +1180,9 @@ footer.app-footer {
           <div class="baseline-card" id="cardLogistic">
             <div class="baseline-card-header">
               <h3>
-                Hồi quy Logistic (Baseline 2)
+                Hồi quy Logistic
                 <span class="cluster-chip sm" style="background:#fef3c7;color:#92400e;">Context-only</span>
               </h3>
-              <div class="baseline-desc">Dựa trên điểm đến + 13 trường ngữ cảnh tìm kiếm (one-hot), không dùng lịch sử</div>
             </div>
             <table class="baseline-table">
               <thead>
@@ -1171,12 +1203,6 @@ footer.app-footer {
 
   </section>
 </main>
-
-<footer class="app-footer">
-  Mô phỏng offline trên tập dữ liệu Expedia Hotel Recommendations (2,952,675 lượt đặt sau làm sạch, 100 hotel_cluster). 
-  Phân chia theo mốc thời gian 80/10/10 (Train: 2013-01-07 đến 2014-10-08, Valid: 2014-10-08 đến 2014-11-19, Test: 2014-11-19 đến 2014-12-31). 
-  hotel_cluster đóng vai trò đại diện ẩn danh cho hạng phòng hoặc gói dịch vụ nghỉ dưỡng.
-</footer>
 
 <!-- MODAL 1: CHI TIẾT TOÀN BỘ CHUỖI LƯỢT TƯƠNG TÁC (HISTORY MODAL) -->
 <div class="modal-backdrop" id="modalHistory">
@@ -1285,6 +1311,25 @@ footer.app-footer {
         <tbody id="modalAll100Tbody"></tbody>
       </table>
     </div>
+  </div>
+</div>
+
+<!-- MODAL 4: SOI CHIẾU NỘI QUAN TẦNG MẠNG (MODEL LAYER INSPECTOR) -->
+<div class="modal-backdrop" id="modalInspector">
+  <div class="modal-box" style="max-width:860px;">
+    <div class="modal-header">
+      <h3 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 16v-4"></path>
+          <path d="M12 8h.01"></path>
+        </svg>
+        <span id="inspectModalTitle">Soi chiếu tầng mạng</span>
+        <span class="cluster-chip sm" id="inspectModalBadge" style="background:var(--primary-light);color:var(--primary-dark);font-family:var(--mono);"></span>
+      </h3>
+      <button class="modal-close-btn" data-close="modalInspector">&times;</button>
+    </div>
+    <div class="modal-body" id="inspectModalBody"></div>
   </div>
 </div>
 
@@ -1424,7 +1469,7 @@ async function runRecommend() {
   const requestId = ++STATE.isBusy;
   $('mainContainer').classList.add('is-loading');
   try {
-    const uid = $('chkIgnoreHistory').checked ? '' : $('inputUserId').value.trim();
+    const uid = $('inputUserId').value.trim();
     const payload = {
       user_id: uid,
       event: uid ? STATE.event : '',
@@ -1456,7 +1501,6 @@ async function loadUserData() {
     STATE.event = '';
     STATE.truth = '';
     $('userTestBookingWrap').style.display = 'none';
-    $('userStatusInfo').textContent = 'Khách mới / Cold-start: Lịch sử tương tác để trống.';
     await runRecommend();
     return;
   }
@@ -1466,7 +1510,6 @@ async function loadUserData() {
       STATE.event = '';
       STATE.truth = '';
       $('userTestBookingWrap').style.display = 'none';
-      $('userStatusInfo').textContent = `User ${res.user_id}: ${res.n_total} booking, không có booking trong tập test. Dùng toàn bộ lịch sử.`;
       await runRecommend();
       return;
     }
@@ -1476,7 +1519,6 @@ async function loadUserData() {
     ).join('');
     select.onchange = () => applyTestBooking(res.tests[select.value], res.user_id);
     $('userTestBookingWrap').style.display = 'block';
-    $('userStatusInfo').textContent = `User ${res.user_id}: ${res.n_total} booking, ${res.n_test} booking trong tập test.`;
     await applyTestBooking(res.tests[0], res.user_id);
   } catch (err) {
     $('globalErrorMsg').textContent = err.message;
@@ -1491,26 +1533,12 @@ async function applyTestBooking(testItem, userId) {
   await runRecommend();
 }
 
-async function pickRandomSample(isNewClockSeed) {
+async function pickRandomSample() {
   $('globalErrorMsg').textContent = '';
   try {
     const payload = { mode: STATE.mode };
-    const manualSeed = $('inputSeed').value.trim();
-    if (manualSeed && !isNewClockSeed) {
-      payload.seed = parseInt(manualSeed, 10);
-    }
-    if (isNewClockSeed) {
-      $('inputSeed').value = '';
-    }
     const res = await api('/api/seed', payload);
-    $('inputSeed').value = res.seed;
     $('userTestBookingWrap').style.display = 'none';
-    
-    const timeStr = new Date().toLocaleTimeString('vi-VN');
-    const seedTypeLabel = res.seed_type === 'time' ? `từ time() đồng hồ (${timeStr})` : 'nhập tay';
-    $('sampleStatusInfo').textContent = `Seed: ${res.seed} (${seedTypeLabel}) · Event #${res.event}, ${res.n_prior} booking trước`;
-    $('userStatusInfo').textContent = `User ${res.user_id} (bốc từ tập test).`;
-    $('chkIgnoreHistory').checked = false;
     
     await applyTestBooking({
       event: res.event,
@@ -1522,13 +1550,6 @@ async function pickRandomSample(isNewClockSeed) {
   }
 }
 
-function handleAutoCycleToggle() {
-  clearInterval(STATE.autoTimer);
-  STATE.autoTimer = null;
-  if ($('chkAutoCycle').checked) {
-    STATE.autoTimer = setInterval(() => pickRandomSample(true), 6000);
-  }
-}
 
 // --- RENDER FUNCTIONS ---
 function renderAll(data) {
@@ -1611,7 +1632,7 @@ function renderArchitectureSvg(data) {
   </defs>`;
 
   // Header text left
-  svgContent += `<text x="30" y="24" font-size="16" fill="#5c6166" font-weight="600">lượt đặt trước (tối đa 20): L = ${history.length}</text>`;
+  svgContent += `<text x="30" y="24" font-size="16" fill="#5c6166" font-weight="600">Lịch sử (tối đa 20): L = ${history.length}</text>`;
 
   // HISTORY BLOCK
   if (history.length === 0) {
@@ -1621,7 +1642,6 @@ function renderArchitectureSvg(data) {
       <text x="105" y="110" font-size="16" fill="#334155" text-anchor="middle" font-weight="700">Khách mới</text>
       <text x="105" y="134" font-size="14" fill="#64748b" text-anchor="middle">(Cold-start)</text>
       <text x="105" y="160" font-size="13" fill="#64748b" text-anchor="middle">Lịch sử trống: L = 0</text>
-      <text x="105" y="195" font-size="12" fill="#3b6ea5" text-anchor="middle" font-style="italic">Chỉ dựa vào query</text>
     </g>`;
   } else if (history.length <= 3) {
     // Show all <= 3 items
@@ -1682,13 +1702,14 @@ function renderArchitectureSvg(data) {
     <text x="105" y="308" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="700">query token</text>
     <line x1="180" y1="302" x2="203" y2="302" stroke="#3b6ea5" stroke-width="2" marker-end="url(#arr-stage3-blue)"/>
     <text x="30" y="350" font-size="15" fill="#2f5a88" font-weight="600">tổng 14 embedding trường</text>
-    <text x="30" y="368" font-size="12" fill="#3b6ea5" font-style="italic">&#128065; Bấm để xem chi tiết</text>
   </g>`;
 
   // EMBEDDING LAYER COLUMN
-  svgContent += `<rect x="205" y="44" width="34" height="284" rx="2" fill="#ececeb" stroke="#5c6166" stroke-width="1.2"/>
-  <g transform="rotate(-90 222 186)">
-    <text x="222" y="186" font-size="18" fill="#20242a" text-anchor="middle" font-weight="600">Lớp embedding</text>
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('embedding')" title="Bấm để xem kích hoạt lớp Embedding">
+    <rect x="205" y="44" width="34" height="284" rx="2" fill="#ececeb" stroke="#5c6166" stroke-width="1.2"/>
+    <g transform="rotate(-90 222 186)">
+      <text x="222" y="186" font-size="18" fill="#20242a" text-anchor="middle" font-weight="600">Lớp embedding</text>
+    </g>
   </g>`;
 
   // MAIN PROCESSING LAYER (× 2, dùng chung một khối)
@@ -1696,7 +1717,7 @@ function renderArchitectureSvg(data) {
   <text x="532" y="52" font-size="19" fill="#20242a" text-anchor="middle" font-weight="700">Lớp xử lý chính (× 2, dùng chung một khối)</text>`;
 
   // 3D Isometric Tensor sequence x channel x feature
-  svgContent += `<g>
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('tensor3d')" title="Bấm để soi chiếu Tensor 3D/4D">
     <polygon points="292,150 316,126 396,126 372,150" fill="#f2f2f1" stroke="#5c6166" stroke-width="1.2"/>
     <polygon points="372,150 396,126 396,206 372,230" fill="#e4e4e2" stroke="#5c6166" stroke-width="1.2"/>
     <rect x="292" y="150" width="80" height="80" fill="#f2f2f1" stroke="#5c6166" stroke-width="1.2"/>
@@ -1715,9 +1736,11 @@ function renderArchitectureSvg(data) {
   svgContent += `<line x1="400" y1="190" x2="426" y2="190" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>`;
 
   // Layer Norm Bar
-  svgContent += `<rect x="428" y="110" width="30" height="160" rx="2" fill="#ececeb" stroke="#5c6166" stroke-width="1.2"/>
-  <g transform="rotate(-90 445 190)">
-    <text x="445" y="190" font-size="17" fill="#20242a" text-anchor="middle" font-weight="600">Layer Norm</text>
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('layernorm')" title="Bấm để xem chuẩn hóa Layer Norm">
+    <rect x="428" y="110" width="30" height="160" rx="2" fill="#ececeb" stroke="#5c6166" stroke-width="1.2"/>
+    <g transform="rotate(-90 445 190)">
+      <text x="445" y="190" font-size="17" fill="#20242a" text-anchor="middle" font-weight="600">Layer Norm</text>
+    </g>
   </g>`;
 
   // 3 Mixing branches
@@ -1728,19 +1751,25 @@ function renderArchitectureSvg(data) {
   <line x1="484" y1="281" x2="502" y2="281" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>`;
 
   // Sequence Mixing
-  svgContent += `<rect x="504" y="80" width="230" height="58" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
-  <text x="619" y="106" font-size="18" fill="#20242a" text-anchor="middle" font-weight="700">Sequence mixing</text>
-  <text x="619" y="127" font-size="15" fill="#5c6166" text-anchor="middle">giữa các vị trí chuỗi</text>`;
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('seq_mix')" title="Bấm để xem Sequence Mixing">
+    <rect x="504" y="80" width="230" height="58" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
+    <text x="619" y="106" font-size="18" fill="#20242a" text-anchor="middle" font-weight="700">Sequence mixing</text>
+    <text x="619" y="127" font-size="15" fill="#5c6166" text-anchor="middle">giữa các vị trí chuỗi</text>
+  </g>`;
 
   // Feature Mixing
-  svgContent += `<rect x="504" y="161" width="230" height="58" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
-  <text x="619" y="187" font-size="18" fill="#20242a" text-anchor="middle" font-weight="700">Feature mixing</text>
-  <text x="619" y="208" font-size="15" fill="#5c6166" text-anchor="middle">chỉ 1 đặc trưng (cluster ID)</text>`;
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('feat_mix')" title="Bấm để xem Feature Mixing">
+    <rect x="504" y="161" width="230" height="58" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
+    <text x="619" y="187" font-size="18" fill="#20242a" text-anchor="middle" font-weight="700">Feature mixing</text>
+    <text x="619" y="208" font-size="15" fill="#5c6166" text-anchor="middle">chỉ 1 đặc trưng (cluster ID)</text>
+  </g>`;
 
   // Channel Mixing
-  svgContent += `<rect x="504" y="252" width="230" height="58" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
-  <text x="619" y="278" font-size="18" fill="#20242a" text-anchor="middle" font-weight="700">Channel mixing</text>
-  <text x="619" y="299" font-size="15" fill="#5c6166" text-anchor="middle">giữa các đơn vị ẩn</text>`;
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('chan_mix')" title="Bấm để xem Channel Mixing">
+    <rect x="504" y="252" width="230" height="58" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
+    <text x="619" y="278" font-size="18" fill="#20242a" text-anchor="middle" font-weight="700">Channel mixing</text>
+    <text x="619" y="299" font-size="15" fill="#5c6166" text-anchor="middle">giữa các đơn vị ẩn</text>
+  </g>`;
 
   // Confluence lines to circle addition (+)
   svgContent += `<line x1="734" y1="109" x2="762" y2="109" stroke="#5c6166" stroke-width="1.4"/>
@@ -1748,41 +1777,41 @@ function renderArchitectureSvg(data) {
   <line x1="734" y1="281" x2="762" y2="281" stroke="#5c6166" stroke-width="1.4"/>
   <line x1="762" y1="281" x2="762" y2="206" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>
   <line x1="734" y1="190" x2="746" y2="190" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>
-  <circle cx="762" cy="190" r="14" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
-  <line x1="750" y1="190" x2="774" y2="190" stroke="#20242a" stroke-width="1.4"/>
-  <line x1="762" y1="178" x2="762" y2="202" stroke="#20242a" stroke-width="1.4"/>`;
-
-  // Flow tags at bottom
-  svgContent += `<line x1="478" y1="340" x2="478" y2="410" stroke="#5c6166" stroke-width="1.2" stroke-dasharray="5 5"/>
-  <line x1="722" y1="340" x2="722" y2="410" stroke="#5c6166" stroke-width="1.2" stroke-dasharray="5 5"/>
-  <text x="370" y="392" font-size="15" fill="#5c6166" text-anchor="middle">Chuẩn hoá</text>
-  <text x="609" y="392" font-size="15" fill="#5c6166" text-anchor="middle">Trích xuất thông tin</text>
-  <text x="756" y="392" font-size="15" fill="#5c6166" text-anchor="middle">Hợp nhất</text>`;
+  <g class="svg-interactive" onclick="inspectLayer('merge')" title="Bấm để xem kết quả hợp nhất & 2 tầng Mixer">
+    <circle cx="762" cy="190" r="14" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
+    <line x1="750" y1="190" x2="774" y2="190" stroke="#20242a" stroke-width="1.4"/>
+    <line x1="762" y1="178" x2="762" y2="202" stroke="#20242a" stroke-width="1.4"/>
+  </g>`;
 
   // Line to Output Layer
   svgContent += `<line x1="776" y1="190" x2="820" y2="190" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>`;
 
   // OUTPUT LAYER
-  svgContent += `<rect x="822" y="70" width="34" height="240" rx="2" fill="#ececeb" stroke="#5c6166" stroke-width="1.2"/>
-  <g transform="rotate(-90 839 190)">
-    <text x="839" y="190" font-size="18" fill="#20242a" text-anchor="middle" font-weight="600">Lớp đầu ra</text>
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('output')" title="Bấm để xem Lớp đầu ra & Logits">
+    <rect x="822" y="70" width="34" height="240" rx="2" fill="#ececeb" stroke="#5c6166" stroke-width="1.2"/>
+    <g transform="rotate(-90 839 190)">
+      <text x="839" y="190" font-size="18" fill="#20242a" text-anchor="middle" font-weight="600">Lớp đầu ra</text>
+    </g>
   </g>`;
 
   // Arrow & read query position
-  svgContent += `<line x1="858" y1="190" x2="890" y2="190" stroke="#3b6ea5" stroke-width="1.8" marker-end="url(#arr-stage3-blue)"/>
-  <text x="892" y="150" font-size="15" fill="#2f5a88" font-weight="600">đọc tại: vị trí query</text>
-  <rect x="892" y="164" width="150" height="52" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
-  <text x="967" y="187" font-size="16" fill="#20242a" text-anchor="middle">điểm cho</text>
-  <text x="967" y="207" font-size="16" fill="#20242a" text-anchor="middle" font-weight="700">100 cluster</text>
-  <line x1="967" y1="218" x2="967" y2="238" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>`;
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('output')" title="Bấm để xem Lớp đầu ra & Logits">
+    <line x1="858" y1="190" x2="890" y2="190" stroke="#3b6ea5" stroke-width="1.8" marker-end="url(#arr-stage3-blue)"/>
+    <text x="892" y="150" font-size="15" fill="#2f5a88" font-weight="600">đọc tại: vị trí query</text>
+    <rect x="892" y="164" width="150" height="52" rx="4" fill="#ffffff" stroke="#20242a" stroke-width="1.4"/>
+    <text x="967" y="187" font-size="16" fill="#20242a" text-anchor="middle">điểm cho</text>
+    <text x="967" y="207" font-size="16" fill="#20242a" text-anchor="middle" font-weight="700">100 cluster</text>
+    <line x1="967" y1="218" x2="967" y2="238" stroke="#5c6166" stroke-width="1.4" marker-end="url(#arr-stage3)"/>
+  </g>`;
 
   // SAMEDEST BLOCK
   const sameDestColor = knownDest ? '#15803d' : '#3b6ea5';
-  svgContent += `<rect x="852" y="324" width="300" height="100" rx="6" fill="#ffffff" stroke="${sameDestColor}" stroke-width="${knownDest ? 2.2 : 2}"/>
-  <text x="866" y="348" font-size="18" fill="${knownDest ? '#166534' : '#2f5a88'}" font-weight="700">sameDest ${knownDest ? '★ (Đã kích hoạt)' : ''}</text>
-  <text x="866" y="369" font-size="15" fill="#20242a">cluster đã đặt trước tại điểm</text>
-  <text x="866" y="387" font-size="15" fill="#20242a">đến đang tìm (${currentDest}); gần hơn nặng hơn</text>
-  <text x="866" y="409" font-size="15" fill="${knownDest ? '#15803d' : '#5c6166'}" font-weight="600">w = ${ws} (${knownDest ? 'đã đặt, dùng trọng số ' + ws : 'chưa từng đặt, w = 0'})</text>`;
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('samedest')" title="Bấm để xem phân phối xác suất sameDest">
+    <rect x="852" y="324" width="300" height="100" rx="6" fill="#ffffff" stroke="${sameDestColor}" stroke-width="${knownDest ? 2.2 : 2}"/>
+    <text x="866" y="356" font-size="18" fill="${knownDest ? '#166534' : '#2f5a88'}" font-weight="700">sameDest ${knownDest ? '★' : ''}</text>
+    <text x="866" y="380" font-size="15" fill="#20242a">Điểm đến #${currentDest}</text>
+    <text x="866" y="404" font-size="14" fill="${knownDest ? '#15803d' : '#64748b'}" font-weight="600">Trọng số w = ${ws} ${knownDest ? '(Kích hoạt)' : '(w = 0)'}</text>
+  </g>`;
 
   // Dashed blue connecting line from History to sameDest
   svgContent += `<path d="M 12 70 V 434 H 1002 V 426" fill="none" stroke="#3b6ea5" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#arr-stage3-blue)"/>
@@ -1794,10 +1823,10 @@ function renderArchitectureSvg(data) {
   svgContent += `<line x1="1016" y1="322" x2="1016" y2="296" stroke="#3b6ea5" stroke-width="1.8" marker-end="url(#arr-stage3-blue)"/>`;
 
   // FUSION & OUTPUT RANKING BLOCK (Far Right)
-  svgContent += `<g class="svg-interactive" onclick="openAll100Modal()" title="Bấm để xem đầy đủ xếp hạng 100 cluster">
+  svgContent += `<g class="svg-interactive" onclick="inspectLayer('fusion')" title="Bấm để xem công thức và trọng số dung hợp điểm">
     <rect x="880" y="240" width="272" height="54" rx="6" fill="#ffffff" stroke="#3b6ea5" stroke-width="2"/>
     <text x="1016" y="262" font-size="16" fill="#20242a" text-anchor="middle" font-weight="600" font-style="italic">log p(model) + w &middot; log p(sameDest)</text>
-    <text x="1016" y="283" font-size="14" fill="#3b6ea5" text-anchor="middle" font-weight="600">rồi lấy top 5 &middot; &#128065; Bấm xem 100 cluster</text>
+    <text x="1016" y="283" font-size="14" fill="#3b6ea5" text-anchor="middle" font-weight="600">Hợp nhất &rarr; Top 5</text>
   </g>`;
 
   svg.innerHTML = svgContent;
@@ -1808,8 +1837,6 @@ function renderTop5Detail(data) {
   const top = data.top || [];
   const truth = data.truth ? data.truth.cluster : null;
   const maxScore = Math.max(...top.map(r => r.score), 0.0001);
-
-  $('fusionMetaSpan').textContent = `L = ${data.history_len} booking &middot; Điểm đến ${data.known_destination ? 'đã có trong lịch sử (Kích hoạt)' : 'chưa có trong lịch sử'} &middot; Trọng số w = ${data.w_samedest}`;
 
   let cardsHtml = '';
   top.forEach(item => {
@@ -1880,7 +1907,7 @@ function renderBaselines(data) {
 
   $('knnTop5Tbody').innerHTML = renderTableRows(knn);
   $('knnFooter').innerHTML = renderFooter(knn);
-  $('knnNote').textContent = knn.note || 'Chỉ dùng lịch sử tương tác';
+  if ($('knnNote')) $('knnNote').textContent = knn.note || '';
 
   $('lrTop5Tbody').innerHTML = renderTableRows(lr);
   $('lrFooter').innerHTML = renderFooter(lr);
@@ -1992,6 +2019,114 @@ function filterAndRender100Ranking() {
   }).join('');
 }
 
+// --- MODEL INTROSPECTION INSPECTOR ---
+function renderTensorCard(title, t) {
+  if (!t || !t.shape) return '';
+  const shapeStr = `[${t.shape.join(', ')}]`;
+  const samples = t.sample || [];
+  const maxAbs = Math.max(...samples.map(Math.abs), 0.0001);
+
+  const barsHtml = samples.map(val => {
+    const isPos = val >= 0;
+    const heightPct = Math.min(100, Math.max(8, (Math.abs(val) / maxAbs) * 100));
+    return `<div class="inspect-bar-col" title="Giá trị: ${val}">
+      <div style="flex:1;display:flex;align-items:flex-end;">
+        ${isPos ? `<div style="width:100%;height:${heightPct/2}%;background:var(--primary);border-radius:2px 2px 0 0;"></div>` : ''}
+      </div>
+      <div style="width:100%;height:1px;background:#cbd5e1;"></div>
+      <div style="flex:1;display:flex;align-items:flex-start;">
+        ${!isPos ? `<div style="width:100%;height:${heightPct/2}%;background:#ea580c;border-radius:0 0 2px 2px;"></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const sampleChipsHtml = samples.map((v, i) => 
+    `<span class="inspect-sample-chip" title="Chiều [${i}]">${v > 0 ? '+' : ''}${v}</span>`
+  ).join('');
+
+  return `<div class="inspect-tensor-card">
+    <div class="inspect-tensor-header">
+      <div style="font-weight:700;font-size:0.92rem;color:var(--ink);">${title}</div>
+      <span class="cluster-chip sm" style="background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;font-family:var(--mono);">Shape: ${shapeStr}</span>
+    </div>
+    <div class="inspect-stats-grid">
+      <div class="inspect-stat-box"><div class="inspect-stat-label">Min</div><div class="inspect-stat-val" style="color:#ea580c;">${t.min}</div></div>
+      <div class="inspect-stat-box"><div class="inspect-stat-label">Max</div><div class="inspect-stat-val" style="color:#16a34a;">${t.max}</div></div>
+      <div class="inspect-stat-box"><div class="inspect-stat-label">Mean (μ)</div><div class="inspect-stat-val">${t.mean}</div></div>
+      <div class="inspect-stat-box"><div class="inspect-stat-label">Std (σ)</div><div class="inspect-stat-val">${t.std}</div></div>
+      <div class="inspect-stat-box"><div class="inspect-stat-label">L2 Norm</div><div class="inspect-stat-val" style="color:var(--primary);">${t.l2_norm}</div></div>
+    </div>
+    <div style="font-size:0.75rem;font-weight:600;color:var(--muted);margin-bottom:4px;">Phân phối 16 giá trị đầu (Sparkline / Âm &middot; Dương):</div>
+    <div class="inspect-bars-container">${barsHtml}</div>
+    <div style="font-size:0.75rem;font-weight:600;color:var(--muted);margin-bottom:6px;">Mẫu giá trị số thực kích hoạt (16 chiều đầu):</div>
+    <div class="inspect-sample-wrap">${sampleChipsHtml}</div>
+  </div>`;
+}
+
+function inspectLayer(layerKey) {
+  if (!STATE.currentData || !STATE.currentData.activations) {
+    alert('Dữ liệu mô hình chưa tải xong. Vui lòng thử lại sau giây lát.');
+    return;
+  }
+  const act = STATE.currentData.activations[layerKey];
+  if (!act) return;
+
+  $('inspectModalTitle').textContent = act.name;
+  $('inspectModalBadge').textContent = layerKey.toUpperCase();
+
+  let bodyHtml = `<div class="inspect-role-card">
+    <div style="font-weight:700;color:var(--primary);margin-bottom:4px;">Vai trò kiến trúc trong thuật toán:</div>
+    <div>${act.role}</div>
+    ${act.formula ? `<div style="margin-top:8px;"><div style="font-size:0.75rem;color:var(--muted);font-weight:700;">Công thức toán học:</div><div class="inspect-formula">${act.formula}</div></div>` : ''}
+  </div>`;
+
+  if (layerKey === 'embedding') {
+    bodyHtml += renderTensorCard('1. Embedding chuỗi lịch sử (Item Embedding)', act.history_emb);
+    bodyHtml += renderTensorCard('2. Query Vector (Tổng 14 trường tìm kiếm + Mask)', act.query_vec);
+    bodyHtml += renderTensorCard('3. Tensor ghép nối chuỗi + Query [S+1, H]', act.combined);
+  } else if (layerKey === 'tensor3d') {
+    bodyHtml += renderTensorCard('Tensor 3D/4D sau Unsqueeze & Transpose', act.tensor);
+  } else if (layerKey === 'layernorm') {
+    bodyHtml += renderTensorCard('Tensor chuẩn hóa qua norm2(X)', act.tensor);
+  } else if (layerKey === 'seq_mix') {
+    bodyHtml += renderTensorCard('Đầu ra Sequence Mixing (MLP trên chiều 21 vị trí)', act.tensor);
+  } else if (layerKey === 'feat_mix') {
+    bodyHtml += renderTensorCard('Đầu ra Feature Mixing (MLP trên chiều kênh)', act.tensor);
+  } else if (layerKey === 'chan_mix') {
+    bodyHtml += renderTensorCard('Đầu ra Channel Mixing (MLP giữa 64 đơn vị ẩn)', act.tensor);
+  } else if (layerKey === 'merge') {
+    bodyHtml += renderTensorCard('Đầu ra sau Layer 1 (x0 + x1 + x2)', act.layer1);
+    bodyHtml += renderTensorCard('Đầu ra sau Layer 2 (Lặp khối thứ 2)', act.layer2);
+  } else if (layerKey === 'output') {
+    bodyHtml += renderTensorCard('1. Vector ẩn tại Query Position (sau LayerNorm)', act.query_hidden);
+    bodyHtml += renderTensorCard('2. Điểm Logits trước Softmax (100 cluster)', act.logits);
+    bodyHtml += renderTensorCard('3. Xác suất Softmax của mô hình SMLP4Rec (model_p)', act.model_softmax_p);
+  } else if (layerKey === 'samedest') {
+    bodyHtml += `<div class="inspect-tensor-card">
+      <div style="font-weight:700;margin-bottom:6px;">Trạng thái sameDest trong lần chạy này:</div>
+      <div style="display:flex;gap:12px;margin-bottom:12px;">
+        <span class="cluster-chip sm" style="background:${act.active ? '#dcfce7' : '#f1f5f9'};color:${act.active ? '#166534' : '#64748b'};">
+          ${act.active ? 'Đã kích hoạt (Điểm đến có trong lịch sử)' : 'Chưa kích hoạt (Điểm đến mới)'}
+        </span>
+        <span class="cluster-chip sm" style="background:#ede9fe;color:#6b21a8;">Trọng số w = ${act.weight_w}</span>
+      </div>
+    </div>`;
+    bodyHtml += renderTensorCard('Phân phối xác suất sameDest trên 100 cụm', act.distribution);
+  } else if (layerKey === 'fusion') {
+    bodyHtml += `<div class="inspect-tensor-card">
+      <div style="font-weight:700;margin-bottom:6px;">Tham số dung hợp tối ưu trên tập Validation:</div>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <span class="cluster-chip sm" style="background:#e0f2fe;color:#0369a1;">Alpha làm mịn: ${act.alpha}</span>
+        <span class="cluster-chip sm" style="background:#ede9fe;color:#6b21a8;">Trọng số w: ${act.weight_w}</span>
+      </div>
+    </div>`;
+    bodyHtml += renderTensorCard('Log-Score sau dung hợp (Trước Softmax cuối)', act.final_scores);
+  }
+
+  $('inspectModalBody').innerHTML = bodyHtml;
+  $('modalInspector').classList.add('open');
+}
+
 // --- MODAL CLOSE LISTENERS ---
 document.querySelectorAll('[data-close]').forEach(btn => {
   btn.onclick = () => {
@@ -2028,13 +2163,9 @@ async function initApp() {
   // User actions
   $('btnLoadUser').onclick = loadUserData;
   $('inputUserId').addEventListener('keydown', e => { if (e.key === 'Enter') loadUserData(); });
-  $('chkIgnoreHistory').onchange = runRecommend;
 
   // Random sample actions
-  $('btnRandomSample').onclick = () => pickRandomSample(true);
-  $('btnApplySeed').onclick = () => pickRandomSample(false);
-  $('inputSeed').addEventListener('keydown', e => { if (e.key === 'Enter') pickRandomSample(false); });
-  $('chkAutoCycle').onchange = handleAutoCycleToggle;
+  $('btnRandomSample').onclick = () => pickRandomSample();
 
   // Sample mode buttons
   document.querySelectorAll('#sampleModeGroup button').forEach(btn => {
@@ -2042,7 +2173,7 @@ async function initApp() {
       document.querySelectorAll('#sampleModeGroup button').forEach(el => el.classList.remove('active'));
       btn.classList.add('active');
       STATE.mode = btn.dataset.mode;
-      pickRandomSample(true);
+      pickRandomSample();
     };
   });
 
@@ -2050,7 +2181,7 @@ async function initApp() {
   $('btnOpen100Modal').onclick = openAll100Modal;
 
   // Initial pick
-  await pickRandomSample(true);
+  await pickRandomSample();
 }
 
 initApp().catch(err => {
