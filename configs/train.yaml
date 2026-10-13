@@ -1,0 +1,29 @@
+# Training and selection for the week-6 retrain (plan_oct_12_new_split_retrain.md, section 5).
+max_epochs: 10
+patience: 2                # epochs without a gain > min_delta in autoregressive valid NDCG@10
+min_delta: 0.000699486      # set by notebook 00 (2026-10-12); results/week6_retrain/min_delta_calibration.json
+nll_guard_epochs: 2        # stop when valid NLL rose this many epochs in a row while train loss fell
+batch_size: 1024
+learning_rate: 0.001
+weight_decay: 0.0
+monitor: ndcg@10           # autoregressive valid
+eval_batch: 8192
+train_probe_rows: 50000    # fixed random train rows scored each epoch (generalisation gap)
+train_probe_seed: 0
+dropout_grid: [0.0, 0.2]   # SMLP4Rec hidden_dropout_prob, chosen on seed 2022
+calibration_epochs: 3      # T6: short run used to set min_delta
+min_delta_se_multiple: 2.0 # min_delta = multiple x user-clustered SE of the epoch-to-epoch gain
+min_delta_bounds: [1.0e-4, 5.0e-3]  # outside these bounds T6 stops and reports
+bootstrap_resamples: 1000
+
+# sameDest fusion grid (tuned on autoregressive valid, seed 2022, one-standard-error rule by user)
+samedest:
+  recency: 0.7
+  alpha_grid: [0.05, 0.1, 0.2, 0.3, 0.5]
+  w_grid: [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
+
+# baselines
+itemknn_k_grid: [5, 10, 20, 50, 100]
+itemknn_tie_eps: 1.0e-6     # popularity tie-break weight, far below any cosine-similarity step
+top_k_export: 10           # main-model top-K written to the test CSV
+logreg_c_grid: [0.1, 1.0, 10.0]

@@ -1,4 +1,4 @@
-"""Sensitivity of the sameDest gain and the query-token advantage, from the saved per-row test ranks.
+"""Sensitivity of the sameDest gain and the query-embedding advantage, from the saved per-row test ranks.
 
 Read-only. Inputs: the per-row warm test ranks written by notebook 01c
 (`experiments/<run>/ranks_test_warm.npz`), the logistic-regression / ItemKNN ranks of notebook 07
@@ -6,10 +6,10 @@ Read-only. Inputs: the per-row warm test ranks written by notebook 01c
 `results/week4_rebuild/sensitivity.json`.
 
 Analyses (test, warm rows)
-1. sameDest gain (query token + sameDest minus query token) on all rows, and after removing the
+1. sameDest gain (query embedding + sameDest minus query embedding) on all rows, and after removing the
    targets that repeat a cluster the user booked at the same destination within 1 hour / 1 day
    (re-booking inside a session, not a long-term preference). Paired bootstrap 95 % CI.
-2. Query token vs logistic regression and ItemKNN (paired bootstrap), same rows.
+2. Query embedding vs logistic regression and ItemKNN (paired bootstrap), same rows.
 
 Usage: .venv/Scripts/python.exe scripts/expedia_sensitivity.py [run_dir]
 """
@@ -61,7 +61,7 @@ def main() -> None:
     age_t = age[row]  # NaN = the user never booked this cluster at this destination before
     ranks = {
         k: z[k]
-        for k in ("plain", "plain_prior", "old_hybrid", "query_token", "query_token_sameDest")
+        for k in ("plain", "plain_prior", "old_hybrid", "query_embedding", "query_embedding_sameDest")
     }
 
     res: dict = {"run": RUN.name, "rows": len(row)}
@@ -70,11 +70,11 @@ def main() -> None:
         masks[f"excluding_rebook_{name}"] = ~(age_t <= w)
     res["sameDest_gain"] = {}
     for name, m in masks.items():
-        a, b = ranks["query_token_sameDest"][m], ranks["query_token"][m]
+        a, b = ranks["query_embedding_sameDest"][m], ranks["query_embedding"][m]
         res["sameDest_gain"][name] = {
             "rows": int(m.sum()),
-            "query_token": summarize(b, ks=(5,)),
-            "query_token_sameDest": summarize(a, ks=(5,)),
+            "query_embedding": summarize(b, ks=(5,)),
+            "query_embedding_sameDest": summarize(a, ks=(5,)),
             "gain_bootstrap": paired_bootstrap(a, b, k=5),
         }
     res["rows_removed"] = {
@@ -90,18 +90,18 @@ def main() -> None:
     )
     lr, knn = base.loc[src, LR].to_numpy(), base.loc[src, KNN].to_numpy()
     res["vs_baselines_warm"] = {
-        "query_token minus logistic_regression": paired_bootstrap(ranks["query_token"], lr, k=5),
-        "query_token_sameDest minus logistic_regression": paired_bootstrap(
-            ranks["query_token_sameDest"], lr, k=5
+        "query_embedding minus logistic_regression": paired_bootstrap(ranks["query_embedding"], lr, k=5),
+        "query_embedding_sameDest minus logistic_regression": paired_bootstrap(
+            ranks["query_embedding_sameDest"], lr, k=5
         ),
-        "query_token minus ItemKNN": paired_bootstrap(ranks["query_token"], knn, k=5),
-        "query_token_sameDest minus ItemKNN": paired_bootstrap(
-            ranks["query_token_sameDest"], knn, k=5
+        "query_embedding minus ItemKNN": paired_bootstrap(ranks["query_embedding"], knn, k=5),
+        "query_embedding_sameDest minus ItemKNN": paired_bootstrap(
+            ranks["query_embedding_sameDest"], knn, k=5
         ),
         "logistic_regression": summarize(lr, ks=(5,)),
         "ItemKNN": summarize(knn, ks=(5,)),
     }
-    # cold (L = 0) rows: ranks written by scripts/query_token_cold_users.py
+    # cold (L = 0) rows: ranks written by scripts/query_embedding_cold_users.py
     cold_file = RUN / "ranks_test_cold.npz"
     if cold_file.exists():
         zc = np.load(cold_file)
@@ -114,16 +114,16 @@ def main() -> None:
         )
         lr_c = bc.loc[csrc, LR].to_numpy()
         qt_c, prior_c, qtp_c = (
-            zc["query_token_alone"],
+            zc["query_embedding_alone"],
             zc["destination_prior_only"],
-            zc["query_token_+_prior"],
+            zc["query_embedding_+_prior"],
         )
         res["cold_rows"] = {
             "rows": len(crow),
-            "query_token minus logistic_regression": paired_bootstrap(qt_c, lr_c, k=5),
-            "query_token minus destination_prior": paired_bootstrap(qt_c, prior_c, k=5),
+            "query_embedding minus logistic_regression": paired_bootstrap(qt_c, lr_c, k=5),
+            "query_embedding minus destination_prior": paired_bootstrap(qt_c, prior_c, k=5),
             "logistic_regression minus destination_prior": paired_bootstrap(lr_c, prior_c, k=5),
-            "query_token_plus_prior minus logistic_regression": paired_bootstrap(qtp_c, lr_c, k=5),
+            "query_embedding_plus_prior minus logistic_regression": paired_bootstrap(qtp_c, lr_c, k=5),
         }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

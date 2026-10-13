@@ -3,7 +3,7 @@ import pytest
 torch = pytest.importorskip("torch")  # torch before anything that imports pandas (Windows c10.dll)
 pytest.importorskip("recbole")
 
-from nbp.models.smlprec_query import ROW_ID, SMLPRECQuery  # noqa: E402
+from nbp.models.smlprec_query import ROW_ID, SMLPRECQuery
 
 S, H, N_ITEMS, F = 6, 8, 11, 3
 

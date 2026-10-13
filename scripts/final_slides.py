@@ -12,10 +12,10 @@ Titles-only outline (the argument, read in order):
  5. The searched destination says far more about the booked cluster than any other field
  6. Every model is scored on one temporal split, full ranking, warm and first-booking rows apart
  7. The original SMLP4Rec reads only past bookings and ignores the current search
- 8. Our query token puts the 14 search fields into the model as one extra position
+ 8. Our query embedding puts the 14 search fields into the model as one extra position
  9. sameDest adds what the guest booked before at the searched destination
 10. Training with the {first} first bookings teaches the model the empty-history case
-11. The query token carries most of the gain, sameDest adds a smaller, real step
+11. The query embedding carries most of the gain, sameDest adds a smaller, real step
 12. The main model leads both baselines on all, cold and warm test rows
 13. On first bookings only the search-aware models rank well
 14. The lead over logistic regression grows with history, from {L=0 gap} to {L>=10 gap} NDCG@5
@@ -359,7 +359,7 @@ def fig_timeline(d: dict) -> str:
 
 
 def fig_arch(d: dict, stage: int) -> str:
-    """SMLP4Rec diagram in the layout of the paper figure: 1 = history only, 2 = + query token,
+    """SMLP4Rec diagram in the layout of the paper figure: 1 = history only, 2 = + query embedding,
     3 = + sameDest. Input = cluster IDs only (no brand / category), 2 layers sharing one block."""
     run = d["run"]
     nf = len(run["query_fields"])
@@ -400,7 +400,7 @@ def fig_arch(d: dict, stage: int) -> str:
         )
     else:
         o.append(box(30, 276, 150, 52, MAIN, MAIN, 1.4))
-        o.append(txt(105, 308, "query token", 18, "#ffffff", "middle", 600))
+        o.append(txt(105, 308, "query embedding", 18, "#ffffff", "middle", 600))
         o.append(line(180, 302, 203, 302, MAIN, 1.8, arrow=True))
         o.append(
             txt(
@@ -638,13 +638,13 @@ def fig_ladder(d: dict) -> str:
             "color": CONTEXT,
         },
         {
-            "label": "+ query token",
-            "value": m(d, "query_token", "warm", "ndcg@5"),
+            "label": "+ query embedding",
+            "value": m(d, "query_embedding", "warm", "ndcg@5"),
             "color": CONTEXT,
         },
         {
             "label": T(
-                "+ query token + sameDest (main)", "+ query token + sameDest (mô hình chính)"
+                "+ query embedding + sameDest (main)", "+ query embedding + sameDest (mô hình chính)"
             ),
             "value": m(d, "main", "warm", "ndcg@5"),
             "color": MAIN,
@@ -652,8 +652,8 @@ def fig_ladder(d: dict) -> str:
             "lc": MAIN_DARK,
         },
     ]
-    q = ci(d, "warm", "query_token", "plain_all", "ndcg@5")
-    s = ci(d, "warm", "main", "query_token", "ndcg@5")
+    q = ci(d, "warm", "query_embedding", "plain_all", "ndcg@5")
+    s = ci(d, "warm", "main", "query_embedding", "ndcg@5")
     rows[2]["note"] = f"{sgn3(q[0])}"
     rows[3]["note"] = f"{sgn3(s[0])}"
     return hbars(
@@ -664,7 +664,7 @@ def fig_ladder(d: dict) -> str:
 def fig_cold(d: dict) -> str:
     rows = [
         {
-            "label": "SMLP4Rec + query token (+ sameDest)",
+            "label": "SMLP4Rec + query embedding (+ sameDest)",
             "value": m(d, "main", "cold", "ndcg@5"),
             "color": MAIN,
             "vc": MAIN_DARK,
@@ -758,7 +758,7 @@ def fig_known(d: dict) -> str:
         ("known destination", T("known destination", "điểm đến đã biết")),
         ("new destination", T("new destination", "điểm đến mới")),
     ]
-    series = [("logreg", "logistic regression", CONTRAST), ("query_token", "query token", CONTEXT),
+    series = [("logreg", "logistic regression", CONTRAST), ("query_embedding", "query embedding", CONTEXT),
               ("main", "+ sameDest", MAIN)]  # fmt: skip
     w = 1000
     o, y = [], 10
@@ -845,7 +845,7 @@ def fig_context(d: dict) -> str:
 
 def fig_rq4(d: dict) -> str:
     ba = d["ba"][d["ba"]["row_set"] == "all"].set_index("model_key")
-    pts = [("main", T("main model", "mô hình chính"), MAIN), ("query_token", "query token", CONTEXT),
+    pts = [("main", T("main model", "mô hình chính"), MAIN), ("query_embedding", "query embedding", CONTEXT),
            ("logreg", "logistic regression", CONTRAST),
            ("plain_all", T("original SMLP4Rec", "SMLP4Rec gốc"), CONTEXT),
            ("itemknn", "ItemKNN", CONTEXT)]  # fmt: skip
@@ -879,7 +879,7 @@ def fig_rq4(d: dict) -> str:
             MUTED,
         )
     )
-    offs = {"main": (12, 22), "query_token": (12, -10), "logreg": (12, 6),
+    offs = {"main": (12, 22), "query_embedding": (12, -10), "logreg": (12, 6),
             "plain_all": (12, 6), "itemknn": (-12, 22)}  # fmt: skip
     for key, name, col in pts:
         x, y = xs(m(d, key, "all", "ndcg@5")), ys(float(ba.loc[key, "exposure_gini"]))
@@ -1237,23 +1237,23 @@ def build(d: dict) -> None:
     )
     slide(
         T(
-            f"Our query token puts the {nf} search fields into the model as one extra position",
-            f"query token của chúng tôi đưa {nf} trường tìm kiếm vào mô hình như một vị trí bổ sung",
+            f"Our query embedding puts the {nf} search fields into the model as one extra position",
+            f"query embedding của chúng tôi đưa {nf} trường tìm kiếm vào mô hình như một vị trí bổ sung",
         ),
         f'<div class="fig">{fig_arch(d, 2)}</div>',
         T(
-            f"The query token is one extra position after the history: a learned mask vector plus the sum "
+            f"The query embedding is one extra position after the history: a learned mask vector plus the sum "
             f"of {nf} field embeddings (destination, destination type, check-in month, days to check-in, "
             "nights, adults, children, rooms, package, mobile, channel, site, point-of-sale continent, "
             "user country). The mixer lets this position read the history, and its hidden state scores "
-            "the clusters. A first booking still has a query token, so the model works with an empty "
+            "the clusters. A first booking still has a query embedding, so the model works with an empty "
             "history. Vocabulary from training rows only. Source: src/nbp/models/smlprec_query.py, "
             "smlprec_query_cold_train_es_run.json (query_fields).",
-            f"query token là một vị trí bổ sung sau lịch sử: một vector mask học được cộng với tổng của "
+            f"query embedding là một vị trí bổ sung sau lịch sử: một vector mask học được cộng với tổng của "
             f"{nf} embedding trường (điểm đến, loại điểm đến, tháng check-in, số ngày đến check-in, "
             "số đêm, người lớn, trẻ em, số phòng, gói, mobile, kênh, site, châu lục điểm bán, quốc gia "
             "người dùng). Mixer cho vị trí này đọc lịch sử, và trạng thái ẩn của nó chấm điểm các "
-            "cluster. Lượt đặt đầu tiên vẫn có query token, nên mô hình chạy được với lịch sử rỗng. "
+            "cluster. Lượt đặt đầu tiên vẫn có query embedding, nên mô hình chạy được với lịch sử rỗng. "
             "Từ vựng chỉ lấy từ các dòng train. Nguồn: src/nbp/models/smlprec_query.py, "
             "smlprec_query_cold_train_es_run.json (query_fields).",
         ),
@@ -1324,31 +1324,31 @@ def build(d: dict) -> None:
     )
 
     # 11 ladder
-    q = ci(d, "warm", "query_token", "plain_all", "ndcg@5")
-    sd = ci(d, "warm", "main", "query_token", "ndcg@5")
+    q = ci(d, "warm", "query_embedding", "plain_all", "ndcg@5")
+    sd = ci(d, "warm", "main", "query_embedding", "ndcg@5")
     pw = ci(d, "warm", "plain_all", "plain_warm", "ndcg@5")
     slide(
         T(
-            "The query token carries most of the gain, sameDest adds a smaller, real step",
-            "query token mang phần lớn mức tăng, sameDest thêm một bước nhỏ hơn nhưng có thật",
+            "The query embedding carries most of the gain, sameDest adds a smaller, real step",
+            "query embedding mang phần lớn mức tăng, sameDest thêm một bước nhỏ hơn nhưng có thật",
         ),
         f'<div class="fig">{fig_ladder(d)}</div>'
         + T(
-            f'<p class="lede">NDCG@5 on warm test rows. Steps: query token {ci_txt(q)}, '
+            f'<p class="lede">NDCG@5 on warm test rows. Steps: query embedding {ci_txt(q)}, '
             f"sameDest {ci_txt(sd)}.</p>",
-            f'<p class="lede">NDCG@5 trên dòng test warm. Các bước: query token {ci_txt(q)}, '
+            f'<p class="lede">NDCG@5 trên dòng test warm. Các bước: query embedding {ci_txt(q)}, '
             f"sameDest {ci_txt(sd)}.</p>",
         ),
         T(
             f"Warm test rows, NDCG@5. The original SMLP4Rec scores {f3(m(d, 'plain_all', 'warm', 'ndcg@5'))} "
             f"when trained on all events and {f3(m(d, 'plain_warm', 'warm', 'ndcg@5'))} trained on warm "
-            f"users only; the difference {ci_txt(pw)} is not significant. The query token adds {sgn3(q[0])}, "
+            f"users only; the difference {ci_txt(pw)} is not significant. The query embedding adds {sgn3(q[0])}, "
             f"sameDest another {sgn3(sd[0])}. Paired bootstrap, 1000 resamples. Source: "
             "results/week5_final/final_benchmark.csv, bootstrap_ci.csv. Likely question: is sameDest just "
             "re-booking? Removing re-books within a day keeps a positive gain (slide 15).",
             f"Dòng test warm, NDCG@5. SMLP4Rec gốc đạt {f3(m(d, 'plain_all', 'warm', 'ndcg@5'))} "
             f"khi train trên mọi sự kiện và {f3(m(d, 'plain_warm', 'warm', 'ndcg@5'))} khi chỉ train trên "
-            f"người dùng warm; chênh lệch {ci_txt(pw)} không có ý nghĩa thống kê. query token thêm "
+            f"người dùng warm; chênh lệch {ci_txt(pw)} không có ý nghĩa thống kê. query embedding thêm "
             f"{sgn3(q[0])}, sameDest thêm {sgn3(sd[0])} nữa. Paired bootstrap, 1000 lần lấy mẫu lại. "
             "Nguồn: results/week5_final/final_benchmark.csv, bootstrap_ci.csv. Câu hỏi có thể gặp: "
             "sameDest có phải chỉ là đặt lại không? Loại các lượt đặt lại trong vòng một ngày vẫn còn "
@@ -1380,10 +1380,10 @@ def build(d: dict) -> None:
             ),
             False,
         ),
-        ("query_token", "+ query token", False),
+        ("query_embedding", "+ query embedding", False),
         (
             "main",
-            T("+ query token + sameDest (main)", "+ query token + sameDest (chính)"),
+            T("+ query embedding + sameDest (main)", "+ query embedding + sameDest (chính)"),
             False,
         ),
     ]
@@ -1471,7 +1471,7 @@ def build(d: dict) -> None:
             "bootstrap_ci.csv. Caveat: 'first booking' means first observed booking, the data starts in "
             "January 2013.",
             "Dòng cold là các lượt đặt đầu tiên: hoàn toàn không có lịch sử. Trên các dòng này mô hình "
-            "chính chính là query token, vì sameDest không có gì để dùng. ItemKNN không chấm được và "
+            "chính chính là query embedding, vì sameDest không có gì để dùng. ItemKNN không chấm được và "
             "quay về độ phổ biến của lượt đặt đầu tiên; SMLP4Rec gốc chấm được nhưng trả về một xếp hạng "
             "cho mọi người. Logistic regression đọc cùng các trường tìm kiếm và đứng thứ hai với "
             f"{f3(m(d, 'logreg', 'cold', 'ndcg@5'))}. Nguồn: results/week5_final/final_benchmark.csv, "
@@ -1531,9 +1531,9 @@ def build(d: dict) -> None:
     slide(
         T(
             f"History pays where guests return: sameDest lifts known-destination NDCG@5 from "
-            f"{f3(kv('known destination', 'query_token'))} to {f3(kv('known destination', 'main'))}",
+            f"{f3(kv('known destination', 'query_embedding'))} to {f3(kv('known destination', 'main'))}",
             f"Lịch sử có giá trị ở nơi khách quay lại: sameDest nâng NDCG@5 tại điểm đến đã biết từ "
-            f"{f3(kv('known destination', 'query_token'))} lên {f3(kv('known destination', 'main'))}",
+            f"{f3(kv('known destination', 'query_embedding'))} lên {f3(kv('known destination', 'main'))}",
         ),
         f'<div class="fig">{fig_known(d)}</div>'
         + T(
@@ -1831,7 +1831,7 @@ def build(d: dict) -> None:
             "Phụ lục A2. Xáo trộn tìm kiếm phá hủy độ chính xác, che lịch sử tốn ít hơn nhiều",
         ),
         table(
-            [T("Query token model, input", "Mô hình query token, đầu vào"), "NDCG@5"],
+            [T("Query embedding model, input", "Mô hình query embedding, đầu vào"), "NDCG@5"],
             rows_dg,
         )
         + T(
@@ -1841,12 +1841,12 @@ def build(d: dict) -> None:
         + ", ".join(f"{k_} {sgn3(-v['ndcg@5_drop'])}" for k_, v in top_drop)
         + ".</p>",
         T(
-            "Controls on the query-token model (no sameDest), warm test rows. Masking the history costs "
+            "Controls on the query-embedding model (no sameDest), warm test rows. Masking the history costs "
             "some accuracy; shuffling the search across rows drops it close to popularity, so the model "
             "really uses the search. Permuting one field at a time shows the destination carries almost "
             "all of it. Source: results/week4_rebuild/smlprec_query_cold_train_es_run.json "
             "(diagnostics_test, field_permutation_test).",
-            "Các phép đối chứng trên mô hình query token (không có sameDest), dòng test warm. Che lịch "
+            "Các phép đối chứng trên mô hình query embedding (không có sameDest), dòng test warm. Che lịch "
             "sử làm giảm một phần độ chính xác; xáo trộn tìm kiếm giữa các dòng kéo nó xuống gần mức "
             "phổ biến, nên mô hình thực sự dùng tìm kiếm. Hoán vị từng trường một cho thấy điểm đến "
             "mang gần như toàn bộ tác dụng. Nguồn: results/week4_rebuild/smlprec_query_cold_train_es_run.json "

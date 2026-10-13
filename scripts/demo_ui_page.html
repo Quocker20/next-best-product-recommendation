@@ -959,7 +959,7 @@ input:focus, select:focus {
       </svg>
       <div>
         <h1>Next-Best Product Recommendation</h1>
-        <p>Gợi ý cụm khách sạn tiếp theo cho đặt phòng nghỉ dưỡng &middot; SMLP4Rec + Query Token + sameDest</p>
+        <p>Gợi ý cụm khách sạn tiếp theo cho đặt phòng nghỉ dưỡng &middot; SMLP4Rec + Query Embedding + sameDest</p>
       </div>
     </div>
   </div>
@@ -1119,7 +1119,7 @@ input:focus, select:focus {
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
-            SMLP4Rec + Query Token + sameDest (Kiến trúc Stage 3)
+            SMLP4Rec + Query Embedding + sameDest (Kiến trúc Stage 3)
           </h2>
         </div>
       </div>
@@ -1242,8 +1242,8 @@ input:focus, select:focus {
   </div>
 </div>
 
-<!-- MODAL 2: CHI TIẾT 14 TRƯỜNG QUERY TOKEN (QUERY FEATURES MODAL) -->
-<div class="modal-backdrop" id="modalQueryToken">
+<!-- MODAL 2: CHI TIẾT 14 TRƯỜNG QUERY EMBEDDING (QUERY FEATURES MODAL) -->
+<div class="modal-backdrop" id="modalQueryEmbedding">
   <div class="modal-box">
     <div class="modal-header">
       <h3>
@@ -1252,13 +1252,13 @@ input:focus, select:focus {
           <polyline points="2 17 12 22 22 17"></polyline>
           <polyline points="2 12 12 17 22 12"></polyline>
         </svg>
-        Query Token &middot; Chi tiết 14 trường feature được nhúng (Embedding)
+        Query Embedding &middot; Chi tiết 14 trường feature được nhúng (Embedding)
       </h3>
-      <button class="modal-close-btn" data-close="modalQueryToken">&times;</button>
+      <button class="modal-close-btn" data-close="modalQueryEmbedding">&times;</button>
     </div>
     <div class="modal-body">
       <p style="font-size:0.85rem;color:var(--muted);margin-top:0;">
-        Query token là vị trí bổ sung ở cuối chuỗi lịch sử trong SMLP4Rec. Nó được tạo thành từ vector mask học được cộng với tổng embedding của 14 trường đặc trưng tìm kiếm dưới đây:
+        Query embedding là vị trí bổ sung ở cuối chuỗi lịch sử trong SMLP4Rec. Nó được tạo thành từ vector mask học được cộng với tổng embedding của 14 trường đặc trưng tìm kiếm dưới đây:
       </p>
       <table class="detail-table">
         <thead>
@@ -1703,10 +1703,10 @@ function renderArchitectureSvg(data) {
     </g>`;
   }
 
-  // QUERY TOKEN BLOCK
-  svgContent += `<g class="svg-interactive" onclick="openQueryTokenModal()" title="Bấm để xem chi tiết 14 trường feature">
+  // QUERY EMBEDDING BLOCK
+  svgContent += `<g class="svg-interactive" onclick="openQueryEmbeddingModal()" title="Bấm để xem chi tiết 14 trường feature">
     <rect x="30" y="276" width="150" height="52" rx="4" fill="#3b6ea5" stroke="#2f5a88" stroke-width="1.6"/>
-    <text x="105" y="308" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="700">query token</text>
+    <text x="105" y="308" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="700">query embedding</text>
     <line x1="180" y1="302" x2="203" y2="302" stroke="#3b6ea5" stroke-width="2" marker-end="url(#arr-stage3-blue)"/>
     <text x="30" y="350" font-size="15" fill="#2f5a88" font-weight="600">tổng 14 embedding trường</text>
   </g>`;
@@ -1944,7 +1944,7 @@ function openHistoryModal() {
   $('modalHistory').classList.add('open');
 }
 
-function openQueryTokenModal() {
+function openQueryEmbeddingModal() {
   if (!STATE.currentData || !META) return;
   const fields = getFormFields();
 
@@ -1972,7 +1972,7 @@ function openQueryTokenModal() {
     </tr>`;
   }).join('');
 
-  $('modalQueryToken').classList.add('open');
+  $('modalQueryEmbedding').classList.add('open');
 }
 
 function openAll100Modal() {

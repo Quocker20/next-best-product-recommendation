@@ -1,0 +1,91 @@
+model,row_set,metric,ar_minus_tf,ci95_low,ci95_high
+ItemKNN,all,recall@5,-0.0547,-0.056,-0.0536
+ItemKNN,all,ndcg@5,-0.0411,-0.042,-0.0402
+ItemKNN,all,recall@10,-0.0635,-0.0649,-0.0622
+ItemKNN,all,ndcg@10,-0.0439,-0.0448,-0.043
+ItemKNN,all,recall@20,-0.0602,-0.0617,-0.0589
+ItemKNN,all,ndcg@20,-0.0431,-0.044,-0.0423
+ItemKNN,warm,recall@5,-0.0675,-0.069,-0.0661
+ItemKNN,warm,ndcg@5,-0.0506,-0.0518,-0.0496
+ItemKNN,warm,recall@10,-0.0783,-0.0799,-0.0766
+ItemKNN,warm,ndcg@10,-0.0541,-0.0552,-0.0531
+ItemKNN,warm,recall@20,-0.0743,-0.076,-0.0727
+ItemKNN,warm,ndcg@20,-0.0532,-0.0543,-0.0522
+ItemKNN,cold,recall@5,0.0,0.0,0.0
+ItemKNN,cold,ndcg@5,0.0,0.0,0.0
+ItemKNN,cold,recall@10,0.0,0.0,0.0
+ItemKNN,cold,ndcg@10,0.0,0.0,0.0
+ItemKNN,cold,recall@20,0.0,0.0,0.0
+ItemKNN,cold,ndcg@20,0.0,0.0,0.0
+SMLP4Rec plain,all,recall@5,-0.0656,-0.0669,-0.0642
+SMLP4Rec plain,all,ndcg@5,-0.0536,-0.0546,-0.0525
+SMLP4Rec plain,all,recall@10,-0.0706,-0.0721,-0.0693
+SMLP4Rec plain,all,ndcg@10,-0.0553,-0.0563,-0.0543
+SMLP4Rec plain,all,recall@20,-0.0663,-0.0677,-0.0647
+SMLP4Rec plain,all,ndcg@20,-0.0542,-0.0552,-0.0532
+SMLP4Rec plain,warm,recall@5,-0.0809,-0.0824,-0.0793
+SMLP4Rec plain,warm,ndcg@5,-0.0661,-0.0673,-0.0649
+SMLP4Rec plain,warm,recall@10,-0.0871,-0.0888,-0.0853
+SMLP4Rec plain,warm,ndcg@10,-0.0682,-0.0694,-0.0669
+SMLP4Rec plain,warm,recall@20,-0.0817,-0.0835,-0.0801
+SMLP4Rec plain,warm,ndcg@20,-0.0669,-0.0681,-0.0657
+SMLP4Rec plain,cold,recall@5,0.0,0.0,0.0
+SMLP4Rec plain,cold,ndcg@5,0.0,0.0,0.0
+SMLP4Rec plain,cold,recall@10,0.0,0.0,0.0
+SMLP4Rec plain,cold,ndcg@10,0.0,0.0,0.0
+SMLP4Rec plain,cold,recall@20,0.0,0.0,0.0
+SMLP4Rec plain,cold,ndcg@20,0.0,0.0,0.0
+Logistic regression,all,recall@5,0.0,0.0,0.0
+Logistic regression,all,ndcg@5,0.0,0.0,0.0
+Logistic regression,all,recall@10,0.0,0.0,0.0
+Logistic regression,all,ndcg@10,0.0,0.0,0.0
+Logistic regression,all,recall@20,0.0,0.0,0.0
+Logistic regression,all,ndcg@20,0.0,0.0,0.0
+Logistic regression,warm,recall@5,0.0,0.0,0.0
+Logistic regression,warm,ndcg@5,0.0,0.0,0.0
+Logistic regression,warm,recall@10,0.0,0.0,0.0
+Logistic regression,warm,ndcg@10,0.0,0.0,0.0
+Logistic regression,warm,recall@20,0.0,0.0,0.0
+Logistic regression,warm,ndcg@20,0.0,0.0,0.0
+Logistic regression,cold,recall@5,0.0,0.0,0.0
+Logistic regression,cold,ndcg@5,0.0,0.0,0.0
+Logistic regression,cold,recall@10,0.0,0.0,0.0
+Logistic regression,cold,ndcg@10,0.0,0.0,0.0
+Logistic regression,cold,recall@20,0.0,0.0,0.0
+Logistic regression,cold,ndcg@20,0.0,0.0,0.0
+SMLP4Rec + query embedding,all,recall@5,-0.0236,-0.0244,-0.0227
+SMLP4Rec + query embedding,all,ndcg@5,-0.0228,-0.0235,-0.0222
+SMLP4Rec + query embedding,all,recall@10,-0.0175,-0.0182,-0.0169
+SMLP4Rec + query embedding,all,ndcg@10,-0.0209,-0.0215,-0.0203
+SMLP4Rec + query embedding,all,recall@20,-0.0102,-0.0108,-0.0097
+SMLP4Rec + query embedding,all,ndcg@20,-0.0191,-0.0196,-0.0185
+SMLP4Rec + query embedding,warm,recall@5,-0.0291,-0.0301,-0.028
+SMLP4Rec + query embedding,warm,ndcg@5,-0.0282,-0.029,-0.0273
+SMLP4Rec + query embedding,warm,recall@10,-0.0216,-0.0227,-0.0207
+SMLP4Rec + query embedding,warm,ndcg@10,-0.0258,-0.0265,-0.025
+SMLP4Rec + query embedding,warm,recall@20,-0.0126,-0.0133,-0.0119
+SMLP4Rec + query embedding,warm,ndcg@20,-0.0235,-0.0242,-0.0228
+SMLP4Rec + query embedding,cold,recall@5,0.0,0.0,0.0
+SMLP4Rec + query embedding,cold,ndcg@5,0.0,0.0,0.0
+SMLP4Rec + query embedding,cold,recall@10,0.0,0.0,0.0
+SMLP4Rec + query embedding,cold,ndcg@10,0.0,0.0,0.0
+SMLP4Rec + query embedding,cold,recall@20,0.0,0.0,0.0
+SMLP4Rec + query embedding,cold,ndcg@20,0.0,0.0,0.0
+SMLP4Rec + query embedding + sameDest (main),all,recall@5,-0.0316,-0.0325,-0.0306
+SMLP4Rec + query embedding + sameDest (main),all,ndcg@5,-0.035,-0.0359,-0.0342
+SMLP4Rec + query embedding + sameDest (main),all,recall@10,-0.0216,-0.0224,-0.0209
+SMLP4Rec + query embedding + sameDest (main),all,ndcg@10,-0.0318,-0.0326,-0.0311
+SMLP4Rec + query embedding + sameDest (main),all,recall@20,-0.0115,-0.0121,-0.0109
+SMLP4Rec + query embedding + sameDest (main),all,ndcg@20,-0.0293,-0.03,-0.0286
+SMLP4Rec + query embedding + sameDest (main),warm,recall@5,-0.0389,-0.0401,-0.0378
+SMLP4Rec + query embedding + sameDest (main),warm,ndcg@5,-0.0432,-0.0442,-0.0422
+SMLP4Rec + query embedding + sameDest (main),warm,recall@10,-0.0267,-0.0277,-0.0256
+SMLP4Rec + query embedding + sameDest (main),warm,ndcg@10,-0.0393,-0.0403,-0.0383
+SMLP4Rec + query embedding + sameDest (main),warm,recall@20,-0.0141,-0.0149,-0.0135
+SMLP4Rec + query embedding + sameDest (main),warm,ndcg@20,-0.0361,-0.037,-0.0352
+SMLP4Rec + query embedding + sameDest (main),cold,recall@5,0.0,0.0,0.0
+SMLP4Rec + query embedding + sameDest (main),cold,ndcg@5,0.0,0.0,0.0
+SMLP4Rec + query embedding + sameDest (main),cold,recall@10,0.0,0.0,0.0
+SMLP4Rec + query embedding + sameDest (main),cold,ndcg@10,0.0,0.0,0.0
+SMLP4Rec + query embedding + sameDest (main),cold,recall@20,0.0,0.0,0.0
+SMLP4Rec + query embedding + sameDest (main),cold,ndcg@20,0.0,0.0,0.0

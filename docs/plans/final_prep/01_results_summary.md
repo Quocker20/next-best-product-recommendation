@@ -1,6 +1,6 @@
 # 01 Final results summary (Expedia, test split)
 
-Consolidated results package for the final report. Scope: the original code (SMLP4Rec plain, history only), the improved model (SMLP4Rec + query token, and + sameDest = the locked main model, notebook 01d with early stopping) and the two baselines (ItemKNN, logistic regression). Explorations (old hybrid, rerank rules, destination prior, behaviour split) are left out.
+Consolidated results package for the final report. Scope: the original code (SMLP4Rec plain, history only), the improved model (SMLP4Rec + query embedding, and + sameDest = the locked main model, notebook 01d with early stopping) and the two baselines (ItemKNN, logistic regression). Explorations (old hybrid, rerank rules, destination prior, behaviour split) are left out.
 
 - Built 2026-10-11 by `scripts/final_results_summary.py` (project `.venv`) from the run JSONs in `results/week4_rebuild/` and the saved per-row ranks; top-10 lists of the SMLP4Rec models from `scripts/final_export_topk_smlp4rec.py` (smlp4rec venv, loads checkpoints only, no training).
 - Outputs: `results/week5_final/final_results.json`, `final_benchmark.csv` (one row per model x training set x row set x seed-or-mean, `source` column = input file and key), `bootstrap_ci.csv`, `slices_*.csv`, `beyond_accuracy_*.csv`, `sensitivity_logreg_nb07.csv`, `final_tables.md`.
@@ -13,15 +13,15 @@ Consolidated results package for the final report. Scope: the original code (SML
 |---|---|---|---|---|
 | `plain_warm` | SMLP4Rec plain (original code, history only), nb01 | **warm users only** (L >= 1 next-booking targets of the train window) | fixed 3 epochs | 2022 |
 | `plain_all` | SMLP4Rec plain (original code, history only), 01e | all events: warm targets + first bookings (L = 0, empty history) of the train window, identical to 01d | early stopping on valid NDCG@10 (best epoch 2) | 2022 |
-| `query_token` | SMLP4Rec + query token, 01d | all events (as above) | early stopping (best epoch 8) | 2022 |
-| `main` | SMLP4Rec + query token + sameDest (locked main model), 01d | all events; sameDest weights tuned on valid (alpha 0.2, w_s 0 for a new destination, 0.75 for a known one) | early stopping (best epoch 8) | 2022 |
+| `query_embedding` | SMLP4Rec + query embedding, 01d | all events (as above) | early stopping (best epoch 8) | 2022 |
+| `main` | SMLP4Rec + query embedding + sameDest (locked main model), 01d | all events; sameDest weights tuned on valid (alpha 0.2, w_s 0 for a new destination, 0.75 for a known one) | early stopping (best epoch 8) | 2022 |
 | `itemknn` | ItemKNN (implicit cosine, K = 50, history only), 07b | all events | K on valid NDCG@10 | deterministic |
 | `logreg` | Multinomial logistic regression (destination + trip context, no history), 07b | all events | C on valid, one SAGA pass at a time with early stopping (C = 1.0, pass 8) | 2022 |
 
 Rows that a model cannot score are filled with a stated fallback, never left blank (column `scored_by`):
 - `plain_warm` on cold rows: **not scored by the model** (it never saw an empty history). The cold and all-events numbers in the source JSON use global popularity for cold rows; they are shown with that label.
 - `itemknn` on cold rows: no history, so first-booking popularity (07b design).
-- `main` on cold rows: identical to `query_token` (no history, so the sameDest term has no input; its weight for a new destination is 0).
+- `main` on cold rows: identical to `query_embedding` (no history, so the sameDest term has no input; its weight for a new destination is 0).
 - `plain_all` on cold rows: the model scores them, but an empty history gives one constant ranking for every cold row (a learned first-booking popularity).
 
 **Which original-code row is the fair comparison.** The like-for-like original-code row is `plain_all` (01e): same training set (warm + L = 0 rows), same early-stopping rule, same rows and scoring code as the main model, and it scores cold rows with the model itself. `plain_warm` is the original training recipe (warm users only, 3 epochs) and is reported, labelled, as the code as first run. On warm rows the two are statistically indistinguishable (bootstrap below: `plain_all` minus `plain_warm` NDCG@5 +0.0003, 95 % CI [-0.0002, +0.0007]), so the choice changes no conclusion; it matters only for the cold and all-events rows, where `plain_warm` has no model score.
@@ -34,8 +34,8 @@ Rows that a model cannot score are filled with a stated fallback, never left bla
 |---|---|---|---|---|---|---|---|---|
 | SMLP4Rec plain (original code) [warm rows only (L>=1), 3 epochs fixed, nb01] | 263331 | 0.2856 | 0.4105 | 0.5734 | 0.2000 | 0.2401 | 0.2811 | model on warm rows + global-popularity fallback on cold rows |
 | SMLP4Rec plain (original code) [all events (warm + L=0), early stopping, 01e] | 263331 | 0.2856 | 0.4110 | 0.5736 | 0.2001 | 0.2405 | 0.2814 | model |
-| SMLP4Rec + query token [all events (warm + L=0), early stopping, 01d] | 263331 | 0.5831 | 0.7613 | 0.9050 | 0.4122 | 0.4700 | 0.5066 | model |
-| SMLP4Rec + query token + sameDest (main) [all events (warm + L=0), early stopping, 01d] | 263331 | 0.5944 | 0.7664 | 0.9066 | 0.4295 | 0.4853 | 0.5210 | model |
+| SMLP4Rec + query embedding [all events (warm + L=0), early stopping, 01d] | 263331 | 0.5831 | 0.7613 | 0.9050 | 0.4122 | 0.4700 | 0.5066 | model |
+| SMLP4Rec + query embedding + sameDest (main) [all events (warm + L=0), early stopping, 01d] | 263331 | 0.5944 | 0.7664 | 0.9066 | 0.4295 | 0.4853 | 0.5210 | model |
 | ItemKNN (K=50) [all events (warm + L=0), K on valid, 07b] | 263331 | 0.2713 | 0.3989 | 0.5626 | 0.1850 | 0.2260 | 0.2671 | model on warm rows + first-booking popularity on cold rows |
 | Logistic regression (C=1.0) [all events (warm + L=0), early stopping, 07b] | 263331 | 0.4948 | 0.6869 | 0.8560 | 0.3339 | 0.3961 | 0.4391 | model |
 
@@ -46,8 +46,8 @@ Rows that a model cannot score are filled with a stated fallback, never left bla
 |---|---|---|---|---|---|---|---|---|
 | SMLP4Rec plain (original code) [warm rows only (L>=1), 3 epochs fixed, nb01] | 49462 | 0.1318 | 0.2270 | 0.3589 | 0.0814 | 0.1115 | 0.1444 | NOT SCORED by the model (never trained on an empty history); global-popularity fallback |
 | SMLP4Rec plain (original code) [all events (warm + L=0), early stopping, 01e] | 49462 | 0.1307 | 0.2288 | 0.3599 | 0.0809 | 0.1124 | 0.1454 | model (cold rows: one constant ranking, empty history) |
-| SMLP4Rec + query token [all events (warm + L=0), early stopping, 01d] | 49462 | 0.5252 | 0.7137 | 0.8807 | 0.3578 | 0.4189 | 0.4614 | model |
-| SMLP4Rec + query token + sameDest (main) [all events (warm + L=0), early stopping, 01d] | 49462 | 0.5252 | 0.7137 | 0.8807 | 0.3578 | 0.4189 | 0.4614 | identical to query token: no history, sameDest has no input (weight 0 for a new destination) |
+| SMLP4Rec + query embedding [all events (warm + L=0), early stopping, 01d] | 49462 | 0.5252 | 0.7137 | 0.8807 | 0.3578 | 0.4189 | 0.4614 | model |
+| SMLP4Rec + query embedding + sameDest (main) [all events (warm + L=0), early stopping, 01d] | 49462 | 0.5252 | 0.7137 | 0.8807 | 0.3578 | 0.4189 | 0.4614 | identical to query embedding: no history, sameDest has no input (weight 0 for a new destination) |
 | ItemKNN (K=50) [all events (warm + L=0), K on valid, 07b] | 49462 | 0.1318 | 0.2288 | 0.3590 | 0.0814 | 0.1123 | 0.1449 | NOT SCORED by the model (no history); first-booking popularity fallback |
 | Logistic regression (C=1.0) [all events (warm + L=0), early stopping, 07b] | 49462 | 0.4857 | 0.6747 | 0.8482 | 0.3275 | 0.3887 | 0.4328 | model |
 
@@ -58,8 +58,8 @@ Rows that a model cannot score are filled with a stated fallback, never left bla
 |---|---|---|---|---|---|---|---|---|
 | SMLP4Rec plain (original code) [warm rows only (L>=1), 3 epochs fixed, nb01] | 213869 | 0.3212 | 0.4530 | 0.6230 | 0.2274 | 0.2698 | 0.3127 | model |
 | SMLP4Rec plain (original code) [all events (warm + L=0), early stopping, 01e] | 213869 | 0.3214 | 0.4532 | 0.6230 | 0.2277 | 0.2701 | 0.3129 | model |
-| SMLP4Rec + query token [all events (warm + L=0), early stopping, 01d] | 213869 | 0.5965 | 0.7723 | 0.9107 | 0.4248 | 0.4818 | 0.5171 | model |
-| SMLP4Rec + query token + sameDest (main) [all events (warm + L=0), early stopping, 01d] | 213869 | 0.6104 | 0.7786 | 0.9125 | 0.4461 | 0.5007 | 0.5348 | model |
+| SMLP4Rec + query embedding [all events (warm + L=0), early stopping, 01d] | 213869 | 0.5965 | 0.7723 | 0.9107 | 0.4248 | 0.4818 | 0.5171 | model |
+| SMLP4Rec + query embedding + sameDest (main) [all events (warm + L=0), early stopping, 01d] | 213869 | 0.6104 | 0.7786 | 0.9125 | 0.4461 | 0.5007 | 0.5348 | model |
 | ItemKNN (K=50) [all events (warm + L=0), K on valid, 07b] | 213869 | 0.3036 | 0.4383 | 0.6097 | 0.2089 | 0.2522 | 0.2954 | model |
 | Logistic regression (C=1.0) [all events (warm + L=0), early stopping, 07b] | 213869 | 0.4969 | 0.6897 | 0.8578 | 0.3354 | 0.3978 | 0.4406 | model |
 
@@ -74,86 +74,86 @@ The early-stopping runs in the headline are seed 2022 only; no ES seed runs exis
 
 | model | row_set | recall@5 | recall@5_std | ndcg@5 | ndcg@5_std | recall@5_values | ndcg@5_values |
 |---|---|---|---|---|---|---|---|
-| SMLP4Rec + query token | all | 0.5737 | 0.0025 | 0.4044 | 0.0016 | 0.5748 0.5708 0.5755 | 0.4046 0.4028 0.4059 |
-| SMLP4Rec + query token | cold | 0.5109 | 0.0011 | 0.3488 | 0.0017 | 0.5104 0.5102 0.5122 | 0.3471 0.3487 0.3505 |
-| SMLP4Rec + query token | warm | 0.5882 | 0.0029 | 0.4173 | 0.0018 | 0.5897 0.5849 0.5901 | 0.4179 0.4153 0.4188 |
-| SMLP4Rec + query token + sameDest (main) | all | 0.5857 | 0.0022 | 0.4231 | 0.0016 | 0.5866 0.5832 0.5873 | 0.4233 0.4214 0.4245 |
-| SMLP4Rec + query token + sameDest (main) | cold | 0.5109 | 0.0011 | 0.3488 | 0.0017 | 0.5104 0.5102 0.5122 | 0.3471 0.3487 0.3505 |
-| SMLP4Rec + query token + sameDest (main) | warm | 0.6030 | 0.0025 | 0.4403 | 0.0018 | 0.6042 0.6001 0.6047 | 0.4409 0.4382 0.4417 |
+| SMLP4Rec + query embedding | all | 0.5737 | 0.0025 | 0.4044 | 0.0016 | 0.5748 0.5708 0.5755 | 0.4046 0.4028 0.4059 |
+| SMLP4Rec + query embedding | cold | 0.5109 | 0.0011 | 0.3488 | 0.0017 | 0.5104 0.5102 0.5122 | 0.3471 0.3487 0.3505 |
+| SMLP4Rec + query embedding | warm | 0.5882 | 0.0029 | 0.4173 | 0.0018 | 0.5897 0.5849 0.5901 | 0.4179 0.4153 0.4188 |
+| SMLP4Rec + query embedding + sameDest (main) | all | 0.5857 | 0.0022 | 0.4231 | 0.0016 | 0.5866 0.5832 0.5873 | 0.4233 0.4214 0.4245 |
+| SMLP4Rec + query embedding + sameDest (main) | cold | 0.5109 | 0.0011 | 0.3488 | 0.0017 | 0.5104 0.5102 0.5122 | 0.3471 0.3487 0.3505 |
+| SMLP4Rec + query embedding + sameDest (main) | warm | 0.6030 | 0.0025 | 0.4403 | 0.0018 | 0.6042 0.6001 0.6047 | 0.4409 0.4382 0.4417 |
 
 
 ## 4. Paired bootstrap (headline comparisons)
 
-1000 paired resamples of test rows, `nbp.eval.bootstrap.paired_bootstrap` (seed 0), K = 5 and 10. On cold rows the main model is the query token and ItemKNN is first-booking popularity. The last four rows repeat the sameDest gain after removing targets that re-book the same cluster at the same destination within 1 h / 1 d (definition of `scripts/expedia_sensitivity.py`; it conditions on the label, so it is a lower bound).
+1000 paired resamples of test rows, `nbp.eval.bootstrap.paired_bootstrap` (seed 0), K = 5 and 10. On cold rows the main model is the query embedding and ItemKNN is first-booking popularity. The last four rows repeat the sameDest gain after removing targets that re-book the same cluster at the same destination within 1 h / 1 d (definition of `scripts/expedia_sensitivity.py`; it conditions on the label, so it is a lower bound).
 
 #### Paired bootstrap, test (difference a minus b, 95% CI)
 
 | row_set | n | comparison | metric | diff | ci95 | note |
 |---|---|---|---|---|---|---|
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@5 | +0.0996 | [+0.0978, +0.1015] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@5 | +0.0956 | [+0.0942, +0.0969] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@10 | +0.0796 | [+0.0781, +0.0811] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@10 | +0.0892 | [+0.0880, +0.0903] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@5 | +0.3230 | [+0.3210, +0.3251] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@5 | +0.2445 | [+0.2431, +0.2461] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@10 | +0.3675 | [+0.3652, +0.3697] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@10 | +0.2593 | [+0.2581, +0.2607] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.3088 | [+0.3066, +0.3108] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2294 | [+0.2279, +0.2309] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3554 | [+0.3533, +0.3575] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2448 | [+0.2435, +0.2462] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | recall@5 | +0.0113 | [+0.0108, +0.0118] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | ndcg@5 | +0.0173 | [+0.0168, +0.0178] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | recall@10 | +0.0052 | [+0.0048, +0.0055] |  |
-| all | 263331 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | ndcg@10 | +0.0153 | [+0.0148, +0.0157] |  |
-| all | 263331 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.2975 | [+0.2954, +0.2996] |  |
-| all | 263331 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2121 | [+0.2106, +0.2136] |  |
-| all | 263331 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3503 | [+0.3480, +0.3524] |  |
-| all | 263331 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2295 | [+0.2282, +0.2310] |  |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@5 | +0.0394 | [+0.0358, +0.0433] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@5 | +0.0303 | [+0.0279, +0.0327] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@10 | +0.0390 | [+0.0357, +0.0422] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@10 | +0.0302 | [+0.0279, +0.0322] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@5 | +0.3934 | [+0.3886, +0.3986] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@5 | +0.2764 | [+0.2727, +0.2803] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@10 | +0.4849 | [+0.4797, +0.4901] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@10 | +0.3066 | [+0.3031, +0.3101] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.3945 | [+0.3895, +0.3994] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2769 | [+0.2730, +0.2807] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.4849 | [+0.4797, +0.4901] | cold: main = query token; ItemKNN = first-booking popularity |
-| cold | 49462 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.3065 | [+0.3030, +0.3100] | cold: main = query token; ItemKNN = first-booking popularity |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@5 | +0.1135 | [+0.1115, +0.1153] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@5 | +0.1107 | [+0.1091, +0.1122] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@10 | +0.0890 | [+0.0870, +0.0907] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@10 | +0.1028 | [+0.1014, +0.1041] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@5 | +0.3068 | [+0.3046, +0.3091] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@5 | +0.2372 | [+0.2356, +0.2388] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@10 | +0.3404 | [+0.3382, +0.3428] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@10 | +0.2484 | [+0.2471, +0.2500] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.2889 | [+0.2868, +0.2912] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2184 | [+0.2169, +0.2200] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3255 | [+0.3232, +0.3278] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2306 | [+0.2292, +0.2321] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | recall@5 | +0.2892 | [+0.2870, +0.2914] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | ndcg@5 | +0.2187 | [+0.2172, +0.2203] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | recall@10 | +0.3257 | [+0.3235, +0.3279] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | ndcg@10 | +0.2309 | [+0.2295, +0.2323] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | recall@5 | +0.0139 | [+0.0132, +0.0145] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | ndcg@5 | +0.0213 | [+0.0206, +0.0219] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | recall@10 | +0.0064 | [+0.0060, +0.0068] |  |
-| warm | 213869 | SMLP4Rec + query token + sameDest (main) [main] minus SMLP4Rec + query token [query_token] | ndcg@10 | +0.0188 | [+0.0183, +0.0194] |  |
-| warm | 213869 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.2750 | [+0.2728, +0.2774] |  |
-| warm | 213869 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.1971 | [+0.1955, +0.1988] |  |
-| warm | 213869 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3191 | [+0.3168, +0.3214] |  |
-| warm | 213869 | SMLP4Rec + query token [query_token] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2118 | [+0.2103, +0.2133] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@5 | +0.0996 | [+0.0978, +0.1015] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@5 | +0.0956 | [+0.0942, +0.0969] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@10 | +0.0796 | [+0.0781, +0.0811] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@10 | +0.0892 | [+0.0880, +0.0903] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@5 | +0.3230 | [+0.3210, +0.3251] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@5 | +0.2445 | [+0.2431, +0.2461] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@10 | +0.3675 | [+0.3652, +0.3697] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@10 | +0.2593 | [+0.2581, +0.2607] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.3088 | [+0.3066, +0.3108] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2294 | [+0.2279, +0.2309] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3554 | [+0.3533, +0.3575] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2448 | [+0.2435, +0.2462] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | recall@5 | +0.0113 | [+0.0108, +0.0118] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | ndcg@5 | +0.0173 | [+0.0168, +0.0178] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | recall@10 | +0.0052 | [+0.0048, +0.0055] |  |
+| all | 263331 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | ndcg@10 | +0.0153 | [+0.0148, +0.0157] |  |
+| all | 263331 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.2975 | [+0.2954, +0.2996] |  |
+| all | 263331 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2121 | [+0.2106, +0.2136] |  |
+| all | 263331 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3503 | [+0.3480, +0.3524] |  |
+| all | 263331 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2295 | [+0.2282, +0.2310] |  |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@5 | +0.0394 | [+0.0358, +0.0433] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@5 | +0.0303 | [+0.0279, +0.0327] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@10 | +0.0390 | [+0.0357, +0.0422] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@10 | +0.0302 | [+0.0279, +0.0322] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@5 | +0.3934 | [+0.3886, +0.3986] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@5 | +0.2764 | [+0.2727, +0.2803] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@10 | +0.4849 | [+0.4797, +0.4901] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@10 | +0.3066 | [+0.3031, +0.3101] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.3945 | [+0.3895, +0.3994] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2769 | [+0.2730, +0.2807] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.4849 | [+0.4797, +0.4901] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| cold | 49462 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.3065 | [+0.3030, +0.3100] | cold: main = query embedding; ItemKNN = first-booking popularity |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@5 | +0.1135 | [+0.1115, +0.1153] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@5 | +0.1107 | [+0.1091, +0.1122] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | recall@10 | +0.0890 | [+0.0870, +0.0907] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus Logistic regression (C=1.0) [logreg] | ndcg@10 | +0.1028 | [+0.1014, +0.1041] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@5 | +0.3068 | [+0.3046, +0.3091] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@5 | +0.2372 | [+0.2356, +0.2388] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | recall@10 | +0.3404 | [+0.3382, +0.3428] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus ItemKNN (K=50) [itemknn] | ndcg@10 | +0.2484 | [+0.2471, +0.2500] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.2889 | [+0.2868, +0.2912] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.2184 | [+0.2169, +0.2200] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3255 | [+0.3232, +0.3278] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2306 | [+0.2292, +0.2321] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | recall@5 | +0.2892 | [+0.2870, +0.2914] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | ndcg@5 | +0.2187 | [+0.2172, +0.2203] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | recall@10 | +0.3257 | [+0.3235, +0.3279] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec plain (original code) [plain_warm] | ndcg@10 | +0.2309 | [+0.2295, +0.2323] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | recall@5 | +0.0139 | [+0.0132, +0.0145] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | ndcg@5 | +0.0213 | [+0.0206, +0.0219] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | recall@10 | +0.0064 | [+0.0060, +0.0068] |  |
+| warm | 213869 | SMLP4Rec + query embedding + sameDest (main) [main] minus SMLP4Rec + query embedding [query_embedding] | ndcg@10 | +0.0188 | [+0.0183, +0.0194] |  |
+| warm | 213869 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | recall@5 | +0.2750 | [+0.2728, +0.2774] |  |
+| warm | 213869 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | ndcg@5 | +0.1971 | [+0.1955, +0.1988] |  |
+| warm | 213869 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | recall@10 | +0.3191 | [+0.3168, +0.3214] |  |
+| warm | 213869 | SMLP4Rec + query embedding [query_embedding] minus SMLP4Rec plain (original code) [plain_all] | ndcg@10 | +0.2118 | [+0.2103, +0.2133] |  |
 | warm | 213869 | SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm] | recall@5 | +0.0003 | [-0.0007, +0.0011] |  |
 | warm | 213869 | SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm] | ndcg@5 | +0.0003 | [-0.0002, +0.0007] |  |
 | warm | 213869 | SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm] | recall@10 | +0.0002 | [-0.0007, +0.0012] |  |
 | warm | 213869 | SMLP4Rec plain (original code) [plain_all] minus SMLP4Rec plain (original code) [plain_warm] | ndcg@10 | +0.0003 | [-0.0001, +0.0007] |  |
-| warm excluding re-books within_1h | 206975 | sameDest gain: main minus query token | recall@5 | +0.0097 | [+0.0091, +0.0102] | rows removed: 6894 |
-| warm excluding re-books within_1h | 206975 | sameDest gain: main minus query token | ndcg@5 | +0.0139 | [+0.0133, +0.0145] | rows removed: 6894 |
-| warm excluding re-books within_1d | 205031 | sameDest gain: main minus query token | recall@5 | +0.0085 | [+0.0080, +0.0091] | rows removed: 8838 |
-| warm excluding re-books within_1d | 205031 | sameDest gain: main minus query token | ndcg@5 | +0.0119 | [+0.0114, +0.0124] | rows removed: 8838 |
+| warm excluding re-books within_1h | 206975 | sameDest gain: main minus query embedding | recall@5 | +0.0097 | [+0.0091, +0.0102] | rows removed: 6894 |
+| warm excluding re-books within_1h | 206975 | sameDest gain: main minus query embedding | ndcg@5 | +0.0139 | [+0.0133, +0.0145] | rows removed: 6894 |
+| warm excluding re-books within_1d | 205031 | sameDest gain: main minus query embedding | recall@5 | +0.0085 | [+0.0080, +0.0091] | rows removed: 8838 |
+| warm excluding re-books within_1d | 205031 | sameDest gain: main minus query embedding | ndcg@5 | +0.0119 | [+0.0114, +0.0124] | rows removed: 8838 |
 
 
 **Baseline strength check.** The 07b logistic regression (the like-for-like run, trained on all events with early stopping) is weaker than the logistic regression of notebook 07 (C = 10, 3 SAGA passes, trained on the bookings before a time cut at the end of the train window). The table below scores the notebook-07 model on the same rows. The main model still wins on all three row sets, but the warm NDCG@5 gap is +0.0893 against notebook 07 versus +0.1107 against 07b. The report should either cite the smaller gap as the conservative number or explain the difference (07b restarts SAGA's gradient memory each pass and selected C = 1.0).
@@ -177,7 +177,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: history length L - NDCG@5
 
-| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_token | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
+| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_embedding | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | L=0 (cold) | 49462 | False |  | 0.0809 | 0.3578 | 0.3578 | 0.0814 | 0.3275 |
 | all | L=1 | 39778 | False | 0.1798 | 0.1792 | 0.3934 | 0.4011 | 0.1719 | 0.3285 |
@@ -188,7 +188,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: history length L - Recall@5
 
-| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_token | R@5 main | R@5 itemknn | R@5 logreg |
+| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_embedding | R@5 main | R@5 itemknn | R@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | L=0 (cold) | 49462 | False |  | 0.1307 | 0.5252 | 0.5252 | 0.1318 | 0.4857 |
 | all | L=1 | 39778 | False | 0.2528 | 0.2516 | 0.5625 | 0.5670 | 0.2377 | 0.4919 |
@@ -201,7 +201,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: query destination in last-20 history - NDCG@5
 
-| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_token | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
+| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_embedding | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | cold (no history) | 49462 | False |  | 0.0809 | 0.3578 | 0.3578 | 0.0814 | 0.3275 |
 | all | known destination | 60586 | False | 0.4405 | 0.4408 | 0.5166 | 0.5917 | 0.4088 | 0.3345 |
@@ -210,7 +210,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: query destination in last-20 history - Recall@5
 
-| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_token | R@5 main | R@5 itemknn | R@5 logreg |
+| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_embedding | R@5 main | R@5 itemknn | R@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | cold (no history) | 49462 | False |  | 0.1307 | 0.5252 | 0.5252 | 0.1318 | 0.4857 |
 | all | known destination | 60586 | False | 0.5617 | 0.5614 | 0.6783 | 0.7273 | 0.5501 | 0.4957 |
@@ -223,7 +223,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: check-in month - NDCG@5
 
-| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_token | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
+| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_embedding | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | 01 | 56096 | False |  | 0.1907 | 0.4084 | 0.4271 | 0.1752 | 0.3323 |
 | all | 02 | 18078 | False |  | 0.1698 | 0.4023 | 0.4185 | 0.1576 | 0.3261 |
@@ -253,7 +253,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: check-in month - Recall@5
 
-| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_token | R@5 main | R@5 itemknn | R@5 logreg |
+| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_embedding | R@5 main | R@5 itemknn | R@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | 01 | 56096 | False |  | 0.2714 | 0.5771 | 0.5902 | 0.2569 | 0.4907 |
 | all | 02 | 18078 | False |  | 0.2417 | 0.5711 | 0.5815 | 0.2315 | 0.4845 |
@@ -283,7 +283,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: check-in season - NDCG@5
 
-| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_token | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
+| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_embedding | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | DJF | 207986 | False |  | 0.2025 | 0.4129 | 0.4301 | 0.1876 | 0.3353 |
 | all | JJA | 8825 | False |  | 0.1626 | 0.3931 | 0.4105 | 0.1450 | 0.3166 |
@@ -297,7 +297,7 @@ Not the like-for-like baseline (different C / pass selection); shown because it 
 
 #### Slice: check-in season - Recall@5
 
-| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_token | R@5 main | R@5 itemknn | R@5 logreg |
+| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_embedding | R@5 main | R@5 itemknn | R@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | DJF | 207986 | False |  | 0.2891 | 0.5841 | 0.5953 | 0.2748 | 0.4966 |
 | all | JJA | 8825 | False |  | 0.2367 | 0.5605 | 0.5722 | 0.2192 | 0.4746 |
@@ -315,7 +315,7 @@ Party type = family (children > 0), solo (1 adult), couple (2), group (3+), unkn
 
 #### Slice: party type - NDCG@5
 
-| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_token | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
+| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_embedding | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | couple | 131067 | False |  | 0.1863 | 0.4063 | 0.4216 | 0.1719 | 0.3354 |
 | all | family | 36389 | False |  | 0.1769 | 0.4073 | 0.4188 | 0.1625 | 0.3400 |
@@ -331,7 +331,7 @@ Party type = family (children > 0), solo (1 adult), couple (2), group (3+), unkn
 
 #### Slice: party type - Recall@5
 
-| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_token | R@5 main | R@5 itemknn | R@5 logreg |
+| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_embedding | R@5 main | R@5 itemknn | R@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | couple | 131067 | False |  | 0.2675 | 0.5789 | 0.5888 | 0.2539 | 0.4971 |
 | all | family | 36389 | False |  | 0.2600 | 0.5770 | 0.5845 | 0.2449 | 0.5018 |
@@ -347,7 +347,7 @@ Party type = family (children > 0), solo (1 adult), couple (2), group (3+), unkn
 
 #### Slice: is_package - NDCG@5
 
-| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_token | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
+| row_set | bucket | n | small_bucket | NDCG@5 plain_warm | NDCG@5 plain_all | NDCG@5 query_embedding | NDCG@5 main | NDCG@5 itemknn | NDCG@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | no package | 238003 | False |  | 0.2079 | 0.4120 | 0.4302 | 0.1916 | 0.3315 |
 | all | package | 25328 | False |  | 0.1268 | 0.4146 | 0.4228 | 0.1227 | 0.3571 |
@@ -357,7 +357,7 @@ Party type = family (children > 0), solo (1 adult), couple (2), group (3+), unkn
 
 #### Slice: is_package - Recall@5
 
-| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_token | R@5 main | R@5 itemknn | R@5 logreg |
+| row_set | bucket | n | small_bucket | R@5 plain_warm | R@5 plain_all | R@5 query_embedding | R@5 main | R@5 itemknn | R@5 logreg |
 |---|---|---|---|---|---|---|---|---|---|
 | all | no package | 238003 | False |  | 0.2964 | 0.5826 | 0.5944 | 0.2811 | 0.4914 |
 | all | package | 25328 | False |  | 0.1845 | 0.5873 | 0.5936 | 0.1793 | 0.5272 |
@@ -381,18 +381,18 @@ Global catalog coverage is 100/100 for every learned model on warm and all rows,
 | row_set | model_key | n | ILD@10 | ARP@10 | ARP_target | ARP_ratio | head10_slot_share | head10_target_share | catalog_coverage@10 | exposure_gini |
 |---|---|---|---|---|---|---|---|---|---|---|
 | all | plain_all | 263331 | 0.8719 | 0.0179 | 0.0142 | 1.2568 | 0.4691 | 0.2447 | 100 | 0.6208 |
-| all | query_token | 263331 | 0.9008 | 0.0140 | 0.0142 | 0.9828 | 0.2286 | 0.2447 | 100 | 0.3637 |
+| all | query_embedding | 263331 | 0.9008 | 0.0140 | 0.0142 | 0.9828 | 0.2286 | 0.2447 | 100 | 0.3637 |
 | all | main | 263331 | 0.9009 | 0.0140 | 0.0142 | 0.9825 | 0.2284 | 0.2447 | 100 | 0.3630 |
 | all | itemknn | 263331 | 0.8762 | 0.0171 | 0.0142 | 1.2039 | 0.4365 | 0.2447 | 100 | 0.5805 |
 | all | logreg | 263331 | 0.9058 | 0.0144 | 0.0142 | 1.0132 | 0.2584 | 0.2447 | 100 | 0.4196 |
 | warm | plain_warm | 213869 | 0.8731 | 0.0168 | 0.0143 | 1.1755 | 0.3632 | 0.2488 | 100 | 0.5641 |
 | warm | plain_all | 213869 | 0.8731 | 0.0168 | 0.0143 | 1.1754 | 0.3694 | 0.2488 | 100 | 0.5623 |
-| warm | query_token | 213869 | 0.8996 | 0.0140 | 0.0143 | 0.9779 | 0.2301 | 0.2488 | 100 | 0.3675 |
+| warm | query_embedding | 213869 | 0.8996 | 0.0140 | 0.0143 | 0.9779 | 0.2301 | 0.2488 | 100 | 0.3675 |
 | warm | main | 213869 | 0.8998 | 0.0140 | 0.0143 | 0.9775 | 0.2298 | 0.2488 | 100 | 0.3667 |
 | warm | itemknn | 213869 | 0.8783 | 0.0159 | 0.0143 | 1.1108 | 0.3293 | 0.2488 | 100 | 0.5143 |
 | warm | logreg | 213869 | 0.9053 | 0.0145 | 0.0143 | 1.0101 | 0.2618 | 0.2488 | 100 | 0.4257 |
 | cold | plain_all | 49462 | 0.8669 | 0.0223 | 0.0137 | 1.6249 | 0.9000 | 0.2270 | 10 | 0.9000 |
-| cold | query_token | 49462 | 0.9058 | 0.0138 | 0.0137 | 1.0052 | 0.2220 | 0.2270 | 100 | 0.3540 |
+| cold | query_embedding | 49462 | 0.9058 | 0.0138 | 0.0137 | 1.0052 | 0.2220 | 0.2270 | 100 | 0.3540 |
 | cold | main | 49462 | 0.9058 | 0.0138 | 0.0137 | 1.0052 | 0.2220 | 0.2270 | 100 | 0.3540 |
 | cold | itemknn | 49462 | 0.8669 | 0.0223 | 0.0137 | 1.6249 | 0.9000 | 0.2270 | 10 | 0.9000 |
 | cold | logreg | 49462 | 0.9081 | 0.0141 | 0.0137 | 1.0273 | 0.2437 | 0.2270 | 100 | 0.3971 |
@@ -403,18 +403,18 @@ Global catalog coverage is 100/100 for every learned model on warm and all rows,
 | row_set | model_key | destinations | rows_in_these_destinations | mean_distinct_recommended@10 | mean_distinct_booked | mean_booked_cluster_coverage@10 |
 |---|---|---|---|---|---|---|
 | all | plain_all | 1878 | 216738 | 65.5300 | 15.6600 | 0.9335 |
-| all | query_token | 1878 | 216738 | 23.0200 | 15.6600 | 0.8985 |
+| all | query_embedding | 1878 | 216738 | 23.0200 | 15.6600 | 0.8985 |
 | all | main | 1878 | 216738 | 23.6400 | 15.6600 | 0.9159 |
 | all | itemknn | 1878 | 216738 | 70.9400 | 15.6600 | 0.9515 |
 | all | logreg | 1878 | 216738 | 18.8700 | 15.6600 | 0.8094 |
 | warm | plain_warm | 1606 | 170169 | 67.8500 | 15.9400 | 0.9471 |
 | warm | plain_all | 1606 | 170169 | 68.0000 | 15.9400 | 0.9461 |
-| warm | query_token | 1606 | 170169 | 23.6300 | 15.9400 | 0.9036 |
+| warm | query_embedding | 1606 | 170169 | 23.6300 | 15.9400 | 0.9036 |
 | warm | main | 1606 | 170169 | 24.3300 | 15.9400 | 0.9227 |
 | warm | itemknn | 1606 | 170169 | 73.5600 | 15.9400 | 0.9624 |
 | warm | logreg | 1606 | 170169 | 18.6300 | 15.9400 | 0.8052 |
 | cold | plain_all | 416 | 31371 | 10.0000 | 18.5800 | 0.2044 |
-| cold | query_token | 416 | 31371 | 18.2000 | 18.5800 | 0.7384 |
+| cold | query_embedding | 416 | 31371 | 18.2000 | 18.5800 | 0.7384 |
 | cold | main | 416 | 31371 | 18.2000 | 18.5800 | 0.7384 |
 | cold | itemknn | 416 | 31371 | 10.0000 | 18.5800 | 0.2044 |
 | cold | logreg | 416 | 31371 | 20.0600 | 18.5800 | 0.7622 |
@@ -422,7 +422,7 @@ Global catalog coverage is 100/100 for every learned model on warm and all rows,
 
 #### Coverage per check-in month: distinct clusters recommended in top-10
 
-| row_set | checkin_month | n | distinct_booked | small_bucket | plain_warm | plain_all | query_token | main | itemknn | logreg |
+| row_set | checkin_month | n | distinct_booked | small_bucket | plain_warm | plain_all | query_embedding | main | itemknn | logreg |
 |---|---|---|---|---|---|---|---|---|---|---|
 | all | 01 | 56096 | 100 | False |  | 100 | 100 | 100 | 100 | 100 |
 | all | 02 | 18078 | 100 | False |  | 100 | 100 | 100 | 100 | 100 |
@@ -464,7 +464,7 @@ Global catalog coverage is 100/100 for every learned model on warm and all rows,
 
 #### Coverage per check-in month: exposure Gini of top-10 slots
 
-| row_set | checkin_month | n | distinct_booked | small_bucket | plain_warm | plain_all | query_token | main | itemknn | logreg |
+| row_set | checkin_month | n | distinct_booked | small_bucket | plain_warm | plain_all | query_embedding | main | itemknn | logreg |
 |---|---|---|---|---|---|---|---|---|---|---|
 | all | 01 | 56096 | 100 | False |  | 0.6201 | 0.3443 | 0.3436 | 0.5791 | 0.3948 |
 | all | 02 | 18078 | 100 | False |  | 0.6219 | 0.3199 | 0.3190 | 0.5815 | 0.3698 |
@@ -504,11 +504,11 @@ Global catalog coverage is 100/100 for every learned model on warm and all rows,
 | warm | 12 | 110273 | 100 | False | 0.5735 | 0.5728 | 0.4062 | 0.4055 | 0.5254 | 0.4702 |
 
 
-Reading: the context-aware models (query token, main) recommend clusters about as popular as the booked ones (ARP_ratio 0.9775-1.0052 across row sets) and spread exposure most evenly (lowest exposure Gini). The history-only models (plain, ItemKNN) over-recommend the popular head. Per destination it is the other way round: the query-token models concentrate on about 23-24 distinct clusters per destination, against 65-74 for the history-only models (which ignore the destination). They keep booked-cluster coverage near the history-only level (0.9159 vs 0.9335 for `plain_all`, all rows), above the logistic regression (0.8094).
+Reading: the context-aware models (query embedding, main) recommend clusters about as popular as the booked ones (ARP_ratio 0.9775-1.0052 across row sets) and spread exposure most evenly (lowest exposure Gini). The history-only models (plain, ItemKNN) over-recommend the popular head. Per destination it is the other way round: the query-embedding models concentrate on about 23-24 distinct clusters per destination, against 65-74 for the history-only models (which ignore the destination). They keep booked-cluster coverage near the history-only level (0.9159 vs 0.9335 for `plain_all`, all rows), above the logistic regression (0.8094).
 
 ## 7. Existing results reused (01d early-stopping run)
 
-#### Existing: per-field permutation on the query token, test warm (01d ES)
+#### Existing: per-field permutation on the query embedding, test warm (01d ES)
 
 | field | recall@5 | ndcg@5 | ndcg@5_drop |
 |---|---|---|---|
@@ -528,7 +528,7 @@ Reading: the context-aware models (query token, main) recommend clusters about a
 | country | 0.5942 | 0.4229 | 0.0019 |
 
 
-#### Existing: query / history ablation of the query token, test warm (01d ES)
+#### Existing: query / history ablation of the query embedding, test warm (01d ES)
 
 | input | n | recall@5 | recall@10 | recall@20 | ndcg@5 | ndcg@10 | ndcg@20 |
 |---|---|---|---|---|---|---|---|
@@ -538,11 +538,11 @@ Reading: the context-aware models (query token, main) recommend clusters about a
 | both (shuffled + masked) | 213869 | 0.0761 | 0.1451 | 0.2731 | 0.0456 | 0.0677 | 0.0997 |
 
 
-#### Existing: cold rows by destination vocabulary, query token (01d ES)
+#### Existing: cold rows by destination vocabulary, query embedding (01d ES)
 
 | slice | n | recall@5 | ndcg@5 |
 |---|---|---|---|
-| destination in query-token vocab | 48578 | 0.5301 | 0.3613 |
+| destination in query-embedding vocab | 48578 | 0.5301 | 0.3613 |
 | destination out of vocab | 884 | 0.2523 | 0.1655 |
 
 
@@ -571,7 +571,7 @@ Reading: the context-aware models (query token, main) recommend clusters about a
 | RQ | Answered by | Status |
 |---|---|---|
 | RQ1: does a context-aware session model beat traditional CF on sparse, seasonal, trip-context-dependent travel data? | Headline tables (section 2), bootstrap (section 4), slices by L (5.1), known / new destination (5.2), trip context (5.4), existing ablations (section 7) | Answered for history length, destination novelty, party type, package and cold vs warm. **Seasonality is not answerable on this split** (5.3); the slice is reported with row counts only. |
-| RQ1, sparsity / new users | Cold rows (L = 0) and L = 1 bucket | Answered: the query token scores first bookings, while history-only models fall back to a constant ranking. |
+| RQ1, sparsity / new users | Cold rows (L = 0) and L = 1 bucket | Answered: the query embedding scores first bookings, while history-only models fall back to a constant ranking. |
 | RQ4: accuracy vs diversity / coverage | Section 6 (ILD, ARP, head share, exposure Gini, coverage per destination and per check-in month) plus the accuracy tables | Answered with the definitions above. ILD differences are small because clusters are anonymous (co-booking similarity only); per-season coverage inherits the season degeneracy. |
 | RQ2 (food delivery), RQ3 (cross-sell) | none | Out of scope (CLAUDE.md section 3); no data in this project. |
 

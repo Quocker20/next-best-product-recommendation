@@ -7,7 +7,7 @@ recommended lists and not only the rank of the booked cluster.
 
 Models (seed 2022):
 - final model, 01d with early stopping (`2026-10-10_..._query-1d-clean-cold-es/best.pth`):
-  query token alone, and query token + sameDest with the weights tuned on valid in
+  query embedding alone, and query embedding + sameDest with the weights tuned on valid in
   `smlprec_query_cold_train_es_run.json` (`samedest_hybrid.tuned_on_valid.A`);
 - original code, plain SMLP4Rec (history only) trained on all events, 01e
   (`2026-10-10_..._plain-1e-clean-cold-es/best.pth`); cold rows = all-padding history, length 1,
@@ -120,7 +120,7 @@ def main() -> None:
 
     p_all = plain_model(PLAIN_ALL_DIR / "best.pth", runner.n_items)
     p_warm = plain_model(PLAIN_WARM_DIR / "best.pth", runner.n_items)
-    names = ("query_token", "main", "plain_all", "plain_warm")
+    names = ("query_embedding", "main", "plain_all", "plain_warm")
     ranks = {k: np.empty(len(events), np.int16) for k in names}
     tops = {k: np.empty((len(events), TOP), np.int8) for k in names}
     known = np.zeros(len(events), bool)
@@ -155,7 +155,7 @@ def main() -> None:
             )
             truth = d.item[ev_b].astype(np.int64)
             sl = slice(s, s + n)
-            ranks["query_token"][sl], tops["query_token"][sl] = rank_and_top(np.log(p), truth)
+            ranks["query_embedding"][sl], tops["query_embedding"][sl] = rank_and_top(np.log(p), truth)
             ranks["main"][sl], tops["main"][sl] = rank_and_top(fused, truth)
             # plain models: empty history -> one all-padding position (length 1), as in 01e
             ln_t = torch.from_numpy(np.maximum(length, 1))
@@ -180,17 +180,17 @@ def main() -> None:
     iw = np.array([pos[int(e)] for e in zw["row"]])
     ic = np.array([pos[int(e)] for e in zc["row"]])
     agree = {
-        "main vs 01d ranks_test_warm[query_token_sameDest]": float(
-            (ranks["main"][iw] == zw["query_token_sameDest"]).mean()
+        "main vs 01d ranks_test_warm[query_embedding_sameDest]": float(
+            (ranks["main"][iw] == zw["query_embedding_sameDest"]).mean()
         ),
-        "query_token vs 01d ranks_test_warm[query_token]": float(
-            (ranks["query_token"][iw] == zw["query_token"]).mean()
+        "query_embedding vs 01d ranks_test_warm[query_embedding]": float(
+            (ranks["query_embedding"][iw] == zw["query_embedding"]).mean()
         ),
         "plain_warm vs 01d ranks_test_warm[plain] (nb01 rescored)": float(
             (ranks["plain_warm"][iw] == zw["plain"]).mean()
         ),
-        "query_token (cold) vs 01d ranks_test_cold[query_token_alone]": float(
-            (ranks["query_token"][ic] == zc["query_token_alone"]).mean()
+        "query_embedding (cold) vs 01d ranks_test_cold[query_embedding_alone]": float(
+            (ranks["query_embedding"][ic] == zc["query_embedding_alone"]).mean()
         ),
         "plain_all (warm) vs 01e ranks_test.npz[warm]": float(
             (ranks["plain_all"][iw] == ze["warm"]).mean()

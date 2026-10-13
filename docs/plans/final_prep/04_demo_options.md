@@ -41,7 +41,7 @@ early-stopping demo gave pooled Recall@5 0.577 (main), 0.511 (logistic regressio
 (1,500 × 0.5252 + 3,000 × 0.6104) / 4,500 = 0.582, within about one binomial standard error
 (0.007 at n = 4,500).
 (Corrected 2026-10-11 by the verification pass: the warm main-model value was 0.5965, which is the
-query token without sameDest; the main model is query token + sameDest, `final_benchmark.csv`.)
+query embedding without sameDest; the main model is query embedding + sameDest, `final_benchmark.csv`.)
 
 ## 1. Ranked options
 
@@ -100,7 +100,7 @@ CSS tokens of `reports/summary/week4_rebuild/week4_clean_slides.html` for a cons
 6. Large-font "presentation mode" (hide the 14-field form behind a toggle).
 
 **Claims supported.** RQ1 (context and history both matter; side by side against both
-baselines), plus a live demonstration that the query token reacts to party and season. RQ4 is not
+baselines), plus a live demonstration that the query embedding reacts to party and season. RQ4 is not
 well served by a single user; leave it to the result slides.
 
 **Effort.** 6 to 10 h (front-end in the `PAGE` string, one extra endpoint not needed: what-ifs are
@@ -150,16 +150,16 @@ machine.
 narration matches the clicks (a narrated recording reads as a demo; a recording with a foreign
 voice-over does not).
 
-### Option 4 (rank 4): interactive explainer of the query token
+### Option 4 (rank 4): interactive explainer of the query embedding
 
 **What the audience sees.** A small page with the history as S boxes plus one extra box at the
-end, the query token = a learned [MASK] vector plus one embedding per search field
+end, the query embedding = a learned [MASK] vector plus one embedding per search field
 (`src/nbp/models/smlprec_query.py`, `query_vector`). A stepper shows (1) embed history,
-(2) build the query token from destination, dates, party, package, channel, (3) the MLP mixer mixes
+(2) build the query embedding from destination, dates, party, package, channel, (3) the MLP mixer mixes
 across positions so the last position "reads" the history, (4) the last position scores all 100
 clusters, (5) sameDest adds the earlier bookings at the searched destination (`w = 0.75` only for a
 known destination; `alpha = 0.2`, tuned on valid, `smlprec_query_cold_train_es_run.json`).
-Toggling a field in the query token can replay a precomputed example from Option 1 (no live model).
+Toggling a field in the query embedding can replay a precomputed example from Option 1 (no live model).
 
 **Claims supported.** Methodology: why a session model with the search inside it can beat
 CF and a context-only classifier (RQ1 mechanism). Good for a "how it works" slide.
@@ -172,7 +172,7 @@ slide in 1 to 2 h, which gives most of the value.
 **Dependencies.** None.
 
 **Reuses.** The architecture slide content in `reports/summary/week4_rebuild/week4_clean_slides.html`
-("Query token: 14 trường ...", "sameDest ..."), precomputed JSON of Option 1.
+("Query embedding: 14 trường ...", "sameDest ..."), precomputed JSON of Option 1.
 
 **Talk track (about 40 s).**
 > "The original SMLP4Rec only sees the list of past clusters. We add one extra position at the end:
@@ -220,7 +220,7 @@ Not worth it for a short talk. Ask the user only if they want a hosted demo late
    Switch rule: if the page is not responding within 10 to 15 s, or anything needs debugging, go to
    the video and narrate it. Never debug on stage.
 4. **Optional: Option 4 as one static slide** before the demo, if the methodology slide does not
-   already explain the query token.
+   already explain the query embedding.
 
 Pre-talk checklist: start the server 5 minutes before the session (`python -u`); open the page
 and press each preset once; disable sleep and notifications; projector resolution test; storyboard
@@ -327,7 +327,7 @@ Checked: the early-stopping run json has the keys the `Runner` reads
 Follow-ups in the same change:
 1. Seeds 2023 / 2024 have no early-stopping run (PROGRESS.md open item). Either drop them (above)
    or keep them labelled "3-epoch" in the seed dropdown; do not mix them silently.
-2. Page and docstring text: "SMLP4Rec + query token (01d, early stopping, best epoch 8) + sameDest".
+2. Page and docstring text: "SMLP4Rec + query embedding (01d, early stopping, best epoch 8) + sameDest".
 3. `print(f"ready: ...", flush=True)` so the ready line shows when run in the background.
 4. Optional, for consistency with the final table: export the 07b baselines instead of notebook 07.
    In `scripts/export_baselines_for_demo.py` set `SRC = .../baselines_es_models.joblib`. The 07b

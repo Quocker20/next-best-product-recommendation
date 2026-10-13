@@ -3,7 +3,7 @@
 
 
 Scope of the final deliverable (user, 2026-10-11): re-introduce the problem, the dataset, the method, the
-**original** SMLP4Rec adaptation, **our improvements** (query token, sameDest, training with first
+**original** SMLP4Rec adaptation, **our improvements** (query embedding, sameDest, training with first
 bookings), the benchmark against exactly **two** baselines (ItemKNN, logistic regression), and which parts
 answer RQ1 and RQ4. RQ2 / RQ3 are out of scope and get one sentence. **Skipped on purpose:** old hybrid,
 top-5 rerank rules, destination prior, behaviour split, LLM rerank, every other model (notebooks 02, 03,
@@ -46,7 +46,7 @@ keep that style and the inline-SVG builder pattern of `scripts/week4_clean_slide
 
 ## 1. Written report: table of contents
 
-Headline model throughout: **SMLP4Rec + query token + sameDest, trained with first bookings, early
+Headline model throughout: **SMLP4Rec + query embedding + sameDest, trained with first bookings, early
 stopping** (notebook 01d, user decision 2026-10-10, `PROGRESS.md` "01d with early stopping"). Headline
 row set: warm test rows; cold and all events next to it.
 
@@ -54,7 +54,7 @@ row set: warm test rows; cold and all events next to it.
 - **Abstract** (150-200 words): problem, data, model, the two baselines, headline warm and cold result,
   one limitation sentence. Source: `results/week4_rebuild/baselines_vs_final_es.json`.
 - **Summary of contributions** (bullets, each pointing to a chapter): (1) cleaned, leakage-audited
-  Expedia booking benchmark; (2) a runnable adaptation of SMLP4Rec on hotel clusters; (3) query token;
+  Expedia booking benchmark; (2) a runnable adaptation of SMLP4Rec on hotel clusters; (3) query embedding;
   (4) sameDest; (5) training with first bookings; (6) benchmark against ItemKNN and logistic regression
   with warm / cold rows; (7) RQ1 slices and RQ4 beyond-accuracy view.
 
@@ -123,13 +123,13 @@ search. 33,702 parameters. Source: `src/models/smlprec.py` (docstring), `docs/ex
 `results/week4_rebuild/smlprec_plain_cold_train_es_run.json` (`n_parameters`), notebook
 `notebooks/hospitality/smlp4rec/01e_train_test_smlp4rec_plain_cold_train.ipynb`; week-3 slide
 "Từ code gốc đến bản chạy với Expedia" in `reports/summary/week3_implementation/week3_report_slides_v3.html`.
-5.3 **Improvement 1: query token.** One extra position at the end of the sequence: learned [MASK] +
+5.3 **Improvement 1: query embedding.** One extra position at the end of the sequence: learned [MASK] +
 sum of 14 field embeddings (destination, destination type, check-in month, lead, stay, adults,
 children, rooms, package, mobile, channel, site, point-of-sale continent, user country); the hidden
 state at that position scores the catalogue; train-only vocabulary (min count 5). Source:
 `src/nbp/models/smlprec_query.py`, `src/nbp/data/query_features.py`, `scripts/expedia_query_to_recbole.py`,
 `results/week4_rebuild/smlprec_query_cold_train_es_run.json` (`query_fields`, `query_vocab_min_count`,
-`n_parameters`, `n_query_parameters`), plan `docs/plans/plan_oct_07_query_token.md`.
+`n_parameters`, `n_query_parameters`), plan `docs/plans/plan_oct_07_query_embedding.md`.
 5.4 **Improvement 2: sameDest.** Recency-weighted score for clusters the user booked before at the
 searched destination; post-hoc late fusion `log q_model + w_s · log q_sameDest`, alpha and weights
 picked on valid by the one-SE rule; zero on new-destination and cold rows. State plainly that it is a
@@ -150,14 +150,14 @@ A short diagram of the three inputs (history / query / both) helps here (gap G9)
 
 ### 6. Results
 6.1 **Main benchmark (RQ1 headline).** One table: global popularity (reference row only), ItemKNN,
-logistic regression, plain SMLP4Rec, query token, query token + sameDest; warm / cold / all events;
+logistic regression, plain SMLP4Rec, query embedding, query embedding + sameDest; warm / cold / all events;
 Recall@5/10/20, NDCG@5/10/20. Pointer values (warm, Recall@5 / NDCG@5): ItemKNN 0.3036 / 0.2089,
 logistic regression 0.4969 / 0.3354, main model 0.6104 / 0.4461. Source:
 `results/week4_rebuild/baselines_vs_final_es.json`. **Needs:** paired bootstrap CIs vs both
 baselines for the ES checkpoint (gap G1) and a decision on which logistic-regression run is reported
 (gap G2).
-6.2 **Ablation ladder: what each improvement adds.** plain -> + query token -> + first bookings ->
-+ sameDest. Source: `baselines_vs_final_es.json` (plain, query token, + sameDest at ES);
+6.2 **Ablation ladder: what each improvement adds.** plain -> + query embedding -> + first bookings ->
++ sameDest. Source: `baselines_vs_final_es.json` (plain, query embedding, + sameDest at ES);
 `results/week4_rebuild/seeds_summary.json` (`paired_01d_minus_01c`, first-bookings effect over 3
 seeds, 3-epoch runs); `smlprec_query_cold_train_es_run.json` (`bootstrap_query_minus_plain_test`).
 Caveat to print: the first-bookings step is measured on 3-epoch runs (01c was not rerun with early
@@ -169,12 +169,12 @@ stopping).
 re-books within 1 h / 1 d (lower bound). Source: `smlprec_query_cold_train_es_run.json`
 (`samedest_hybrid.test_slices_recall@5_ndcg@5`); `results/week4_rebuild/sensitivity_cold_train.json`
 (3-epoch; ES version missing, gap G1); `seeds_summary.json` (gain stability).
-6.5 **Cold rows (L = 0).** Query token on an empty history vs logistic regression vs ItemKNN fallback.
+6.5 **Cold rows (L = 0).** Query embedding on an empty history vs logistic regression vs ItemKNN fallback.
 Source: `results/week4_rebuild/smlprec_query_cold_L0_cold_train_es.json`, `baselines_vs_final_es.json`;
 3-epoch CI in `sensitivity_cold_train.json` (`cold_rows`).
 6.6 **RQ1 slices** (main model and both baselines, warm test): history length L (1 | 2-4 | 5-9 | 10+),
 known vs new destination, trip context (solo / couple / family / group, package), season (check-in
-month; degenerate on test, see 7.x). Source today: only L and seen / unseen for plain and query token
+month; degenerate on test, see 7.x). Source today: only L and seen / unseen for plain and query embedding
 (`smlprec_query_cold_train_es_run.json`, `slices_test`) and known / new destination for the main-model
 variants (`samedest_hybrid.test_slices_recall@5_ndcg@5`). **Baseline slices, trip-context slices and
 season slices do not exist** (gap G6).
@@ -252,9 +252,9 @@ Assertion titles below are drafts; numbers in them must be filled by the builder
 | 6 | We removed only duplicate events: {48,010} burst repeats collapsed, defects flagged, no hotel field used as input | cleaning tiers table (small) + leakage audit tick list | `eda_e1_cleaning.png`; `docs/data_cleaning_strategy.md`; `leakage_audit.json` | 1.0 |
 | 7 | Every model is scored on the same temporal split, full ranking over 100 clusters, warm and first-booking rows apart | timeline train / valid / test with row counts | `eda_e7_split_composition.png`; `split_export_counts.json`; `docs/eval_protocol.md` | 1.0 |
 | 8 | The original SMLP4Rec reads only past bookings and ignores the current search | architecture diagram (plain) | **new figure needed** (EN; `results/figures/vi/fig12_smlp4rec_architecture.png` is the VI week-2 version) | 1.0 |
-| 9 | Our query token puts the 14 search fields inside the model as one extra position | architecture diagram with query token highlighted | **new figure needed** (week-4 deck has an HTML slide "Query token: 14 trường…" to reuse) | 1.2 |
+| 9 | Our query embedding puts the 14 search fields inside the model as one extra position | architecture diagram with query embedding highlighted | **new figure needed** (week-4 deck has an HTML slide "Query embedding: 14 trường…" to reuse) | 1.2 |
 | 10 | sameDest adds what the user booked before at this destination; training with first bookings teaches the cold case | two small panels: sameDest formula / training-set bar (warm vs + first bookings) | **new figure needed**; `same_dest.py`; `baselines_es_run.json` (`training_set`) | 1.2 |
-| 11 | Each step adds accuracy: plain {..} -> query token {..} -> + sameDest {..} NDCG@5 (warm test) | ablation ladder / waterfall bar | **new figure needed**; `baselines_vs_final_es.json`; first-bookings step from `seeds_summary.json` | 1.5 |
+| 11 | Each step adds accuracy: plain {..} -> query embedding {..} -> + sameDest {..} NDCG@5 (warm test) | ablation ladder / waterfall bar | **new figure needed**; `baselines_vs_final_es.json`; first-bookings step from `seeds_summary.json` | 1.5 |
 | 12 | The main model beats logistic regression by {Δ} and ItemKNN by {Δ} NDCG@5 on warm rows [CI] | grouped bars, 3 models × warm / cold / all, CI whiskers | **new figure needed**; `baselines_vs_final_es.json`; CIs (G1) | 1.5 |
 | 13 | On first bookings the model ties or beats the context-only baseline, while ItemKNN cannot score them | cold-row bars | **new figure needed**; `smlprec_query_cold_L0_cold_train_es.json`, `baselines_vs_final_es.json` | 1.0 |
 | 14 | History pays where guests return: sameDest lifts known-destination rows and leaves new ones unchanged | known vs new destination bars; L-bucket line | **new figure needed**; `samedest_hybrid.test_slices_recall@5_ndcg@5`, `slices_test`; baselines slices (G6) | 1.3 |
@@ -286,7 +286,7 @@ GRU4Rec?" (scope decision 2026-10-08), "is the cluster a real product?" (proxy l
 | G6 | RQ1 slices for **all three models** on warm test: L buckets, known vs new destination, trip context (solo / couple / family / group from adults / children / rooms; `is_package`), season. Baseline slices and trip-context slices do not exist anywhere. Season slice is degenerate on test (`eda_clean.json`); needs a user decision: pool valid + test, or state the limitation. | 6.6, slides 14-15 | new slice script over per-row ranks (export via notebook 08 pattern) + `nbp.eval` slice helper with tests | must (season + trip context are "never cut" in the plan) |
 | G7 | RQ4 metrics: intra-list diversity, popularity bias, coverage per destination / season for the three models. No code in `src/nbp/eval/`, no results. Diversity over anonymous clusters needs a similarity definition (e.g. item-embedding cosine or co-booking), to decide. | 6.8, 7.2, slide 16 | new `nbp.eval` functions + unit tests, then a script writing `results/<week>/rq4_*.json` | must (cut order allows dropping coverage, keep diversity + popularity bias) |
 | G8 | Ablation ladder with all four steps on one footing: the "first bookings" step exists only as 01c vs 01d at 3 epochs (`seeds_summary.json`); 01c was not rerun with early stopping. Either accept the mixed footing with a caveat, or rerun 01c with ES. | 6.2, slide 11 | caveat or one 01c ES run | should |
-| G9 | English figures: SMLP4Rec plain architecture, query-token architecture, sameDest / first-bookings schematic, ablation ladder, main benchmark bars with CIs, cold bars, slice charts, RQ4 chart, early-stopping curve. Only EDA figures exist in English (`results/figures/clean/en/`); the architecture figure exists only in VI (`results/figures/vi/fig12_smlp4rec_architecture.png`, old). | slides 8-16, report ch. 5-6 | final builder script (inline SVG like `scripts/week4_clean_slides.py`) or `scripts/final_report_figures.py` writing `results/figures/{en,vi}/` | must |
+| G9 | English figures: SMLP4Rec plain architecture, query-embedding architecture, sameDest / first-bookings schematic, ablation ladder, main benchmark bars with CIs, cold bars, slice charts, RQ4 chart, early-stopping curve. Only EDA figures exist in English (`results/figures/clean/en/`); the architecture figure exists only in VI (`results/figures/vi/fig12_smlp4rec_architecture.png`, old). | slides 8-16, report ch. 5-6 | final builder script (inline SVG like `scripts/week4_clean_slides.py`) or `scripts/final_report_figures.py` writing `results/figures/{en,vi}/` | must |
 | G10 | Final report and deck builders do not exist (`scripts/week4_clean_slides.py` reads the 3-epoch JSONs). A new folder `reports/summary/week5_final/` and `results/week5_final/` would follow CLAUDE.md §7 naming. | all | new scripts | must |
 | G11 | `PROGRESS.md` has no entry for notebooks 01e, 07b, 08 and their JSONs (`smlprec_plain_cold_train_es_run.json`, `baselines_es_run.json`, `baselines_vs_final_es.json`, `smlprec_query_cold_L0_cold_train_es.json`, `split_export_counts.json`); they are untracked in git. | traceability | PROGRESS entry + commit (user) | must |
 | G12 | Demo UI (`scripts/demo_ui.py`) still loads the 3-epoch checkpoints; update if the demo is shown in the talk. | optional demo slide | script edit | could |

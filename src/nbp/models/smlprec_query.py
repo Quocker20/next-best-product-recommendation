@@ -1,7 +1,7 @@
-"""SMLP4Rec with a query token: the current search enters the model as one extra position.
+"""SMLP4Rec with a query embedding: the current search enters the model as one extra position.
 
 History = the user's previous clusters (positions 0..S-1, RecBole right-padding, exactly as the
-history-only model). The query token sits at the fixed last position S: a learned [MASK] vector
+history-only model). The query embedding sits at the fixed last position S: a learned [MASK] vector
 plus the sum of one embedding per query field (destination, dates, party, package, channel...).
 The hidden state at that position scores the item catalogue. The legacy mixer block and item
 embedding come from `src/models/smlprec.py`, which stays untouched.
@@ -21,7 +21,7 @@ ROW_ID = "row_id"
 
 
 class SMLPRECQuery(SMLPREC):
-    """History-only SMLPREC + query token.
+    """History-only SMLPREC + query embedding.
 
     Args:
         config: RecBole config (needs MAX_ITEM_LIST_LENGTH = S).
@@ -45,7 +45,7 @@ class SMLPRECQuery(SMLPREC):
             q = q + emb(q_idx[:, j].long())
         return q
 
-    def forward(self, item_seq, q_idx):  # noqa: D102 (history (B, S) ids, query (B, F) indices)
+    def forward(self, item_seq, q_idx):
         h = self.item_embedding(item_seq)  # (B, S, H)
         x = torch.cat([h, self.query_vector(q_idx).unsqueeze(1)], dim=1)  # (B, S+1, H)
         x = x.unsqueeze(2).transpose(1, 2).contiguous()  # (B, 1, S+1, H)

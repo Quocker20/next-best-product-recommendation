@@ -23,12 +23,12 @@ Rebuild: `.venv/Scripts/python.exe scripts/verify_final_results.py` (about 1 min
 |---|---|---|---|
 | 1 | 01d saved warm / cold row ids = warm / cold events recomputed from bookings | PASS | 213,869 warm + 49,462 cold rows in the files |
 | 2 | 07b baseline parquet covers exactly the test-window events, same warm / cold split | PASS | 263,331 rows |
-| 3 | `final_topk_test.npz` ranks = notebooks' saved ranks | PASS | main 0.999996, query token 1.0, plain_all 1.0, plain_warm (warm) 0.999995 (one tie row each) |
+| 3 | `final_topk_test.npz` ranks = notebooks' saved ranks | PASS | main 0.999996, query embedding 1.0, plain_all 1.0, plain_warm (warm) 0.999995 (one tie row each) |
 | 4 | `final_topk_test.npz` n_prior = prior bookings recomputed | PASS | |
 | 5 | Row counts all / cold / warm = 263,331 / 49,462 / 213,869 | PASS | also equal in `final_results.json` |
 | 6 | Headline: 6 models x {all, cold, warm} x Recall / NDCG @5/10/20 recomputed = `final_benchmark.csv` | PASS | 108 values, 0 mismatches (tolerance = 4-decimal rounding) |
 | 7 | The same 18 headline rows appear verbatim in `final_tables.md` | PASS | |
-| 8 | Main model on cold rows is identical to the query token, rank by rank | PASS | the "identical to query token" label is correct |
+| 8 | Main model on cold rows is identical to the query embedding, rank by rank | PASS | the "identical to query embedding" label is correct |
 | 9 | ItemKNN cold rows are one constant popularity ranking | PASS | the "NOT SCORED by the model" label is correct |
 | 10 | Bootstrap main minus logistic regression (warm, cold; K = 5, 10) with seed 20261011 instead of 0 | PASS | same point differences; CI endpoints within 0.0004 of the package (MC error) |
 | 11 | History-length slice recomputed = `slices_history_length.csv` | PASS | 174 values, 0 mismatches (includes plain_warm on warm buckets) |
@@ -37,7 +37,7 @@ Rebuild: `.venv/Scripts/python.exe scripts/verify_final_results.py` (about 1 min
 | 14 | sameDest weights in `final_topk_test.npz` = `tuned_on_valid` | PASS | alpha 0.2, w 0 (new destination) / 0.75 (known) |
 | 15 | 01e plain and 07b baselines trained on the same rows as 01d | PASS | 713,754 first bookings + 1,710,952 warm targets in every case |
 | 16 | Training-set labels: original code warm-only run labelled warm-only; every other model labelled "all events (warm + L=0)" and sourced from 01d ES / 01e ES / 07b | PASS | 18 headline rows |
-| 17 | Cold-row handling labelled (main = query token; ItemKNN and warm-only plain = popularity fallback; 01e plain = one constant ranking) | PASS | `scored_by` column and `final_tables.md` |
+| 17 | Cold-row handling labelled (main = query embedding; ItemKNN and warm-only plain = popularity fallback; 01e plain = one constant ranking) | PASS | `scored_by` column and `final_tables.md` |
 | 18 | `01_results_summary.md` labels the warm-only original run "warm users only" | PASS | section 1 table; the tables say "warm rows only (L>=1)" (same meaning) |
 | 19 | `01` prose "months 4-10 below 0.03 each" | PASS | max test share of months 4-10 = 0.0239 |
 | 20 | `01`: every table row outside the hand-written sections 1 and 9 is verbatim in `final_tables.md` | PASS | |
@@ -52,7 +52,7 @@ Rebuild: `.venv/Scripts/python.exe scripts/verify_final_results.py` (about 1 min
 
 | File:line | Problem | Fix |
 |---|---|---|
-| `docs/plans/final_prep/04_demo_options.md:35` | Warm "Main model Recall@5" was 0.5965. That is the query token without sameDest; the main model (query token + sameDest, the model the demo runs) is 0.6104 (`final_benchmark.csv`). | Changed to 0.6104. |
+| `docs/plans/final_prep/04_demo_options.md:35` | Warm "Main model Recall@5" was 0.5965. That is the query embedding without sameDest; the main model (query embedding + sameDest, the model the demo runs) is 0.6104 (`final_benchmark.csv`). | Changed to 0.6104. |
 | `docs/plans/final_prep/04_demo_options.md:41` | Consistency arithmetic used 0.5965: (1,500 x 0.5252 + 3,000 x 0.5965) / 4,500 = 0.573. | Recomputed with 0.6104: 0.582, which is still within about one binomial standard error (0.007) of the demo sample's 0.577; correction note added in the file. |
 | `docs/plans/final_prep/02_report_toc.md` section 3 | Gap table still listed G1 (ES bootstrap CIs), G6 (slices) and G7 (RQ4 metrics) as missing; they now exist in `results/week5_final/`. | Added a one-line dated status note above the gap table; G2, G4, G5 marked still open. |
 

@@ -63,7 +63,7 @@ Use a white background (projectors wash out cream and tints) and the colors belo
 | `--ink` | `#20242a` | 15.6 | titles, body |
 | `--muted` | `#5c6166` | 6.3 | secondary text, source line |
 | `--rule` | `#d9dadb` | – | hairlines, gridlines, table rules |
-| `--main` | `#3b6ea5` | 5.3 | **main model (SMLP4Rec + query token + sameDest) only** |
+| `--main` | `#3b6ea5` | 5.3 | **main model (SMLP4Rec + query embedding + sameDest) only** |
 | `--main-dark` | `#2f5a88` | 7.2 | text that must carry the main color |
 | `--contrast` | `#c27c3f` | 3.4 | second series (e.g. logistic regression, "cold"); large marks only, never small text |
 | `--context` | `#a8a79f` | 2.4 | baselines, earlier variants, background data (marks only) |
@@ -96,8 +96,8 @@ Rules:
 - **DO** keep a table under ~6 rows × 6 columns on a content slide; anything bigger goes in the appendix.
 
 ### Model architecture diagrams
-- **DO** draw the architecture as one hand-authored SVG in the same palette. Gray boxes for inputs, the main color only for the new parts (query token, sameDest), thin `--muted` arrows, labels in the body face at ≥ 16 px.
-- **DO** build it up over 2–3 slides when it is explained step by step: history only → + query token → + sameDest. Use the same diagram each time with the new part colored; the slide title states what the step adds.
+- **DO** draw the architecture as one hand-authored SVG in the same palette. Gray boxes for inputs, the main color only for the new parts (query embedding, sameDest), thin `--muted` arrows, labels in the body face at ≥ 16 px.
+- **DO** build it up over 2–3 slides when it is explained step by step: history only → + query embedding → + sameDest. Use the same diagram each time with the new part colored; the slide title states what the step adds.
 - **DO** stay faithful to the SMLP4Rec paper's block structure (the three mixers: sequence, channel/feature, embedding) and label it "research adaptation".
 - **DON'T** use colored pastel boxes for every block, rounded pill shapes, icon glyphs inside boxes, or gradient arrows.
 

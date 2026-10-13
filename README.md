@@ -2,7 +2,7 @@
 
 Research benchmark for next-best-product recommendation in hospitality (Vinpearl). Output is a report, not a production system.
 
-**Scope (revised 2026-10-08):** travel domain, one dataset (**Expedia Hotel Recommendations**), one main model (**SMLP4Rec with a query token + sameDest**), two classical baselines (**ItemKNN**, **logistic regression**). Remaining work: data processing, model tuning, RQ1 / RQ4 evaluation, final report. Everything else (other models, food delivery, taxi, cross-sell) is out of scope until reopened. Details: `CLAUDE.md`, active plan `docs/plans/plan_oct_08_replan.md`, decision log `PROGRESS.md` (`CLAUDE.md` and `PROGRESS.md` are local, gitignored).
+**Scope (revised 2026-10-08):** travel domain, one dataset (**Expedia Hotel Recommendations**), one main model (**SMLP4Rec with a query embedding + sameDest**), two classical baselines (**ItemKNN**, **logistic regression**). Remaining work: data processing, model tuning, RQ1 / RQ4 evaluation, final report. Everything else (other models, food delivery, taxi, cross-sell) is out of scope until reopened. Details: `CLAUDE.md`, active plan `docs/plans/plan_oct_08_replan.md`, decision log `PROGRESS.md` (`CLAUDE.md` and `PROGRESS.md` are local, gitignored).
 
 **Status:** the main model reaches test NDCG@5 0.4475 / Recall@5 0.6060 on warm users (one seed, 3 epochs), against 0.2195 / 0.3161 for ItemKNN and 0.3561 / 0.5219 for logistic regression. Numbers come from `results/week4_rebuild/`.
 
@@ -47,7 +47,7 @@ RecBole patches: `weights_only=False` in `torch.load`; anomaly detection off (`s
 python scripts/download.py                     # raw data into data/raw/ (needs Kaggle token in env)
 python scripts/expedia_build_bookings.py       # cleaned bookings parquet
 python scripts/expedia_to_recbole.py           # RecBole interaction file
-python scripts/expedia_query_to_recbole.py     # query-token codes
+python scripts/expedia_query_to_recbole.py     # query-embedding codes
 ```
 
 Then run `notebooks/hospitality/smlp4rec/01c_train_test_smlp4rec_query.ipynb` (kernel `smlp4rec`) for the main model and `07_basic_baselines.ipynb` (kernel `nbp`, the `.venv`) for the baselines. Tests: `pytest`.

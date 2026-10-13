@@ -54,6 +54,26 @@ class EarlyStopper:
         return stopper
 
 
+def nll_guard(valid_nll: list[float], train_loss: list[float], n: int) -> bool:
+    """True if, over the last `n` epochs, the valid NLL rose every epoch while the train loss fell.
+
+    Args:
+        valid_nll: per-epoch validation NLL (epoch 1 first).
+        train_loss: per-epoch mean training loss, same length.
+        n: number of consecutive epoch-to-epoch steps that must show the pattern (>= 1).
+    Returns:
+        False while fewer than n + 1 epochs exist.
+    """
+    if n < 1:
+        raise ValueError("n must be >= 1")
+    if len(valid_nll) != len(train_loss):
+        raise ValueError("valid_nll and train_loss must have the same length")
+    if len(valid_nll) < n + 1:
+        return False
+    v, t = np.asarray(valid_nll[-(n + 1) :]), np.asarray(train_loss[-(n + 1) :])
+    return bool((np.diff(v) > 0).all() and (np.diff(t) < 0).all())
+
+
 def mean_nll(scores: np.ndarray, y: np.ndarray) -> float:
     """Mean negative log-likelihood of the true item under softmax(scores).
 

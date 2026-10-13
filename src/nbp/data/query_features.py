@@ -95,7 +95,9 @@ def build_query_codes(raw: pd.DataFrame) -> np.ndarray:
     )
 
 
-def build_vocab(codes: np.ndarray, train_rows: np.ndarray, min_counts: dict[str, int] | None = None):
+def build_vocab(
+    codes: np.ndarray, train_rows: np.ndarray, min_counts: dict[str, int] | None = None
+):
     """Per-field sorted arrays of codes seen at least `min_count` times among the train targets.
 
     Args:

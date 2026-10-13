@@ -1,0 +1,20 @@
+{
+  "seed": 2022,
+  "window": "test",
+  "protocol": "ar",
+  "query embedding": {
+    "rows": 378788,
+    "self_confirming_rows": 44931,
+    "share": 0.11861780204230335,
+    "ndcg@10_self_confirming": 0.44943694188074135,
+    "ndcg@10_other": 0.4439746943166194
+  },
+  "main (query embedding + sameDest)": {
+    "rows": 378788,
+    "self_confirming_rows": 45819,
+    "share": 0.12096212129212118,
+    "ndcg@10_self_confirming": 0.46420030906810017,
+    "ndcg@10_other": 0.45016226365862383
+  },
+  "main_minus_query_embedding": "paired bootstrap per protocol (AR and TF) in bootstrap_ci.csv, written by notebook 04"
+}

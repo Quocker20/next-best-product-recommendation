@@ -1,4 +1,4 @@
-"""Leakage audit of the query token fields and the sameDest feature on the collapsed bookings.
+"""Leakage audit of the query embedding fields and the sameDest feature on the collapsed bookings.
 
 Read-only. Inputs: data/interim/expedia_bookings.parquet (event index = row position) and
 data/interim/expedia_query_codes_clean.npz (query codes, row i = event i). Output:

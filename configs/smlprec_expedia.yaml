@@ -1,48 +1,24 @@
-# SMLP4Rec on Expedia bookings — week-3 pipeline-validation run, 3 epochs (not a tuned result).
-# Input: data/interim/recbole/expedia/expedia.inter from scripts/expedia_to_recbole.py.
-# data_path and checkpoint_dir are set by scripts/run_smlprec_expedia.py.
+# SMLP4Rec model hyperparameters (week-6 retrain, plan_oct_12_new_split_retrain.md).
+# Data, split and evaluation are not read from here any more: the date split is configs/split.yaml
+# (rows built by scripts/expedia_build_split.py) and training is configs/train.yaml.
 
-# data
-load_col:
-  inter: [user_id, item_id, timestamp]
-MAX_ITEM_LIST_LENGTH: 20
+# fields the RecBole base class (SequentialRecommender) reads; the data itself never goes through RecBole
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+LIST_SUFFIX: _list
+ITEM_LIST_LENGTH_FIELD: item_length
+NEG_PREFIX: neg_
+MAX_ITEM_LIST_LENGTH: 20   # must equal max_history in configs/split.yaml
+device: cpu
 
 # model (light config from the ML-100K smoke run; paper-style config is too slow on CPU)
 n_layers: 2
 n_heads: 1                 # read by the original code, unused
 hidden_size: 64
-hidden_dropout_prob: 0.0
+hidden_dropout_prob: 0.0   # tuned on {0.0, 0.2} by configs/train.yaml dropout_grid
 hidden_act: gelu
 layer_norm_eps: 1.0e-12
 initializer_range: 0.02
 selected_features: []     # hotel clusters have no item attributes
 pooling_mode: mean
 loss_type: CE
-
-# training
-# max_epochs / early_stop_*: read by notebooks 01c and 01d only (nbp.models.early_stop). They train up to
-# max_epochs and stop after early_stop_patience epochs without a valid NDCG@10 gain > early_stop_min_delta;
-# best.pth = best valid epoch. `epochs` below stays 3 for nb01 and the week-3 scripts.
-max_epochs: 10
-early_stop_patience: 2
-early_stop_min_delta: 7.0e-4   # ~2 x paired SE (0.00035) of the epoch-to-epoch valid NDCG@10 gain: results/week4_rebuild/early_stop_threshold_analysis.txt
-epochs: 3
-stopping_step: 10   # RecBole's own early stop; unused by the notebooks (nb01 runs a fixed 3 epochs)
-train_batch_size: 1024
-learning_rate: 0.001
-neg_sampling: ~
-seed: 2022
-reproducibility: true
-use_gpu: false
-show_progress: false
-
-# evaluation: global temporal split over next-booking targets, full ranking over all clusters
-eval_args:
-  split: {RS: [0.8, 0.1, 0.1]}
-  order: TO
-  group_by: ~
-  mode: full
-eval_batch_size: 4096
-metrics: [Recall, NDCG, MRR, Hit]
-topk: [5, 10, 20]
-valid_metric: NDCG@10

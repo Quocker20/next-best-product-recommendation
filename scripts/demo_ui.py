@@ -1,6 +1,6 @@
 """Quick demo UI: simulate a user and a search, get the top-5 clusters from the main model.
 
-Main model = SMLP4Rec + query token trained with the first bookings (notebook 01d, early stopping,
+Main model = SMLP4Rec + query embedding trained with the first bookings (notebook 01d, early stopping,
 best epoch 8), plus the sameDest term with the weights tuned on valid (`samedest_hybrid` in the run
 json). Baselines = ItemKNN and logistic regression of notebook 07b (same training rows as the main
 model). Offline demo, nothing is written to the data. Cluster ids are anonymous (proxy of room
@@ -294,7 +294,7 @@ class Runner:
             },
             "output": {
                 "name": "Lớp đầu ra (Query Position)",
-                "role": "Trích xuất biểu diễn ẩn tại vị trí cuối cùng (Query Token), chuẩn hóa LayerNorm và nhân ma trận với Embedding Table để ra Logits 100 cụm.",
+                "role": "Trích xuất biểu diễn ẩn tại vị trí cuối cùng (Query Embedding), chuẩn hóa LayerNorm và nhân ma trận với Embedding Table để ra Logits 100 cụm.",
                 "formula": "\\mathrm{logits} = \\mathrm{LayerNorm}(Y_{query}) \\cdot W_{emb}^T",
                 "query_hidden": tensor_summary(out_norm),
                 "logits": tensor_summary(s[0, d.cluster_ids]),
