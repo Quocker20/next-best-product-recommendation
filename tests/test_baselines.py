@@ -13,6 +13,7 @@ from nbp.baselines.itemknn import (
     user_item_matrix,
 )
 from nbp.baselines.logreg import fit_encoder, logreg_proba
+from nbp.baselines.popularity import fit_popularity, popularity_scorer
 from nbp.eval.autoregressive import Batch
 
 
@@ -71,3 +72,19 @@ def test_logreg_features_are_the_query_codes_and_never_hotel_fields():
     assert not [c for c in RAW_COLS if c in FORBIDDEN_EXACT or c.startswith(FORBIDDEN_PREFIX)]
     enc = fit_encoder(np.zeros((3, len(QUERY_FIELDS)), int))
     assert len(enc.categories_) == len(QUERY_FIELDS)  # one block per query field, nothing else
+
+
+def test_popularity_share_and_same_ranking_for_every_row():
+    # model ids 1..3 (column 0 = padding): counts 2, 1, 1 out of 4 bookings
+    share = fit_popularity(np.array([1, 1, 2, 3]), 4)
+    assert share.tolist() == [0.0, 0.5, 0.25, 0.25]
+    b = Batch(
+        seq=np.array([[2, 0], [0, 0], [3, 1]]),
+        seq_len=np.array([1, 0, 2]),
+        h_dest=np.zeros((3, 2), int),
+        dest=np.zeros(3, int),
+        event=np.arange(3),
+    )
+    s = popularity_scorer(share)(b)
+    assert s.shape == (3, 4)
+    assert (s == share[None, :]).all()  # history, cold or warm: nothing changes the ranking

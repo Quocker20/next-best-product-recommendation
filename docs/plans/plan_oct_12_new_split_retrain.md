@@ -1,5 +1,7 @@
 # Plan — date split, autoregressive evaluation, retrain (detailed, 2026-10-12)
 
+> **Update 2026-10-13 (user decision):** the logistic regression baseline was replaced by **global popularity** (the train-window booking share of each cluster, one ranking for every row, no history, no query). Notebooks `03_baselines` and `04_compare` were re-run; current numbers are in `results/week6_retrain/final_tables.md`. The text below describes the original plan and still names logistic regression.
+
 **Status:** approved by the user on 2026-10-12. All six recommended defaults were accepted (section 0). Implementation has not started.
 
 **Related plans:**

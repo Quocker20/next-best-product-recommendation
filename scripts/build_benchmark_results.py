@@ -22,7 +22,7 @@ SRC = ROOT / "results" / "week6_retrain" / "final_benchmark.csv"
 OUT = ROOT / "reports" / "benchmark_results.csv"
 ROLE = {
     "ItemKNN": "baseline",
-    "Logistic regression": "baseline",
+    "Global popularity": "baseline",
     "SMLP4Rec plain": "main-model ablation",
     "SMLP4Rec + query embedding": "main-model ablation",
     "SMLP4Rec + query embedding + sameDest (main)": "main model",

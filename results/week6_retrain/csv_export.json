@@ -7,9 +7,9 @@
   },
   "top_k": 10,
   "model": "SMLP4Rec + query embedding + sameDest (main)",
-  "seed": 2022,
+  "seed": 2024,
   "protocol": "autoregressive",
-  "test_recall@10_from_csv_column": 0.7410187228740087,
+  "test_recall@10_from_csv_column": 0.7364726443287538,
   "columns_test": [
     "event_id",
     "user_id",

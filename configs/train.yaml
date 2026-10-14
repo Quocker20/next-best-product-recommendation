@@ -26,4 +26,3 @@ samedest:
 itemknn_k_grid: [5, 10, 20, 50, 100]
 itemknn_tie_eps: 1.0e-6     # popularity tie-break weight, far below any cosine-similarity step
 top_k_export: 10           # main-model top-K written to the test CSV
-logreg_c_grid: [0.1, 1.0, 10.0]

@@ -2,9 +2,9 @@
 
 Research benchmark for next-best-product recommendation in hospitality (Vinpearl). Output is a report, not a production system.
 
-**Scope (revised 2026-10-08):** travel domain, one dataset (**Expedia Hotel Recommendations**), one main model (**SMLP4Rec with a query embedding + sameDest**), two classical baselines (**ItemKNN**, **logistic regression**). Remaining work: data processing, model tuning, RQ1 / RQ4 evaluation, final report. Everything else (other models, food delivery, taxi, cross-sell) is out of scope until reopened. Details: `CLAUDE.md`, active plan `docs/plans/plan_oct_08_replan.md`, decision log `PROGRESS.md` (`CLAUDE.md` and `PROGRESS.md` are local, gitignored).
+**Scope (revised 2026-10-08):** travel domain, one dataset (**Expedia Hotel Recommendations**), one main model (**SMLP4Rec with a query embedding + sameDest**), two simple baselines (**ItemKNN**, **global popularity**). Remaining work: data processing, model tuning, RQ1 / RQ4 evaluation, final report. Everything else (other models, food delivery, taxi, cross-sell) is out of scope until reopened. Details: `CLAUDE.md`, active plan `docs/plans/plan_oct_08_replan.md`, decision log `PROGRESS.md` (`CLAUDE.md` and `PROGRESS.md` are local, gitignored).
 
-**Status:** the main model reaches test NDCG@5 0.4475 / Recall@5 0.6060 on warm users (one seed, 3 epochs), against 0.2195 / 0.3161 for ItemKNN and 0.3561 / 0.5219 for logistic regression. Numbers come from `results/week4_rebuild/`.
+**Status:** on the date split (week-6 retrain, autoregressive protocol, all test rows, reported seed 2024) the main model reaches test NDCG@10 0.4478 / Recall@10 0.7365, against 0.1825 / 0.3354 for ItemKNN and 0.1225 / 0.2410 for global popularity. Numbers come from `results/week6_retrain/reported_tables.md`.
 
 ## Layout
 

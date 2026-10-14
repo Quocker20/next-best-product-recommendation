@@ -14,7 +14,7 @@
   },
   "fit_rows": "every train-window booking",
   "cold_rows": "train-window first-booking popularity",
-  "git_commit": "066f3fd",
+  "git_commit": "659f00d",
   "split": {
     "valid_start": "2014-09-01",
     "test_start": "2014-11-01",

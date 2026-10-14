@@ -2,7 +2,7 @@
 
 Applies to the three SMLP4Rec steps and the two baselines:
 - SMLP4Rec steps: plain, + query embedding, + query embedding + sameDest (the main model);
-- baselines: ItemKNN and logistic regression.
+- baselines: ItemKNN and global popularity (the train-window booking share of each cluster, one ranking for every row; it replaced logistic regression on 2026-10-13).
 
 Change only with user approval. Plan and rationale:
 - `docs/plans/plan_oct_12_new_split_retrain.md`
@@ -40,7 +40,7 @@ Superseded on 2026-10-12: the RecBole 80/10/10 target split, the teacher-forced 
 - **Row sets:** warm (L ≥ 1), cold (L = 0) and all. All three are always reported.
 - **Training rows:** train window only.
   - Plain SMLP4Rec: warm rows only, because it needs a history.
-  - Query embedding, logistic regression and ItemKNN: every train-window booking.
+  - Query embedding, global popularity and ItemKNN: every train-window booking.
 - **Train-only fits:** the query vocabulary, the popularity tables and the one-hot encoder are built from the train window only.
 
 ## Test protocols
@@ -53,7 +53,7 @@ Superseded on 2026-10-12: the RecBole 80/10/10 target split, the teacher-forced 
   - A view must hold the whole window; warm and cold masks are applied only at metric time.
 - **Secondary: teacher-forced (TF).** True histories. It is computed for every model on the same rows and reported next to AR, never mixed with it. It is the closer proxy of a deployed system, where past bookings are observed.
 - **Sanity checks** (asserted in code):
-  - logistic regression gives identical AR and TF ranks;
+  - global popularity gives identical AR and TF ranks;
   - ItemKNN gives identical AR and TF ranks on rows with h = 0.
 
 ## Task, ranking, metrics
@@ -83,16 +83,16 @@ Superseded on 2026-10-12: the RecBole 80/10/10 target split, the teacher-forced 
 - **Selection,** on the reference seed (2022), by AR valid NDCG@10 with the one-standard-error rule clustered by user:
   - SMLP4Rec dropout ∈ {0.0, 0.2} (ties to the higher dropout);
   - ItemKNN K (ties to the smaller K);
-  - logistic regression C (ties to the smaller C);
   - sameDest alpha and w (ties to the smaller w, then the larger alpha).
   - The chosen values are frozen for the other seeds.
 - **sameDest:** `log q_model + w · log q_sameDest`, `log q = log((1 − alpha) p + alpha / 100)`.
   - q_sameDest is the recency-weighted (0.7^age) share of the history booked at the searched destination.
   - It is uniform when there is none, so the fusion is a no-op for a destination new to the user.
+- **Reported seed (2026-10-13):** every number of the report and the slides is that of **seed 2024**, the seed whose results lie closest to the 3-seed mean (`scripts/pick_reported_seed.py` → `results/week6_retrain/reported_seed.json`, `configs/split.yaml` `report_seed`). The tables of this seed are `results/week6_retrain/reported_tables.md`; `final_tables.md` keeps the mean ± std over the three seeds as the full record.
 - **Test** is read once, after all selection is frozen. There is no retraining on train + valid.
 
 ## Significance and reporting
-- **Bootstrap:** paired, 1000 resamples, **users resampled** (AR rows of one user are dependent), reference seed. The result is reported as the difference with its 95 % interval (`nbp.eval.bootstrap`).
+- **Bootstrap:** paired, 1000 resamples, **users resampled** (AR rows of one user are dependent), reported seed. The result is reported as the difference with its 95 % interval (`nbp.eval.bootstrap`).
 - **Tables:** every table states the dataset, row set and protocol. Results go to `results/week6_retrain/`.
 - **`reports/benchmark_results.csv`:**
   - one row per dataset × model × seed × row set × protocol;

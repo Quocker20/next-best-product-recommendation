@@ -1,5 +1,7 @@
 # Week-6 retrain — checkpoint notes for the user (2026-10-12)
 
+> **Update 2026-10-13 (user decision):** the logistic regression baseline was replaced by **global popularity** (the train-window booking share of each cluster, one ranking for every row, no history, no query). Notebooks `03_baselines` and `04_compare` were re-run; current numbers are in `results/week6_retrain/final_tables.md`. The text below describes the original plan and still names logistic regression.
+
 The user asked for an uninterrupted run from T1 to T10, with a summary at each of the three planned checkpoints written here for a later check. Every number below is copied from the named output file, which is produced by code.
 
 Plan: `docs/plans/plan_oct_12_new_split_retrain.md`.
