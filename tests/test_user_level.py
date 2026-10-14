@@ -43,3 +43,32 @@ def test_anchor_is_earliest_event_and_truth_is_all_items():
     assert uid.tolist() == [5, 9]
     assert anchor.tolist() == [2, 1]
     assert truths == [{1, 3}, {2, 4}]
+
+
+def test_fixed_top_user_metrics_example():
+    from nbp.eval.user_level import fixed_top_user_metrics
+
+    # top-5 {A..E}=0..4 ; bookings A,B,C,D,C,E,A,Z,Z,Z -> truth set of 6, 5 hit
+    top = np.array([[0, 1, 2, 3, 4] + list(range(10, 25))])
+    truth = [{0, 1, 2, 3, 4, 99}]
+    got = fixed_top_user_metrics(top, truth, ks=(5, 10, 20))
+    assert abs(got["recall@5"] - 5 / 6) < 1e-12
+    assert got["recall@20"] == got["recall@10"] == got["recall@5"]
+    disc = [1 / np.log2(r + 1) for r in range(1, 6)]
+    assert abs(got["ndcg@5"] - sum(disc) / sum(disc)) < 1e-12  # k=5: all top-5 hit, ideal = 5 hits
+    # k=20: ideal = 6 slots, dcg = 5 hits at ranks 1..5
+    d6 = sum(1 / np.log2(r + 1) for r in range(1, 7))
+    assert abs(got["ndcg@20"] - sum(disc) / d6) < 1e-12
+
+
+def test_fixed_top_matches_user_set_metrics():
+    from nbp.eval.user_level import fixed_top_user_metrics
+
+    rng = np.random.default_rng(0)
+    top = np.stack([rng.permutation(50)[:20] for _ in range(30)])
+    truths = [set(rng.choice(50, size=int(rng.integers(1, 12)), replace=False).tolist()) for _ in range(30)]
+    got = fixed_top_user_metrics(top, truths)
+    for k in (5, 10, 20):
+        ref = user_set_metrics(top, truths, k=k)
+        assert abs(got[f"recall@{k}"] - ref[f"recall@{k}"]) < 1e-12
+        assert abs(got[f"ndcg@{k}"] - ref[f"ndcg@{k}"]) < 1e-12
