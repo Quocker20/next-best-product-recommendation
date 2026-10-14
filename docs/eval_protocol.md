@@ -43,33 +43,26 @@ Superseded on 2026-10-12: the RecBole 80/10/10 target split, the teacher-forced 
   - Query embedding, global popularity and ItemKNN: every train-window booking.
 - **Train-only fits:** the query vocabulary, the popularity tables and the one-hot encoder are built from the train window only.
 
-## Test protocols
-- **Primary: autoregressive (AR), no label feedback.** Inside an evaluated window (valid or test), the true cluster of a booking never enters any later history.
-  - A history slot holding an earlier booking of the same window gets the **top-1 prediction** made for that booking.
-  - Slots from earlier windows stay real.
-  - The slot's destination is kept, because the searched destination is known at search time.
-  - The row's own query stays visible.
-  - Rows are scored in steps of h (`nbp.eval.autoregressive.score_view`).
-  - A view must hold the whole window; warm and cold masks are applied only at metric time.
-- **Secondary: teacher-forced (TF).** True histories. It is computed for every model on the same rows and reported next to AR, never mixed with it. It is the closer proxy of a deployed system, where past bookings are observed.
-- **Sanity checks** (asserted in code):
-  - global popularity gives identical AR and TF ranks;
-  - ItemKNN gives identical AR and TF ranks on rows with h = 0.
-
-## Task, ranking, metrics
-- **Task:** predict the cluster of a booking given the history and the query. Every row is ranked over all 100 clusters; there are no sampled negatives.
-- **Metrics:** one relevant item per row, so with rank = position of the true cluster:
-  - Recall@K = 1[rank ≤ K];
-  - NDCG@K = 1[rank ≤ K] / log2(rank + 1), with ideal DCG = 1;
-  - K = 5, 10, 20;
-  - NDCG@K is primary and Recall@K secondary;
-  - ties go to the lower model id (`nbp.eval.metrics`, unit-tested);
-  - no MRR, MAP or Hit.
-- **Slices:**
-  - h (0, 1, 2, 3–5, 6+);
-  - check-in month;
-  - AR minus TF gap;
-  - sameDest self-confirmation: the share of AR test rows whose top-1 equals an earlier predicted item at the searched destination.
+## Test protocol (effective 2026-10-14): user-level, one fixed top-20 per user
+Replaces the row-level AR / TF test tables (superseded 2026-10-14). Code: `nbp.eval.two_step`, `nbp.eval.user_level.fixed_top_user_metrics`, `scripts/eval_user_top20.py`.
+- **Unit:** the test user. Each user gets ONE ranked list of 20 clusters, used for every k.
+- **Step 1:** the user's first test booking (h = 0), with its true history; all 100 clusters are scored, the top-20 and their probabilities are kept (P1).
+- **Step 2:** the user's second test booking (h = 1). Its history slot for booking 1 holds the **top-1 of P1** (no label feedback); earlier-window slots stay real. A user with a single test booking gets a synthetic step 2: the context (query, searched destination) of booking 1 and the history of booking 1 followed by the top-1 of P1. Top-20 and probabilities again (P2). Bookings 3+ are not scored; they only enter the truth set.
+- **Probabilities:** taken over all 100 clusters before the top-20 cut. SMLP4Rec steps: softmax of the scores (logits; the fused log-scores for sameDest). Baselines: score / row sum (popularity shares; ItemKNN similarity sums, cold rows already the first-booking popularity).
+- **Rerankers** (P1, P2 → one top-20; **chosen: `m2_merge`**, decision 2026-10-14: best main-model NDCG@K and Recall@K of the three on the reported seed, `m1` and `m3` are kept only in `results/week6_retrain/user_top20_reranker_choice.md` as the record behind the choice; a cluster present in both keeps its max value, ties to the lower id):
+  - `m1_first`: P1 only;
+  - `m2_merge`: union of P1 and P2 sorted by probability;
+  - `m3_sqrt_alpha`: P2 values x mapped to sqrt(alpha · x), alpha = probability of the P1 top-1, then union with P1.
+  - Popularity gives the same list under all three (asserted).
+- **Truth:** the SET of distinct clusters the user books in the whole test window (repeat bookings count once).
+- **Metrics,** per user, then the mean over users; K = 5, 10, 20:
+  - Recall@K = |top-K ∩ truth| / |truth|;
+  - NDCG@K = Σ_{hit at rank r ≤ K} 1/log2(r + 1) / Σ_{r=1}^{min(K, |truth|)} 1/log2(r + 1);
+  - NDCG@K is primary and Recall@K secondary; no MRR, MAP or Hit.
+- **Seed:** one fixed seed, **2024** (`configs/split.yaml` `report_seed`, chosen 2026-10-13 as the seed closest to the 3-seed mean), for every reported and recommended number of the user-level test; no seed averages or ± in these tables. Run on the full real data with the date split above and check the windows before reporting.
+- **User sets:** all, warm (L ≥ 1 at booking 1) and cold (L = 0 at booking 1).
+- **Outputs:** `results/week6_retrain/report_numbers.md` (the one sheet of numbers for the report), `user_top20.json`, `user_top20_tables.md`, `user_top20_bootstrap.{json,md}` (paired user bootstrap), `user_top20_reranker_choice.md`; per-user lists in `data/interim/week6/user_top20.npz`; `test_with_result.csv` (split `test.csv` + one per-user top-10 column per model, reranker m2_merge, `scripts/export_test_with_result.py`).
+- **Valid** (early stopping, selection) is unchanged: row-level AR NDCG@10 (`nbp.eval.autoregressive.score_view`: in-window history slots hold the top-1 predictions, rows scored in steps of h). One relevant item per row: NDCG@K = 1[rank ≤ K] / log2(rank + 1), every row ranked over all 100 clusters, ties to the lower model id (`nbp.eval.metrics`).
 
 ## Training, early stopping and selection (`configs/train.yaml`)
 - **Training:** teacher forcing on train-window rows; Adam; batch 1024; at most 10 epochs; 3 seeds (2022, 2023, 2024).

@@ -1,6 +1,6 @@
 # Plan — autoregressive test protocol (2026-10-12)
 
-Status: APPROVED by the user on 2026-10-12 (supervisor's request). The autoregressive test is the **primary** protocol; teacher-forced stays as the secondary protocol for the report discussion. `docs/eval_protocol.md` and `CLAUDE.md` §6 updated the same day. The ladder plain → + query embedding → + sameDest and both baselines are compared under the primary protocol. Sections 2, 3 and 6 below still carry the original proposal wording; where they say "report both with teacher-forced as headline" the approved rule above wins.
+Status: the TEST part is SUPERSEDED on 2026-10-14 by `docs/plans/plan_oct_14_user_level_top20.md` (user-level fixed top-20); the autoregressive scoring is kept for valid / early stopping. Originally APPROVED by the user on 2026-10-12 (supervisor's request). The autoregressive test is the **primary** protocol; teacher-forced stays as the secondary protocol for the report discussion. `docs/eval_protocol.md` and `CLAUDE.md` §6 updated the same day. The ladder plain → + query embedding → + sameDest and both baselines are compared under the primary protocol. Sections 2, 3 and 6 below still carry the original proposal wording; where they say "report both with teacher-forced as headline" the approved rule above wins.
 
 ## 1. What changes
 

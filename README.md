@@ -4,7 +4,7 @@ Research benchmark for next-best-product recommendation in hospitality (Vinpearl
 
 **Scope (revised 2026-10-08):** travel domain, one dataset (**Expedia Hotel Recommendations**), one main model (**SMLP4Rec with a query embedding + sameDest**), two simple baselines (**ItemKNN**, **global popularity**). Remaining work: data processing, model tuning, RQ1 / RQ4 evaluation, final report. Everything else (other models, food delivery, taxi, cross-sell) is out of scope until reopened. Details: `CLAUDE.md`, active plan `docs/plans/plan_oct_08_replan.md`, decision log `PROGRESS.md` (`CLAUDE.md` and `PROGRESS.md` are local, gitignored).
 
-**Status:** on the date split (week-6 retrain, autoregressive protocol, all test rows, reported seed 2024) the main model reaches test NDCG@10 0.4478 / Recall@10 0.7365, against 0.1825 / 0.3354 for ItemKNN and 0.1225 / 0.2410 for global popularity. Numbers come from `results/week6_retrain/reported_tables.md`.
+**Status:** on the date split (week-6 retrain, user-level test with one fixed top-20 per user, reranker m2 = merge by probability, all 222,428 test users, reported seed 2024) the main model reaches test NDCG@10 0.4474 / Recall@10 0.6968, against 0.1852 / 0.3096 for ItemKNN and 0.1356 / 0.2425 for global popularity. Numbers come from `results/week6_retrain/user_top20_tables.md`. The earlier row-level autoregressive tables (`reported_tables.md`) are superseded for the test.
 
 ## Layout
 

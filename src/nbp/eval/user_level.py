@@ -62,3 +62,41 @@ def user_set_metrics(top: np.ndarray, truths: list[set], k: int = 5) -> dict:
         nd += dcg / sum(disc[: min(k, len(truth))])
     n = len(truths)
     return {"users": n, f"recall@{k}": rec / n, f"ndcg@{k}": nd / n}
+
+
+def fixed_top_user_metrics(top: np.ndarray, truths: list[set], ks=(5, 10, 20)) -> dict:
+    """Per-user and mean Recall@k / NDCG@k for ONE fixed ranked list per user.
+
+    Each user has a single ranked list (e.g. the reranked top-20 of the two-step prediction), reused
+    for every k: the top-k is its first k entries. Truth is the SET of distinct items the user books
+    in the whole test window, so repeated bookings of an item count once (standard set-based
+    definition, see the module docstring).
+
+    Args:
+        top: (u, >= max(ks)) distinct item ids ranked best first, one row per user.
+        truths: u non-empty sets of the items each user booked in the window.
+        ks: cutoffs.
+
+    Returns:
+        {"users": u, "recall@k": mean, "ndcg@k": mean, "per_user": {"recall@k": (u,), "ndcg@k": (u,)}}.
+    """
+    top = np.asarray(top)
+    if top.shape[1] < max(ks):
+        raise ValueError(f"need at least {max(ks)} ranked items per user, got {top.shape[1]}")
+    if len(top) != len(truths) or any(len(t) == 0 for t in truths):
+        raise ValueError("one non-empty truth set per user is required")
+    disc = 1.0 / np.log2(np.arange(2, max(ks) + 2))
+    hit = np.array(
+        [[c in t for c in row] for row, t in zip(top[:, : max(ks)].tolist(), truths)], dtype=float
+    )
+    n_true = np.array([len(t) for t in truths])
+    out = {"users": len(truths), "per_user": {}}
+    for k in ks:
+        rec = hit[:, :k].sum(1) / n_true
+        ideal = np.cumsum(disc)[np.minimum(k, n_true) - 1]
+        ndcg = (hit[:, :k] * disc[:k]).sum(1) / ideal
+        out["per_user"][f"recall@{k}"] = rec
+        out["per_user"][f"ndcg@{k}"] = ndcg
+        out[f"recall@{k}"] = float(rec.mean())
+        out[f"ndcg@{k}"] = float(ndcg.mean())
+    return out
