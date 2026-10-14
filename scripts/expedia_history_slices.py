@@ -11,7 +11,7 @@ Heuristic rankers compared (Recall@5, full ranking over 100 clusters):
 - global / dest_type / market_via_dest: popularity per key
 - dest_raw_backoff_market: destination popularity, unseen destination -> market
 - dest_smooth_m{5,20,50}: (n_dest,k + m * p_market,k) / (n_dest + m)
-- history_then_dest: user's past clusters (recency weight 0.7^age) ranked first
+- history_then_dest: user's past clusters (recency weight 0.7^lag) ranked first
 - same_dest_history_then_dest[_smooth20]: only past clusters booked at the same
   srch_destination_id as the query ranked first
 

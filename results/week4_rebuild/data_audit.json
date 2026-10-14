@@ -108,7 +108,7 @@
       "2014": 1976299
     },
     "destinations_csv_row_coverage": 0.9958289523892044,
-    "sameDest_cluster_hit_age": {
+    "sameDest_cluster_hit_lag": {
       "rows_with_earlier_same_dest_and_cluster": 348776,
       "<=128s": 11716,
       "<=1h": 89242,

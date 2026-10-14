@@ -1,9 +1,9 @@
 """sameDest: how strongly the user's history says "rebook this cluster at this destination".
 
 For one query (destination q) and every cluster k, the score adds a weight for each past booking
-of cluster k that was made at destination q. The weight of a past booking depends on its age:
+of cluster k that was made at destination q. The weight of a past booking depends on its lag:
 
-    weight = base ** age,   age = L - 1 - position   (age 0 = most recent booking of the L in the history)
+    weight = base ** lag,   lag = L - 1 - position   (lag 0 = most recent booking of the L in the history)
 
 With ``base = 0.7`` recent bookings count more. ``normalize=True`` divides by the sum of the
 weights of ALL bookings in the history (same destination or not), so the score is the share of the
@@ -34,8 +34,8 @@ def same_dest_scores(
         h_dest: (n, S) int destination of each history booking.
         q_dest: (n,) int destination of the current query.
         n_items: number of columns of the output (model item ids, padding id 0 included).
-        base: weight of a booking is ``base ** age`` (age 0 = most recent).
-        normalize: divide by the sum of ``base ** age`` over the whole history of that row.
+        base: weight of a booking is ``base ** lag`` (lag 0 = most recent).
+        normalize: divide by the sum of ``base ** lag`` over the whole history of that row.
 
     Returns:
         (n, n_items) float32; 0 for clusters never booked at the query destination.

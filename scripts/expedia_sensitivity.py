@@ -57,8 +57,8 @@ def main() -> None:
     item = d["item_id"].to_numpy().astype("int64")
     sec = d["ts_unix"].to_numpy().astype("int64")
     key = pd.Series(uid * 10**9 + dest * 128 + item)
-    age = (pd.Series(sec) - pd.Series(sec).groupby(key, sort=False).shift()).to_numpy("float64")
-    age_t = age[row]  # NaN = the user never booked this cluster at this destination before
+    lag = (pd.Series(sec) - pd.Series(sec).groupby(key, sort=False).shift()).to_numpy("float64")
+    lag_t = lag[row]  # NaN = the user never booked this cluster at this destination before
     ranks = {
         k: z[k]
         for k in ("plain", "plain_prior", "old_hybrid", "query_embedding", "query_embedding_sameDest")
@@ -67,7 +67,7 @@ def main() -> None:
     res: dict = {"run": RUN.name, "rows": len(row)}
     masks = {"all_warm": np.ones(len(row), bool)}
     for name, w in WINDOWS.items():
-        masks[f"excluding_rebook_{name}"] = ~(age_t <= w)
+        masks[f"excluding_rebook_{name}"] = ~(lag_t <= w)
     res["sameDest_gain"] = {}
     for name, m in masks.items():
         a, b = ranks["query_embedding_sameDest"][m], ranks["query_embedding"][m]

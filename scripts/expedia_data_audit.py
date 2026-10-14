@@ -32,8 +32,8 @@ def share(mask: np.ndarray) -> dict:
     return {"n": int(mask.sum()), "share": float(mask.mean())}
 
 
-AGE_BINS = [-1, 128, 3600, 86400, 7 * 86400, 30 * 86400, 1e12]
-AGE_LABELS = ["<=128s", "<=1h", "<=1d", "<=7d", "<=30d", ">30d"]
+LAG_BINS = [-1, 128, 3600, 86400, 7 * 86400, 30 * 86400, 1e12]
+LAG_LABELS = ["<=128s", "<=1h", "<=1d", "<=7d", "<=30d", ">30d"]
 
 
 def profile(df: pd.DataFrame) -> dict:
@@ -62,22 +62,22 @@ def profile(df: pd.DataFrame) -> dict:
         )["srch_destination_id"]
     )
     out["destinations_csv_row_coverage"] = float(df["ctx_dest_id"].isin(ids).mean())
-    # age of the latest earlier booking of the same cluster at the same destination (sameDest hits)
+    # lag to the latest earlier booking of the same cluster at the same destination (sameDest hits)
     t = df["timestamp"].astype("int64") // 10**9
     key = (
         df["user_id"].astype("int64") * 10**9
         + df["ctx_dest_id"].astype("int64") * 128
         + df["item_id"].astype("int64")
     )
-    age = (t - t.groupby(key, sort=False).shift()).to_numpy(dtype="float64")
-    hit = ~np.isnan(age)
-    bins = pd.cut(pd.Series(age[hit]), AGE_BINS, labels=AGE_LABELS).value_counts(sort=False)
-    out["sameDest_cluster_hit_age"] = {
+    lag = (t - t.groupby(key, sort=False).shift()).to_numpy(dtype="float64")
+    hit = ~np.isnan(lag)
+    bins = pd.cut(pd.Series(lag[hit]), LAG_BINS, labels=LAG_LABELS).value_counts(sort=False)
+    out["sameDest_cluster_hit_lag"] = {
         "rows_with_earlier_same_dest_and_cluster": int(hit.sum()),
         **{k: int(v) for k, v in bins.items()},
     }
     for w in (3600, 6 * 3600, 86400):
-        f = (age <= w) & ~df["flag_burst_repeat"].to_numpy(dtype=bool)
+        f = (lag <= w) & ~df["flag_burst_repeat"].to_numpy(dtype=bool)
         out[f"session_repeat_non_burst_le_{w}s"] = int(f.sum())
     return out
 

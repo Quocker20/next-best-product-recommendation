@@ -110,26 +110,26 @@
       "recall@5_valid": 0.1745694794476993
     }
   },
-  "sameDest_signal_age": {
+  "sameDest_signal_lag": {
     "valid": {
       "targets": 213869,
       "targets_with_same_dest_cluster_repeat": 32382,
       "share_of_targets": 0.15141044284117847,
-      "age_<=1h": 7142,
-      "age_<=1d": 1919,
-      "age_<=7d": 4134,
-      "age_<=30d": 5552,
-      "age_>30d": 13635
+      "lag_<=1h": 7142,
+      "lag_<=1d": 1919,
+      "lag_<=7d": 4134,
+      "lag_<=30d": 5552,
+      "lag_>30d": 13635
     },
     "test": {
       "targets": 213869,
       "targets_with_same_dest_cluster_repeat": 31993,
       "share_of_targets": 0.14959157241114887,
-      "age_<=1h": 6894,
-      "age_<=1d": 1944,
-      "age_<=7d": 4464,
-      "age_<=30d": 5663,
-      "age_>30d": 13028
+      "lag_<=1h": 6894,
+      "lag_<=1d": 1944,
+      "lag_<=7d": 4464,
+      "lag_<=30d": 5663,
+      "lag_>30d": 13028
     }
   }
 }

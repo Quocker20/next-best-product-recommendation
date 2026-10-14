@@ -105,7 +105,7 @@ def samedest_fuse(
         b: batch (history, destinations).
         alpha: smoothing of both distributions toward uniform over the clusters.
         w: weight of the sameDest term.
-        recency: sameDest weight of a history booking = recency ** age.
+        recency: sameDest weight of a history booking = recency ** lag.
     """
     s = np.asarray(base_scores, dtype=np.float64)[:, 1:]
     s = s - s.max(1, keepdims=True)

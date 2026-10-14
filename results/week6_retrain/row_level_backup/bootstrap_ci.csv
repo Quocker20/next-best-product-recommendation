@@ -1,0 +1,181 @@
+protocol,row_set,comparison,metric,diff,ci95_low,ci95_high,n
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@5,0.4107,0.4086,0.4128,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@5,0.2974,0.2958,0.299,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@10,0.4955,0.4935,0.4977,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@10,0.3253,0.3237,0.3268,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@20,0.4968,0.4947,0.4989,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@20,0.3263,0.3249,0.3277,378788
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@5,0.417,0.4145,0.4193,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@5,0.3036,0.3017,0.3055,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@10,0.4991,0.4966,0.5013,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@10,0.3306,0.3289,0.3324,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@20,0.4942,0.492,0.4965,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@20,0.3301,0.3284,0.3317,307071
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@5,0.3837,0.3796,0.3876,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@5,0.271,0.268,0.274,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@10,0.4803,0.476,0.4845,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@10,0.3025,0.2998,0.3055,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@20,0.5077,0.5033,0.5118,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@20,0.31,0.3074,0.3128,71717
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@5,0.4419,0.4399,0.444,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@5,0.3319,0.3303,0.3336,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@10,0.5168,0.5149,0.5189,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@10,0.3566,0.3551,0.3581,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@20,0.5078,0.5059,0.5099,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@20,0.355,0.3536,0.3564,378788
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@5,0.4555,0.4532,0.4578,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@5,0.3461,0.3443,0.348,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@10,0.5254,0.523,0.5276,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@10,0.3692,0.3674,0.371,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@20,0.5078,0.5057,0.51,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@20,0.3655,0.3639,0.3672,307071
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@5,0.3837,0.3796,0.3876,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@5,0.271,0.268,0.274,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@10,0.4803,0.476,0.4845,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@10,0.3025,0.2998,0.3055,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,recall@20,0.5077,0.5033,0.5118,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus Global popularity,ndcg@20,0.31,0.3074,0.3128,71717
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@5,0.3379,0.3359,0.3398,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@5,0.2444,0.2428,0.2459,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@10,0.4011,0.3991,0.403,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@10,0.2652,0.2638,0.2666,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@20,0.3846,0.3826,0.3867,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@20,0.2616,0.2603,0.2629,378788
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@5,0.3272,0.3251,0.3295,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@5,0.2382,0.2365,0.2399,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@10,0.383,0.3807,0.3854,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@10,0.2567,0.2552,0.2582,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@20,0.3551,0.3525,0.3574,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@20,0.2501,0.2486,0.2516,307071
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@5,0.3837,0.3796,0.3876,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@5,0.271,0.268,0.274,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@10,0.4784,0.4741,0.4824,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@10,0.302,0.2993,0.305,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@20,0.5109,0.5066,0.5149,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@20,0.3108,0.3083,0.3135,71717
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@5,0.3144,0.3125,0.3162,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@5,0.2378,0.2364,0.2392,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@10,0.3589,0.357,0.3607,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@10,0.2526,0.2513,0.2539,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@20,0.3354,0.3337,0.3372,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@20,0.2471,0.2459,0.2483,378788
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@5,0.2982,0.2963,0.3003,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@5,0.2301,0.2286,0.2316,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@10,0.331,0.3289,0.3331,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@10,0.2411,0.2397,0.2425,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@20,0.2944,0.2924,0.2963,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@20,0.2323,0.231,0.2335,307071
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@5,0.3837,0.3796,0.3876,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@5,0.271,0.268,0.274,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@10,0.4784,0.4741,0.4824,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@10,0.302,0.2993,0.305,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,recall@20,0.5109,0.5066,0.5149,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus ItemKNN,ndcg@20,0.3108,0.3083,0.3135,71717
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@5,0.0062,0.0058,0.0067,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@5,0.0086,0.0081,0.0091,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@10,0.0027,0.0024,0.003,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@10,0.0074,0.007,0.0079,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@20,0.0007,0.0005,0.0008,378788
+ar,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@20,0.0069,0.0065,0.0073,378788
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@5,0.0077,0.0071,0.0082,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@5,0.0106,0.01,0.0111,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@10,0.0033,0.003,0.0037,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@10,0.0092,0.0087,0.0097,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@20,0.0008,0.0007,0.001,307071
+ar,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@20,0.0085,0.008,0.009,307071
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@5,0.0,0.0,0.0,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@5,0.0,0.0,0.0,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@10,0.0,0.0,0.0,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@10,0.0,0.0,0.0,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@20,0.0,0.0,0.0,71717
+ar,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@20,0.0,0.0,0.0,71717
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@5,0.0155,0.0149,0.016,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@5,0.0224,0.0219,0.023,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@10,0.0075,0.0071,0.0078,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@10,0.0198,0.0193,0.0203,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@20,0.0024,0.0023,0.0026,378788
+tf,all,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@20,0.0185,0.018,0.019,378788
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@5,0.0191,0.0184,0.0198,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@5,0.0276,0.0269,0.0283,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@10,0.0092,0.0088,0.0097,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@10,0.0244,0.0238,0.025,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@20,0.003,0.0028,0.0032,307071
+tf,warm,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@20,0.0229,0.0223,0.0234,307071
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@5,0.0,0.0,0.0,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@5,0.0,0.0,0.0,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@10,0.0,0.0,0.0,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@10,0.0,0.0,0.0,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,recall@20,0.0,0.0,0.0,71717
+tf,cold,SMLP4Rec + query embedding + sameDest (main) minus SMLP4Rec + query embedding,ndcg@20,0.0,0.0,0.0,71717
+ar,all,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@5,0.3288,0.3267,0.3308,378788
+ar,all,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@5,0.2341,0.2325,0.2356,378788
+ar,all,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@10,0.3964,0.3944,0.3985,378788
+ar,all,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@10,0.2563,0.2549,0.2578,378788
+ar,all,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@20,0.3822,0.3802,0.3844,378788
+ar,all,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@20,0.2533,0.2519,0.2547,378788
+ar,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@5,0.3159,0.3136,0.3184,307071
+ar,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@5,0.2254,0.2237,0.2272,307071
+ar,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@10,0.3756,0.3733,0.3781,307071
+ar,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@10,0.2451,0.2435,0.2468,307071
+ar,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@20,0.352,0.3496,0.3545,307071
+ar,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@20,0.2396,0.2381,0.2412,307071
+ar,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@5,0.3837,0.3796,0.3876,71717
+ar,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@5,0.2713,0.2683,0.2745,71717
+ar,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@10,0.4854,0.4813,0.4897,71717
+ar,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@10,0.3045,0.3016,0.3075,71717
+ar,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@20,0.5115,0.5073,0.5156,71717
+ar,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@20,0.3118,0.3092,0.3146,71717
+tf,all,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@5,0.2858,0.2839,0.2876,378788
+tf,all,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@5,0.2013,0.1997,0.2027,378788
+tf,all,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@10,0.3422,0.3404,0.3441,378788
+tf,all,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@10,0.2198,0.2184,0.2211,378788
+tf,all,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@20,0.3236,0.3219,0.3254,378788
+tf,all,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@20,0.2156,0.2143,0.2169,378788
+tf,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@5,0.263,0.2609,0.2652,307071
+tf,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@5,0.1849,0.1832,0.1866,307071
+tf,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@10,0.3088,0.3066,0.3109,307071
+tf,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@10,0.2001,0.1985,0.2016,307071
+tf,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@20,0.2797,0.2777,0.2817,307071
+tf,warm,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@20,0.1932,0.1917,0.1946,307071
+tf,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@5,0.3837,0.3796,0.3876,71717
+tf,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@5,0.2713,0.2683,0.2745,71717
+tf,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@10,0.4854,0.4813,0.4897,71717
+tf,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@10,0.3045,0.3016,0.3075,71717
+tf,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,recall@20,0.5115,0.5073,0.5156,71717
+tf,cold,SMLP4Rec + query embedding minus SMLP4Rec plain,ndcg@20,0.3118,0.3092,0.3146,71717
+ar,all,SMLP4Rec plain minus ItemKNN,recall@5,0.0029,0.0019,0.004,378788
+ar,all,SMLP4Rec plain minus ItemKNN,ndcg@5,0.0018,0.0012,0.0024,378788
+ar,all,SMLP4Rec plain minus ItemKNN,recall@10,0.0019,0.0009,0.003,378788
+ar,all,SMLP4Rec plain minus ItemKNN,ndcg@10,0.0015,0.0009,0.002,378788
+ar,all,SMLP4Rec plain minus ItemKNN,recall@20,0.0016,0.0005,0.0027,378788
+ar,all,SMLP4Rec plain minus ItemKNN,ndcg@20,0.0014,0.0009,0.0019,378788
+ar,warm,SMLP4Rec plain minus ItemKNN,recall@5,0.0036,0.0024,0.0048,307071
+ar,warm,SMLP4Rec plain minus ItemKNN,ndcg@5,0.0023,0.0015,0.003,307071
+ar,warm,SMLP4Rec plain minus ItemKNN,recall@10,0.0041,0.0027,0.0053,307071
+ar,warm,SMLP4Rec plain minus ItemKNN,ndcg@10,0.0024,0.0017,0.003,307071
+ar,warm,SMLP4Rec plain minus ItemKNN,recall@20,0.0022,0.0009,0.0034,307071
+ar,warm,SMLP4Rec plain minus ItemKNN,ndcg@20,0.0019,0.0013,0.0025,307071
+ar,cold,SMLP4Rec plain minus ItemKNN,recall@5,0.0,0.0,0.0,71717
+ar,cold,SMLP4Rec plain minus ItemKNN,ndcg@5,-0.0004,-0.0006,-0.0002,71717
+ar,cold,SMLP4Rec plain minus ItemKNN,recall@10,-0.0071,-0.0089,-0.0052,71717
+ar,cold,SMLP4Rec plain minus ItemKNN,ndcg@10,-0.0025,-0.0031,-0.0019,71717
+ar,cold,SMLP4Rec plain minus ItemKNN,recall@20,-0.0006,-0.0035,0.0021,71717
+ar,cold,SMLP4Rec plain minus ItemKNN,ndcg@20,-0.001,-0.0018,-0.0002,71717
+tf,all,SMLP4Rec plain minus ItemKNN,recall@5,0.0131,0.0122,0.014,378788
+tf,all,SMLP4Rec plain minus ItemKNN,ndcg@5,0.0142,0.0136,0.0148,378788
+tf,all,SMLP4Rec plain minus ItemKNN,recall@10,0.0092,0.0083,0.0103,378788
+tf,all,SMLP4Rec plain minus ItemKNN,ndcg@10,0.013,0.0124,0.0135,378788
+tf,all,SMLP4Rec plain minus ItemKNN,recall@20,0.0093,0.0083,0.0103,378788
+tf,all,SMLP4Rec plain minus ItemKNN,ndcg@20,0.013,0.0125,0.0135,378788
+tf,warm,SMLP4Rec plain minus ItemKNN,recall@5,0.0161,0.015,0.0172,307071
+tf,warm,SMLP4Rec plain minus ItemKNN,ndcg@5,0.0175,0.0168,0.0183,307071
+tf,warm,SMLP4Rec plain minus ItemKNN,recall@10,0.0131,0.0118,0.0142,307071
+tf,warm,SMLP4Rec plain minus ItemKNN,ndcg@10,0.0166,0.0159,0.0173,307071
+tf,warm,SMLP4Rec plain minus ItemKNN,recall@20,0.0116,0.0106,0.0127,307071
+tf,warm,SMLP4Rec plain minus ItemKNN,ndcg@20,0.0162,0.0156,0.0168,307071
+tf,cold,SMLP4Rec plain minus ItemKNN,recall@5,0.0,0.0,0.0,71717
+tf,cold,SMLP4Rec plain minus ItemKNN,ndcg@5,-0.0004,-0.0006,-0.0002,71717
+tf,cold,SMLP4Rec plain minus ItemKNN,recall@10,-0.0071,-0.0089,-0.0052,71717
+tf,cold,SMLP4Rec plain minus ItemKNN,ndcg@10,-0.0025,-0.0031,-0.0019,71717
+tf,cold,SMLP4Rec plain minus ItemKNN,recall@20,-0.0006,-0.0035,0.0021,71717
+tf,cold,SMLP4Rec plain minus ItemKNN,ndcg@20,-0.001,-0.0018,-0.0002,71717

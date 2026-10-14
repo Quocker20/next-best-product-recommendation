@@ -161,27 +161,27 @@ def main() -> None:
         }
     res["candidate_fields"] = cand
 
-    # 7. where the sameDest signal comes from: age of the latest earlier booking of the same cluster
+    # 7. where the sameDest signal comes from: lag to the latest earlier booking of the same cluster
     # at the same destination, for the valid / test targets whose answer is such a repeat
     sec = d["ts_unix"].to_numpy().astype("int64")
     k_dc = pd.Series(uid * 10**9 + dest * 128 + y_all)
-    age = (pd.Series(sec) - pd.Series(sec).groupby(k_dc, sort=False).shift()).to_numpy(
+    lag = (pd.Series(sec) - pd.Series(sec).groupby(k_dc, sort=False).shift()).to_numpy(
         dtype="float64"
     )
     bins = [-1, 3600, 86400, 7 * 86400, 30 * 86400, 1e12]
     labels = ["<=1h", "<=1d", "<=7d", "<=30d", ">30d"]
-    res["sameDest_signal_age"] = {}
+    res["sameDest_signal_lag"] = {}
     for sp, idx in parts.items():
         if sp == "train":
             continue
-        a = age[idx]
+        a = lag[idx]
         hit = ~np.isnan(a)
         counts = pd.cut(pd.Series(a[hit]), bins, labels=labels).value_counts(sort=False)
-        res["sameDest_signal_age"][sp] = {
+        res["sameDest_signal_lag"][sp] = {
             "targets": len(idx),
             "targets_with_same_dest_cluster_repeat": int(hit.sum()),
             "share_of_targets": float(hit.mean()),
-            **{f"age_{k}": int(v) for k, v in counts.items()},
+            **{f"lag_{k}": int(v) for k, v in counts.items()},
         }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

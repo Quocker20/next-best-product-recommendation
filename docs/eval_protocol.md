@@ -79,7 +79,7 @@ Replaces the row-level AR / TF test tables (superseded 2026-10-14). Code: `nbp.e
   - sameDest alpha and w (ties to the smaller w, then the larger alpha).
   - The chosen values are frozen for the other seeds.
 - **sameDest:** `log q_model + w · log q_sameDest`, `log q = log((1 − alpha) p + alpha / 100)`.
-  - q_sameDest is the recency-weighted (0.7^age) share of the history booked at the searched destination.
+  - q_sameDest is the recency-weighted (0.7^lag) share of the history booked at the searched destination.
   - It is uniform when there is none, so the fusion is a no-op for a destination new to the user.
 - **Reported seed (2026-10-13):** every number of the report and the slides is that of **seed 2024**, the seed whose results lie closest to the 3-seed mean (`scripts/pick_reported_seed.py` → `results/week6_retrain/reported_seed.json`, `configs/split.yaml` `report_seed`). The tables of this seed are `results/week6_retrain/reported_tables.md`; `final_tables.md` keeps the mean ± std over the three seeds as the full record.
 - **Test** is read once, after all selection is frozen. There is no retraining on train + valid.

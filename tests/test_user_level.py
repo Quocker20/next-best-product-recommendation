@@ -72,3 +72,16 @@ def test_fixed_top_matches_user_set_metrics():
         ref = user_set_metrics(top, truths, k=k)
         assert abs(got[f"recall@{k}"] - ref[f"recall@{k}"]) < 1e-12
         assert abs(got[f"ndcg@{k}"] - ref[f"ndcg@{k}"]) < 1e-12
+
+
+def test_slide_example_appendix_a2():
+    """The worked example of appendix A2 of the week-6 deck: list 7, 3, 12, 40, 9; truth {3, 9, 55}; K = 5."""
+    from nbp.eval.user_level import fixed_top_user_metrics
+
+    top = np.array([[7, 3, 12, 40, 9] + list(range(100, 115))])
+    got = fixed_top_user_metrics(top, [{3, 9, 55}], ks=(5,))
+    assert abs(got["recall@5"] - 2 / 3) < 1e-12
+    dcg = 1 / np.log2(3) + 1 / np.log2(6)
+    ideal = 1 + 1 / np.log2(3) + 0.5
+    assert abs(got["ndcg@5"] - dcg / ideal) < 1e-12
+    assert round(got["ndcg@5"], 3) == 0.478

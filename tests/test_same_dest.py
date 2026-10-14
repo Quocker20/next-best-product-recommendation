@@ -14,7 +14,7 @@ Q = np.array([100])
 
 def test_decay_recent_counts_more():
     s = same_dest_scores(SEQ, LEN, H_DEST, Q, n_items=10, base=0.7)[0]
-    # ages: cluster 5 -> 2, cluster 6 -> 1 (other destination), cluster 7 -> 0
+    # lags: cluster 5 -> 2, cluster 6 -> 1 (other destination), cluster 7 -> 0
     assert s[7] == pytest.approx(1.0)
     assert s[5] == pytest.approx(0.49)
     assert s[6] == 0.0

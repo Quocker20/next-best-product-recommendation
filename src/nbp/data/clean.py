@@ -83,8 +83,8 @@ def flag_session_repeats(df: pd.DataFrame) -> pd.Series:
     order = df.sort_values(["user_id", "date_time"], kind="stable").index
     s = df.loc[order]
     key = [s["user_id"], s["srch_destination_id"], s["hotel_cluster"]]
-    age = s["date_time"].groupby(key, sort=False).diff().dt.total_seconds()
-    return (age <= SESSION_WINDOW_S).fillna(False).reindex(df.index)
+    lag = s["date_time"].groupby(key, sort=False).diff().dt.total_seconds()
+    return (lag <= SESSION_WINDOW_S).fillna(False).reindex(df.index)
 
 
 def collapse_bursts(clean: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
