@@ -580,7 +580,8 @@ B.r3n=()=>resCols(5,'n','main','query',['+1.5%','+1.1%']);B.r3r=()=>resCols(5,'r
 /* cold vs warm */
 B.cold=()=>{const G=[['Cold','71,717 user',[.0888,.0801,.0859,.3487]],['Tất cả','222,428 user',[null,null,null,.3783]],['Warm','150,711 user',[.1082,.1777,.1833,.3923]]],ms=M.slice(0,4),W=780,lw=130,gw=W-lw-70,bh=34,g=9,gg=40,mx=.5;let y=14,s='';
  G.forEach(([l,n,v],gi)=>{const bars=v.map((x,i)=>[x,i]).filter(([x])=>x!=null),gh=bars.length*bh+(bars.length-1)*g;if(gi==0)s+=R(-10,y-10,W+20,gh+20,C.tint,'',10);s+=T(0,y+gh/2,l,{fs:18,fw:700,c:C.ink})+T(0,y+gh/2+20,n,{fs:12.5});
-  bars.forEach(([x,i],k)=>{const yy=y+k*(bh+g),w=x/mx*gw,hi=i==3;s+=R(lw,yy,w,bh,ms[i].c,`${l} · ${ms[i].n}: ${f4(x)}`,4);s+=T(lw+w+8,yy+bh/2+5,f4(x),{fs:15,fw:hi?800:500,c:hi?C.ink:C.body})});y+=gh+gg;
+  bars.forEach(([x,i],k)=>{const yy=y+k*(bh+g),w=x/mx*gw,hi=i==3;s+=R(lw,yy,w,bh,ms[i].c,`${l} · ${ms[i].n}: ${f4(x)}`,4);s+=T(lw+w+8,yy+bh/2+5,f4(x),{fs:15,fw:hi?800:500,c:hi?C.ink:C.body});
+   if(gi==1){const px=lw+w+84;[['↑ +8.5% vs cold',C.tealD,'#fff'],['↓ −3.6% vs warm',C.ochreT,C.ochreD]].forEach(([tx,bg,fg],j)=>{const py=yy+bh/2-26+j*28,pw=132;s+=R(px,py,pw,24,bg,'',12)+T(px+pw/2,py+16.5,tx,{a:'middle',fs:12.5,fw:800,c:fg})})}});y+=gh+gg;
   if(gi<2)s+=L(0,y-gg/2,W,y-gg/2,C.line,1)});
  return svg(W,y-gg,s)};
 /* where sameDest helps */
