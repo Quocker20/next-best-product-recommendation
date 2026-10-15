@@ -506,7 +506,7 @@ B.g_spread=()=>{const rows=[['Châu lục',6,7,'6 / 7'],['Nước',49,205,'49 / 
  rows.forEach(([l,v,tot,lab])=>{s+=T(0,y+16,l,{fs:15,fw:700,c:C.ink})+T(W,y+16,lab,{a:'end',fs:20,fw:800,c:C.tealD})+R(0,y+26,pw,bh,C.line,`tổng: ${fmt(tot)}`,6)+R(0,y+26,Math.max(v/tot*pw,6),bh,C.teal,`trung vị: ${v}`,6);y+=bh+26+34});
  return `<div style="display:flex;flex-direction:column;justify-content:center;height:360px">`+svg(W,y-34,s)+`</div>`};
 /* data issues */
-B.issues=()=>{const rows=[['Trùng khoá (user, giờ, điểm đến, cluster)',8,0],['Đặt lặp y hệt booking liền trước',48010,0],['Check-in trước ngày tìm kiếm',617,1],['Check-out trước check-in',3,1],['Số người lớn bằng 0',5239,1],['Số phòng bằng 0',250,1],['Hơn 4 khách mỗi phòng',35577,2],['Check-in sau tìm kiếm hơn 1 năm',1817,2],['Thiếu vị trí người dùng',32426,2],['Thiếu khoảng cách người dùng – điểm đến',1015177,2]];
+B.issues=()=>{const rows=[['Trùng khoá (user, giờ, điểm đến, cluster)',8,0],['Đặt lặp y hệt booking liền trước',48010,0],['Check-in trước ngày tìm kiếm',617,1],['Check-out trước check-in',3,1],['Số người lớn bằng 0',5239,1],['Số phòng bằng 0',250,1],['Hơn 4 khách mỗi phòng',35577,2],['Check-in sau tìm kiếm hơn 1 năm',1817,2],['Thiếu khoảng cách người dùng – điểm đến',1015179,2]];
  const A=[['Loại bỏ',C.ochre,C.ochreT,C.ochreD],['Đặt thiếu, giữ dòng',C.blue,C.blueT,'#1F5AA8'],['Giữ, đánh dấu',C.grayL,'#EEF1F4',C.body]];
  const W=1124,lw=340,cw=90,bx=lw+cw+16,pw=470,rh=40,mx=Math.log10(2e6);let s='',y=4;
  rows.forEach(([l,n,a])=>{const w=Math.max(4,Math.log10(n+1)/mx*pw),[an,c,tc,ti]=A[a];
