@@ -297,8 +297,8 @@ aside.notes{display:none!important}}
 <div class="lbl">NDCG@10</div><div class="big">0.1920</div>
 <div class="row"><span class="chip"><span class="up">↑</span> +0.0068 (+3.7%) vs ItemKNN</span><span class="chip"><span class="up">↑</span> +42% vs độ phổ biến</span></div>
 <hr><div class="lbl">Recall@10</div><div class="mid">32.2%</div><div class="row"><span class="chip t"><span class="up">↑</span> +4.1% vs ItemKNN</span></div>
-<div class="nt">Chỉ dùng lịch sử: <b>ngang ItemKNN</b>.</div></div>
-<div class="card" style="padding:16px 22px"><h3>NDCG@10 <small>chất lượng xếp hạng</small></h3><div data-c="r1n"></div><h3 style="margin-top:12px">Recall@10 <small>tỷ lệ booking thật nằm trong top 10</small></h3><div data-c="r1r"></div></div>
+<div class="nt">K = 5: NDCG <b>0.1519</b> · Recall <b>20.8%</b>. Chỉ dùng lịch sử: <b>ngang ItemKNN</b>.</div></div>
+<div class="card" style="padding:16px 22px"><h3>NDCG@K <small>chất lượng xếp hạng</small></h3><div data-c="r1n"></div><h3 style="margin-top:10px">Recall@K <small>tỷ lệ booking thật nằm trong top K</small></h3><div data-c="r1r"></div></div>
 </div></div>
 <p class="meta">Test · 222,428 user · mỗi user một top 20 cố định · trung bình theo user · seed 2024</p>
 <div class="links"><a class="lk" href="#" onclick="go('a2');return false">Cách test và eval →</a></div>
@@ -317,8 +317,8 @@ aside.notes{display:none!important}}
 <div class="lbl">NDCG@10</div><div class="big">0.4426</div>
 <div class="row"><span class="chip" style="font-size:17px;padding:7px 14px"><span class="up">↑</span> +0.2506 (+130.5%)</span><span class="mut" style="font-size:13px">so với SMLP4Rec gốc · KTC 95% +0.2491 đến +0.2521</span></div>
 <hr><div class="lbl">Recall@10</div><div class="mid">69.5%</div><div class="row"><span class="chip t"><span class="up">↑</span> +115.6%</span></div>
-<div class="nt">Lần tìm kiếm hiện tại là <b>tín hiệu chính</b>.</div></div>
-<div class="card" style="padding:16px 22px"><h3>NDCG@10 <small>chất lượng xếp hạng</small></h3><div data-c="r2n"></div><h3 style="margin-top:12px">Recall@10 <small>tỷ lệ booking thật nằm trong top 10</small></h3><div data-c="r2r"></div></div>
+<div class="nt">K = 5: NDCG <b>0.3783</b> · Recall <b>51.1%</b>. Lần tìm kiếm hiện tại là <b>tín hiệu chính</b>.</div></div>
+<div class="card" style="padding:16px 22px"><h3>NDCG@K <small>chất lượng xếp hạng</small></h3><div data-c="r2n"></div><h3 style="margin-top:10px">Recall@K <small>tỷ lệ booking thật nằm trong top K</small></h3><div data-c="r2r"></div></div>
 </div></div>
 <p class="meta">Test · 222,428 user · mỗi user một top 20 cố định · trung bình theo user · seed 2024</p>
 <div class="links"><a class="lk" href="#" onclick="go('a2');return false">Cách test và eval →</a></div>
@@ -327,9 +327,9 @@ aside.notes{display:none!important}}
 <!-- 18 cold -->
 <section class="slide" data-sec="4"><h1>Query embedding: user cold</h1>
 <div class="ct rb"><div class="grid" style="grid-template-columns:1fr 320px">
-<div class="card"><h3>NDCG@10 theo nhóm user<span class="lg" id="lg4"></span></h3><div data-c="cold"></div></div>
-<div class="card kpi hi"><div class="lbl">User cold · NDCG@10</div><div class="big">0.4134</div>
-<div class="row"><span class="chip"><span class="up">↑</span> 3.9× ItemKNN (0.1066)</span><span class="chip"><span class="up">↑</span> 3.4× độ phổ biến (0.1208)</span></div>
+<div class="card"><h3>NDCG@5 theo nhóm user<span class="lg" id="lg4"></span></h3><div data-c="cold"></div></div>
+<div class="card kpi hi"><div class="lbl">User cold · NDCG@5</div><div class="big">0.3487</div>
+<div class="row"><span class="chip"><span class="up">↑</span> 4.4× ItemKNN (0.0801)</span><span class="chip"><span class="up">↑</span> 3.9× độ phổ biến (0.0888)</span></div>
 <hr><div class="nt">Cold: chưa có booking nào trước 01/11/2014. Mô hình chỉ đọc lịch sử không có gì để xếp hạng; query embedding <b>đọc lần tìm kiếm hiện tại</b>.</div></div>
 </div></div>
 <p class="meta">Test · trung bình theo user · seed 2024</p>
@@ -348,8 +348,8 @@ aside.notes{display:none!important}}
 <div class="lbl">NDCG@10</div><div class="big">0.4474</div>
 <div class="row"><span class="chip"><span class="up">↑</span> +0.0048 (+1.1%) vs + query embedding</span><span class="mut" style="font-size:13px">KTC 95% +0.0045 đến +0.0052</span><span class="chip t"><span class="up">↑</span> 3.3× độ phổ biến · 2.4× ItemKNN</span></div>
 <hr><div class="lbl">Recall@10</div><div class="mid">69.7%</div><div class="row"><span class="chip t"><span class="up">↑</span> +0.2%</span></div>
-<div class="nt">Recall@10 gần như không đổi: mức tăng nằm ở <b>thứ hạng</b>.</div></div>
-<div class="card" style="padding:16px 22px"><h3>NDCG@10 <small>chất lượng xếp hạng</small></h3><div data-c="r3n"></div><h3 style="margin-top:12px">Recall@10 <small>tỷ lệ booking thật nằm trong top 10</small></h3><div data-c="r3r"></div></div>
+<div class="nt">K = 5: NDCG <b>0.3840</b> · Recall <b>51.5%</b>. Recall gần như không đổi: mức tăng nằm ở <b>thứ hạng</b>.</div></div>
+<div class="card" style="padding:16px 22px"><h3>NDCG@K <small>chất lượng xếp hạng</small></h3><div data-c="r3n"></div><h3 style="margin-top:10px">Recall@K <small>tỷ lệ booking thật nằm trong top K</small></h3><div data-c="r3r"></div></div>
 </div></div>
 <p class="meta">Test · 222,428 user · mỗi user một top 20 cố định · trung bình theo user · seed 2024</p>
 <div class="links"><a class="lk" href="#" onclick="go('a4');return false">Theo mùa, nhóm khách, gói đặt (A4) →</a><a class="lk" href="#" onclick="go('a2');return false">Cách test và eval →</a></div>
@@ -358,8 +358,8 @@ aside.notes{display:none!important}}
 <!-- 21 where -->
 <section class="slide" data-sec="5"><h1>sameDest: giúp ở đâu</h1>
 <div class="ct wi"><div class="grid" style="grid-template-columns:1.15fr 1fr">
-<div class="card"><h3>Mức tăng NDCG@10 theo số booking trước đó <small>chính − query embedding</small></h3><div data-c="w_hist"></div></div>
-<div class="card"><h3>NDCG@10 user warm theo điểm đến</h3><div class="lg" style="margin:0 0 4px"><span style="--c:#F2994A">+ query embedding</span><span style="--c:#12B8A6">+ sameDest</span></div><div data-c="w_dest"></div></div>
+<div class="card"><h3>Mức tăng NDCG@5 theo số booking trước đó <small>chính − query embedding</small></h3><div data-c="w_hist"></div></div>
+<div class="card"><h3>NDCG@5 user warm theo điểm đến</h3><div class="lg" style="margin:0 0 4px"><span style="--c:#F2994A">+ query embedding</span><span style="--c:#12B8A6">+ sameDest</span></div><div data-c="w_dest"></div></div>
 </div></div>
 <div class="ins"><div><span>sameDest chỉ giúp khi khách <b>quay lại điểm đến cũ</b>, và lịch sử càng dài càng có ích.</span></div><div><span>Với điểm đến mới, mô hình dựa vào ngữ cảnh tìm kiếm; sameDest <b>không làm hại</b>.</span></div></div>
 <aside class="notes">Điểm đến đã biết chiếm 18.7% user warm. Điểm đến mới: 0.4395 và 0.4401.</aside></section>
@@ -376,9 +376,9 @@ aside.notes{display:none!important}}
 <!-- 23 conclusion -->
 <section class="slide" data-sec="6"><h1>Những điều rút ra từ kết quả</h1>
 <div class="ct vc"><div class="cc">
-<div class="card hi"><div class="big">+131%</div><div class="h">Lần tìm kiếm hiện tại</div><div class="d">Query embedding: NDCG@10 0.1920 lên 0.4426</div></div>
-<div class="card"><div class="big">+6.5%</div><div class="h">Lịch sử cũ, đúng điểm đến</div><div class="d">sameDest ở điểm đến đã biết, chi phí khoảng 1 giây</div></div>
-<div class="card"><div class="big">0.4134</div><div class="h">User cold vẫn xếp hạng tốt</div><div class="d">NDCG@10; ItemKNN 0.1066</div></div>
+<div class="card hi"><div class="big">+149%</div><div class="h">Lần tìm kiếm hiện tại</div><div class="d">Query embedding: NDCG@5 0.1519 lên 0.3783</div></div>
+<div class="card"><div class="big">+8.6%</div><div class="h">Lịch sử cũ, đúng điểm đến</div><div class="d">sameDest ở điểm đến đã biết, chi phí khoảng 1 giây</div></div>
+<div class="card"><div class="big">0.3487</div><div class="h">User cold vẫn xếp hạng tốt</div><div class="d">NDCG@5; ItemKNN 0.0801</div></div>
 </div>
 <div class="eq"><span>Mô hình chính =</span><span class="chip g">SMLP4Rec</span>+<span class="chip o">query embedding</span>+<span class="chip t">sameDest</span></div></div>
 <aside class="notes">Mô hình chính = SMLP4Rec + query embedding + sameDest. Lần tìm kiếm hiện tại là tín hiệu chính; lịch sử là phần bổ sung nhỏ hơn nhưng có thật, tập trung ở user quay lại điểm đến cũ.</aside></section>
@@ -393,7 +393,7 @@ aside.notes{display:none!important}}
 <section class="slide appendix" id="a3"><h1>Phụ lục A3. Công thức sameDest</h1>
 <div class="ab"><div class="body"><style>.a5 p{margin:0 0 16px;font-size:19px;line-height:1.35}.a5 math[display="block"]{margin:20px 0}.a5col{margin-top:6px}table.t.a5t td,table.t.a5t th{padding:3px 12px;font-size:18px}.a5col{display:flex;gap:40px;align-items:flex-start}</style><div class="a5col"><div class="a5" style="width:560px"><p><i>B</i>(<i>k</i>): các booking trước, tại điểm đến đang tìm, có cluster <i>k</i>. <i>p</i>: xác suất của mô hình.</p><math display="block"><mrow><mi>sameDest</mi><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow></mrow><mo>=</mo><mrow><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><mi>B</mi><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow></mrow></munder><msup><mn>0.7</mn><msub><mtext>lag</mtext><mi>i</mi></msub></msup></mrow></math><math display="block"><msub><mi>q</mi><mtext>sameDest</mtext></msub><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>sameDest</mi><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow></mrow><mrow><munder><mo>∑</mo><mi>j</mi></munder><mrow><mi>sameDest</mi><mrow><mo lspace="0" rspace="0">(</mo><mi>j</mi><mo lspace="0" rspace="0">)</mo></mrow></mrow></mrow></mfrac></math><math display="block"><mi>q</mi><mo>=</mo><mrow><mo>(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo>)</mo><mo>·</mo><mi>p</mi><mo>+</mo><mfrac><mi>α</mi><mn>100</mn></mfrac></mrow></math><math display="block"><mtext>điểm</mtext><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow><mo>=</mo><mrow><mi>log</mi><mo>&#x2061;</mo><mspace width="0.2em"></mspace><msub><mi>q</mi><mtext>mô hình</mtext></msub></mrow><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow><mo>+</mo><mi>w</mi><mo>·</mo><mrow><mi>log</mi><mo>&#x2061;</mo><mspace width="0.2em"></mspace><msub><mi>q</mi><mtext>sameDest</mtext></msub></mrow><mrow><mo lspace="0" rspace="0">(</mo><mi>k</mi><mo lspace="0" rspace="0">)</mo></mrow></math><p>α = 0.1; w = 0.5 nếu điểm đến đã có trong lịch sử, w = 0 nếu không.</p></div><div class="a5" style="width:540px"><p>Ví dụ: lịch sử bốn booking, tìm kiếm tại điểm đến A (lag 0 = booking gần nhất).</p><table class="t a5t"><thead><tr><th>Điểm đến</th><th class="n">Cluster</th><th class="n">Lag</th><th>Tính vào sameDest?</th><th class="n">0.7<sup>lag</sup></th></tr></thead><tbody><tr><td>A</td><td class="n">7</td><td class="n">3</td><td>có</td><td class="n">0.343</td></tr><tr style="color:var(--muted)"><td>B</td><td class="n">9</td><td class="n">2</td><td>không (khác điểm đến)</td><td class="n">0</td></tr><tr><td>A</td><td class="n">12</td><td class="n">1</td><td>có</td><td class="n">0.700</td></tr><tr><td>A</td><td class="n">7</td><td class="n">0</td><td>có</td><td class="n">1.000</td></tr></tbody></table><p style="margin-top:18px"><math><mrow><mi>sameDest</mi><mrow><mo lspace="0" rspace="0">(</mo><mn>7</mn><mo lspace="0" rspace="0">)</mo></mrow></mrow><mo>=</mo><msup><mn>0.7</mn><mn>3</mn></msup><mo>+</mo><msup><mn>0.7</mn><mn>0</mn></msup><mo>=</mo><mn>0.343</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>1.343</mn></math></p><p><math><mrow><mi>sameDest</mi><mrow><mo lspace="0" rspace="0">(</mo><mn>12</mn><mo lspace="0" rspace="0">)</mo></mrow></mrow><mo>=</mo><msup><mn>0.7</mn><mn>1</mn></msup><mo>=</mo><mn>0.700</mn></math></p><math display="block"><msub><mi>q</mi><mtext>sameDest</mtext></msub><mrow><mo lspace="0" rspace="0">(</mo><mn>7</mn><mo lspace="0" rspace="0">)</mo></mrow><mo>=</mo><mfrac><mn>1.343</mn><mrow><mn>1.343</mn><mo>+</mo><mn>0.700</mn></mrow></mfrac><mo>=</mo><mfrac><mn>1.343</mn><mn>2.043</mn></mfrac><mo>=</mo><mn>0.657</mn></math><math display="block"><msub><mi>q</mi><mtext>sameDest</mtext></msub><mrow><mo lspace="0" rspace="0">(</mo><mn>12</mn><mo lspace="0" rspace="0">)</mo></mrow><mo>=</mo><mfrac><mn>0.700</mn><mrow><mn>1.343</mn><mo>+</mo><mn>0.700</mn></mrow></mfrac><mo>=</mo><mfrac><mn>0.700</mn><mn>2.043</mn></mfrac><mo>=</mo><mn>0.343</mn></math></div></div></div></div><aside class="notes">sameDest là phần cộng thêm ở bước cuối, không phải đầu vào của mạng; chỉ có tác dụng khi user từng đặt tại đúng điểm đến đang tìm. Cơ số 0.7 là giá trị cố định, không nằm trong lưới tune (lưới chỉ gồm α và w); α = 0.1 và w = 0.5 chọn trên tập valid (autoregressive, quy tắc một sai số chuẩn theo user). Động lực: trên booking warm của test, 29.2% tìm kiếm diễn ra tại điểm đến user từng đặt; trong số đó 51.8% lại đặt đúng một cluster đã đặt tại điểm đó (15.11% toàn bộ booking warm); tính trên 307,071 booking warm của test với lịch sử thật. Cơ số 0.7 cố định (0.7² = 0.49 ≈ 0.5, nên cứ hai booking cũ hơn thì trọng số còn khoảng một nửa). Nguồn: src/nbp/hybrid/same_dest.py, fusion.py; results/week6_retrain/main_s2022.json (samedest).</aside></section>
 <section class="slide appendix" id="a4"><h1>Phụ lục A4. Mô hình chính theo mùa, nhóm khách, gói đặt</h1>
-<div class="ab"><div class="card" style="padding:18px 24px"><h3>NDCG@10 của mô hình chính <small>tập test, theo thuộc tính của booking đầu tiên của user</small></h3><div data-c="a4"></div></div></div><aside class="notes">Mô hình chính dẫn đầu mọi nhóm; chênh lệch giữa các nhóm nhỏ.</aside></section>
+<div class="ab"><div class="card" style="padding:18px 24px"><h3>NDCG@5 của mô hình chính <small>tập test, theo thuộc tính của booking đầu tiên của user</small></h3><div data-c="a4"></div></div></div><aside class="notes">Mô hình chính dẫn đầu mọi nhóm; chênh lệch giữa các nhóm nhỏ.</aside></section>
 <section class="slide appendix" id="a5"><h1>Phụ lục A5. Ý nghĩa các trường dữ liệu</h1>
 <div class="ab"><div class="body"><style>table.t.a5f td,table.t.a5f th{padding:5px 10px;font-size:16px;line-height:1.25}.a5f code{font-size:15px}.a5w{display:flex;gap:28px;align-items:flex-start}.a5w>table{flex:1}</style><div class="a5w"><table class="t a5f"><thead><tr><th>Cột</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td><code>date_time</code></td><td>thời điểm của lượt tìm kiếm hoặc đặt</td></tr><tr><td><code>user_id</code></td><td>mã người dùng</td></tr><tr><td><code>is_package</code></td><td>đặt kèm gói (1) hoặc không (0)</td></tr><tr><td><code>srch_adults_cnt</code></td><td>số người lớn</td></tr><tr><td><code>srch_children_cnt</code></td><td>số trẻ em</td></tr><tr><td><code>srch_ci</code></td><td>ngày check-in</td></tr><tr><td><code>srch_co</code></td><td>ngày check-out</td></tr><tr><td><code>srch_rm_cnt</code></td><td>số phòng</td></tr><tr><td><code>srch_destination_id</code></td><td>mã điểm đến tìm kiếm</td></tr><tr><td><code>srch_destination_type_id</code></td><td>loại điểm đến</td></tr><tr><td><code>hotel_cluster</code></td><td>cụm khách sạn đã đặt, mã ẩn danh: nhãn cần dự đoán</td></tr></tbody></table><table class="t a5f"><thead><tr><th>Cột</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td><code>hotel_continent</code></td><td>châu lục của khách sạn đã đặt</td></tr><tr><td><code>hotel_country</code></td><td>quốc gia của khách sạn đã đặt</td></tr><tr><td><code>hotel_market</code></td><td>thị trường của khách sạn đã đặt</td></tr><tr><td><code>orig_destination_distance</code></td><td>khoảng cách từ người dùng đến điểm đến, có thể thiếu</td></tr><tr><td><code>user_location_country</code></td><td>quốc gia của người dùng</td></tr><tr><td><code>user_location_region</code></td><td>vùng của người dùng</td></tr><tr><td><code>user_location_city</code></td><td>thành phố của người dùng</td></tr><tr><td><code>channel</code></td><td>kênh tiếp thị dẫn tới lượt tìm kiếm</td></tr><tr><td><code>is_mobile</code></td><td>dùng thiết bị di động (1) hoặc không (0)</td></tr><tr><td><code>posa_continent</code></td><td>châu lục của điểm bán</td></tr><tr><td><code>site_name</code></td><td>website Expedia dùng để tìm kiếm</td></tr></tbody></table></div></div></div><aside class="notes">Ý nghĩa 22 cột của bảng ở slide 5. Phụ lục này chỉ mở từ slide 5 và quay về slide 5.</aside></section>
 
@@ -517,34 +517,38 @@ B.e4_new=()=>stack({w:460,lw:60,bh:84,gap:48,rows:[['valid',.343],['test',.3912]
  +`<div class="mut" style="font-size:13px;margin-top:22px;line-height:1.45">Valid: 77,541 / 226,064 user<br>Test: 87,008 / 222,428 user</div>`;
 B.e4_hist=()=>cols({w:580,h:350,l:0,t:30,b:52,v:[.3224,.1689,.2445,.1423,.1220],cats:['0 (cold)','1','2–4','5–9','≥ 10'],sub:['71,717 user','','','',''],hi:[0],hc:C.ochre,max:.36,vf:x=>pct(x,2),bw:70});
 /* results */
-const RES={pop:[.1356,.2425],iknn:[.1852,.3096],plain:[.1920,.3224],query:[.4426,.6952],main:[.4474,.6968]};
-function resCols(n,metric,hiKey,ref,lift){const idx=metric=='n'?0:1,mx=metric=='n'?.5:.8,ms=M.slice(0,n),W=730,H=214,Tp=48,Bt=26,ph=H-Tp-Bt,band=W/5,bw=78,vf=metric=='n'?f4:(v=>pct(v));
+const RES={pop:[.1020,.1356,.1459,.2425],iknn:[.1462,.1852,.1984,.3096],plain:[.1519,.1920,.2080,.3224],query:[.3783,.4426,.5113,.6952],main:[.3840,.4474,.5154,.6968]};
+const SHORT={pop:'Phổ biến',iknn:'ItemKNN',plain:'SMLP4Rec',query:'+ query',main:'+ sameDest'};
+function resCols(n,metric,hiKey,ref,lifts){const mx=metric=='n'?.5:.8,ms=M.slice(0,n),PW=352,GAP=26,W=PW*2+GAP,H=212,Tp=60,Bt=26,ph=H-Tp-Bt,band=PW/n,bw=Math.min(52,band*.68),vf=metric=='n'?f4:(v=>pct(v));
  let s='';const Y=v=>Tp+ph-v/mx*ph;
- ms.forEach((m,i)=>{const v=RES[m.k][idx],x=i*band+(band-bw)/2,hi=m.k==hiKey;
-  if(hi)s+=R(i*band+8,0,band-16,H,C.tint,'',10);
-  s+=R(x,Y(v),bw,Tp+ph-Y(v),m.c,`${m.n}: ${vf(v)}`,4);
-  s+=T(x+bw/2,Y(v)-8,vf(v),{a:'middle',fs:hi?16:14,fw:hi?800:500,c:hi?C.ink:C.body});
-  s+=T(i*band+band/2,H-7,m.n,{a:'middle',fs:13,fw:hi?700:400,c:hi?C.ink:C.body})});
- s+=L(0,Tp+ph,W,Tp+ph,C.line,1);
- const hi=ms.findIndex(m=>m.k==hiKey),ri=ms.findIndex(m=>m.k==ref),yr=Y(RES[ref][idx]),hx=hi*band+band/2;
- s+=L(ri*band+band/2+bw/2,yr,hx+bw/2+4,yr,C.muted,1.2,'4 4');
- const cw=lift.length*8.4+34,cy=Y(RES[hiKey][idx])-54;s+=R(hx-cw/2,cy,cw,26,C.tealD,'',13)+T(hx,cy+18,'↑ '+lift,{a:'middle',fs:14.5,fw:800,c:'#fff'});
+ [0,1].forEach(pi=>{const ox=pi*(PW+GAP),idx=(metric=='n'?0:2)+pi,lift=lifts[pi];
+  s+=T(ox,12,'K = '+(pi?10:5),{fs:13,fw:800,c:C.muted});
+  ms.forEach((m,i)=>{const v=RES[m.k][idx],x=ox+i*band+(band-bw)/2,hi=m.k==hiKey;
+   if(hi)s+=R(ox+i*band+3,18,band-6,H-18,C.tint,'',9);
+   s+=R(x,Y(v),bw,Tp+ph-Y(v),m.c,`${m.n} · K=${pi?10:5}: ${vf(v)}`,4);
+   s+=T(x+bw/2,Y(v)-7,vf(v),{a:'middle',fs:hi?13.5:12,fw:hi?800:500,c:hi?C.ink:C.body});
+   s+=T(ox+i*band+band/2,H-7,SHORT[m.k],{a:'middle',fs:11.5,fw:hi?700:400,c:hi?C.ink:C.body})});
+  s+=L(ox,Tp+ph,ox+PW,Tp+ph,C.line,1);
+  const hi=ms.findIndex(m=>m.k==hiKey),ri=ms.findIndex(m=>m.k==ref),yr=Y(RES[ref][idx]),hx=ox+hi*band+band/2;
+  s+=L(ox+ri*band+band/2+bw/2,yr,hx+bw/2+3,yr,C.muted,1.2,'4 4');
+  const cw=lift.length*7.6+30,cy=Math.max(Y(RES[hiKey][idx])-46,18),cx=Math.min(hx,ox+PW-cw/2);s+=R(cx-cw/2,cy,cw,24,C.tealD,'',12)+T(cx,cy+16.5,'↑ '+lift,{a:'middle',fs:12.5,fw:800,c:'#fff'})});
+ s+=L(PW+GAP/2,8,PW+GAP/2,H-4,C.line,1);
  return svg(W,H,s)}
-B.r1n=()=>resCols(3,'n','plain','iknn','+0.0068 (+3.7%)');B.r1r=()=>resCols(3,'r','plain','iknn','+4.1%');
-B.r2n=()=>resCols(4,'n','query','plain','+0.2506 (+130.5%)');B.r2r=()=>resCols(4,'r','query','plain','+115.6%');
-B.r3n=()=>resCols(5,'n','main','query','+0.0048 (+1.1%)');B.r3r=()=>resCols(5,'r','main','query','+0.2%');
+B.r1n=()=>resCols(3,'n','plain','iknn',['+3.9%','+3.7%']);B.r1r=()=>resCols(3,'r','plain','iknn',['+4.8%','+4.1%']);
+B.r2n=()=>resCols(4,'n','query','plain',['+149.0%','+130.5%']);B.r2r=()=>resCols(4,'r','query','plain',['+145.8%','+115.6%']);
+B.r3n=()=>resCols(5,'n','main','query',['+1.5%','+1.1%']);B.r3r=()=>resCols(5,'r','main','query',['+0.8%','+0.2%']);
 /* cold vs warm */
-B.cold=()=>{const G=[['Cold','71,717 user',[.1208,.1066,.1151,.4134]],['Warm','150,711 user',[.1427,.2226,.2286,.4566]]],ms=M.slice(0,4),W=780,lw=130,gw=W-lw-70,bh=36,g=10,gg=54,mx=.5;let y=16,s='';
+B.cold=()=>{const G=[['Cold','71,717 user',[.0888,.0801,.0859,.3487]],['Warm','150,711 user',[.1082,.1777,.1833,.3923]]],ms=M.slice(0,4),W=780,lw=130,gw=W-lw-70,bh=36,g=10,gg=54,mx=.5;let y=16,s='';
  G.forEach(([l,n,v],gi)=>{const gh=4*bh+3*g;if(gi==0)s+=R(-10,y-10,W+20,gh+20,C.tint,'',10);s+=T(0,y+gh/2,l,{fs:18,fw:700,c:C.ink})+T(0,y+gh/2+20,n,{fs:12.5});
   v.forEach((x,i)=>{const yy=y+i*(bh+g),w=x/mx*gw,hi=i==3;s+=R(lw,yy,w,bh,ms[i].c,`${l} · ${ms[i].n}: ${f4(x)}`,4);s+=T(lw+w+8,yy+bh/2+5,f4(x),{fs:15,fw:hi?800:500,c:hi?C.ink:C.body})});y+=gh+gg});
  return svg(W,y-gg,s)};
 /* where sameDest helps */
-B.w_hist=()=>cols({w:570,h:370,l:0,t:30,b:52,v:[.0004,.0019,.0048,.0086,.0162],cats:['0','1','2–4','5–9','≥ 10'],sub:['n = 71,717','n = 37,557','n = 54,385','n = 31,643','n = 27,126'],hi:[0,1,2,3,4],max:.018,vf:x=>'+'+x.toFixed(4),bw:70})+`<div class="mut" style="font-size:12.5px;text-align:center;margin-top:-2px">số booking trước đó của user</div>`;
-B.w_dest=()=>{const G=[['Đã biết','n = 28,200',[.5306,.5653]],['Mới','n = 122,511',[.4395,.4401]]],W=480,H=380,Lp=0,Tp=60,Bt=50,ph=H-Tp-Bt,mx=.6,band=(W-Lp)/2,bw=74,Y=v=>Tp+ph-v/mx*ph;let s='';
+B.w_hist=()=>cols({w:570,h:370,l:0,t:30,b:52,v:[.0003,.0024,.0058,.0106,.0190],cats:['0','1','2–4','5–9','≥ 10'],sub:['n = 71,717','n = 37,557','n = 54,385','n = 31,643','n = 27,126'],hi:[0,1,2,3,4],max:.018,vf:x=>'+'+x.toFixed(4),bw:70})+`<div class="mut" style="font-size:12.5px;text-align:center;margin-top:-2px">số booking trước đó của user</div>`;
+B.w_dest=()=>{const G=[['Đã biết','n = 28,200',[.4722,.5127]],['Mới','n = 122,511',[.3740,.3749]]],W=480,H=380,Lp=0,Tp=60,Bt=50,ph=H-Tp-Bt,mx=.6,band=(W-Lp)/2,bw=74,Y=v=>Tp+ph-v/mx*ph;let s='';
  G.forEach(([l,n,v],gi)=>{const cx=Lp+gi*band+band/2;v.forEach((x,j)=>{const xx=cx-bw-4+j*(bw+8);s+=R(xx,Y(x),bw,Tp+ph-Y(x),j?C.teal:C.ochre,`${l} · ${j?'+ sameDest':'+ query embedding'}: ${f4(x)}`,4)+T(xx+bw/2,Y(x)-8,f4(x),{a:'middle',fs:15,fw:j?800:500,c:j?C.ink:C.body})});
   s+=T(cx,H-Bt+24,l,{a:'middle',fs:16,fw:700,c:C.ink})+T(cx,H-Bt+42,n,{a:'middle',fs:12})});
  s+=L(0,Tp+ph,W,Tp+ph,C.line,1);
- const cx=band/2,lab='+0.0347 (+6.5%)',cw=lab.length*8.4+34;s+=R(cx-cw/2+40,Y(.5653)-60,cw,26,C.tealD,'',13)+T(cx+40,Y(.5653)-42,'↑ '+lab,{a:'middle',fs:14.5,fw:800,c:'#fff'});
+ const cx=band/2,lab='+0.0405 (+8.6%)',cw=lab.length*8.4+34;s+=R(cx-cw/2+40,Y(.5653)-60,cw,26,C.tealD,'',13)+T(cx+40,Y(.5653)-42,'↑ '+lab,{a:'middle',fs:14.5,fw:800,c:'#fff'});
  return svg(W,H,s)};
 /* cost */
 B.cost=()=>{const rows=[['Huấn luyện 1 epoch, query embedding',1070.5,C.gray],['Chấm điểm tập valid, query embedding',24.4,C.grayL],['sameDest, chấm điểm 222,428 user',1.1,C.teal]],W=760,pw=600,bh=30,g=58,lo=-1,hi=Math.log10(2000),X=v=>(Math.log10(v)-lo)/(hi-lo)*pw;
@@ -553,7 +557,7 @@ B.cost=()=>{const rows=[['Huấn luyện 1 epoch, query embedding',1070.5,C.gray
  let y=0;rows.forEach(([l,v,c],i)=>{s+=T(0,y+16,l,{fs:15,fw:i==2?700:500,c:i==2?C.ink:C.body});const w=X(v);s+=R(0,y+26,w,bh,c,`${l}: ${v} s`,4)+T(w+10,y+26+bh/2+6,fmt(v)+' s',{fs:17,fw:800,c:C.ink});y+=bh+26+g});
  return svg(W,HH+26,s)};
 /* A4 */
-B.a4=()=>{const G=[['Mùa check-in',[['T11–12','150,740',.4523],['T1–3','55,535',.4408],['T4–10','16,153',.4251]]],['Nhóm khách',[['solo','58,127',.4491],['couple','115,301',.4477],['family','29,705',.4482],['group','18,983',.4402]]],['Gói đặt',[['có gói','32,013',.4602],['không gói','190,415',.4453]]]];
+B.a4=()=>{const G=[['Mùa check-in',[['T11–12','150,740',.3876],['T1–3','55,535',.3802],['T4–10','16,153',.3630]]],['Nhóm khách',[['solo','58,127',.3849],['couple','115,301',.3842],['family','29,705',.3866],['group','18,983',.3762]]],['Gói đặt',[['có gói','32,013',.4022],['không gói','190,415',.3809]]]];
  const W=1120,lw=240,pw=W-lw-90,mx=.5,bh=26,g=9;let y=0,s='';
  G.forEach(([h,rs])=>{s+=T(0,y+14,h.toUpperCase(),{fs:11.5,fw:700,c:C.muted});y+=24;rs.forEach(([l,n,v])=>{s+=T(14,y+bh/2+5,l,{fs:15,fw:600,c:C.ink})+T(lw-14,y+bh/2+5,'n = '+n,{a:'end',fs:12.5})+R(lw,y,v/mx*pw,bh,C.teal,`${l}: ${f4(v)}`,4)+T(lw+v/mx*pw+8,y+bh/2+5,f4(v),{fs:15,fw:700,c:C.ink});y+=bh+g});y+=6});
  return svg(W,y,s)};
