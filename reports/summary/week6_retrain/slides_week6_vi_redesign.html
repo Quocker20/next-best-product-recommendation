@@ -110,7 +110,7 @@ table.t code{font-size:14px;background:#EEF1F4;padding:1px 6px;border-radius:5px
 .kpi .nt b{color:var(--ink)}
 /* dataset */
 .kg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.kg .card{padding:18px 22px}
+.kg .card{padding:18px 22px;display:flex;flex-direction:column;justify-content:center}
 .kg .mid{margin-top:6px}
 .kg .s{font-size:13.5px;color:var(--muted);margin-top:2px}
 /* split */
@@ -188,49 +188,58 @@ aside.notes{display:none!important}}
 <section class="slide" data-sec="1"><h1>Bộ dữ liệu Expedia</h1>
 <div class="ct rb"><div class="grid" style="grid-template-columns:1.1fr 1fr">
 <div class="kg">
-<div class="card hi" style="grid-column:span 2"><div class="lbl">Booking</div><div class="big" style="margin-top:8px">2,952,675</div><div class="s">2013-01-07 → 2014-12-31</div></div>
-<div class="card"><div class="lbl">User có đặt phòng</div><div class="mid">813,985</div></div>
-<div class="card"><div class="lbl">Điểm đến</div><div class="mid">36,933</div></div>
-<div class="card" style="grid-column:span 2"><div class="lbl">Cần xếp hạng</div><div class="mid">100 <span style="font-size:20px">hotel_cluster</span></div><div class="s">id ẩn danh, không có cột giá</div></div>
-</div>
+<div class="card" style="grid-column:span 2;padding:20px 22px"><div class="lbl">Toàn bộ file</div><div class="big" style="margin-top:8px">37,670,293 <span style="font-size:22px;font-weight:700;letter-spacing:0">dòng</span></div><div class="s">2013-01-07 → 2014-12-31</div>
+<div style="display:flex;height:34px;border-radius:8px;overflow:hidden;gap:2px;margin-top:16px"><div style="flex:92;background:var(--gray-l);display:flex;align-items:center;padding-left:12px;font-size:14px;font-weight:600;color:var(--ink)">Click · 34,669,600 · 92.0%</div><div style="flex:8;background:var(--teal)" title="Booking: 3,000,693 (8.0%)"></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13.5px;color:var(--muted)"><span>Click không dùng làm nhãn</span><span style="font-weight:700;color:var(--teal-d)">Booking · 3,000,693 · 8.0%</span></div></div>
+<div class="card"><div class="lbl">User</div><div class="mid">1,198,786</div><div class="s">813,985 có đặt phòng</div></div>
+<div class="card"><div class="lbl">Cần xếp hạng</div><div class="mid">100 <span style="font-size:18px">cluster</span></div><div class="s">hotel_cluster, id ẩn danh</div></div></div>
 <div class="card" style="padding:18px 22px"><h3>7 nhóm cột</h3><div data-c="cols"></div></div>
 </div></div>
 <div class="links"><a class="lk" href="#" onclick="go('a5');return false">Phụ lục A5: ý nghĩa các trường →</a></div>
-<aside class="notes">Expedia Hotel Recommendations, công khai. Booking từ 2013-01-07 đến 2014-12-31. Hotel_cluster là id ẩn danh, không có cột giá. Giới hạn: một dataset, đánh giá offline.</aside></section>
+<aside class="notes">Expedia Hotel Recommendations, công khai. File thô 37,670,293 dòng, mỗi dòng là một sự kiện tìm kiếm: click (34,669,600 dòng, 92.0%) hoặc đặt phòng (3,000,693 dòng, 8.0%); click không dùng làm nhãn. Toàn file có 1,198,786 user, trong đó 813,985 có đặt phòng. Từ các slide sau chỉ phân tích booking. Hotel_cluster là id ẩn danh (100 giá trị), không có cột giá. Giới hạn: một dataset, đánh giá offline.</aside></section>
 
 <!-- 6 EDA1 -->
-<section class="slide" data-sec="1"><h1>EDA 1: quy mô và thời gian</h1>
+<section class="slide" data-sec="1"><h1>Quy mô và thời gian</h1>
 <div class="ct wi"><div class="grid" style="grid-template-rows:1fr 1fr">
 <div class="card"><h3>Booking theo tháng đặt phòng<span class="lg"><span style="--c:#C9CED5">2013</span><span style="--c:#12B8A6">2014</span></span></h3><div data-c="e1_month"></div></div>
 <div class="grid" style="grid-template-columns:1.35fr 1fr">
 <div class="card"><h3>Tỷ lệ booking theo tháng check-in</h3><div data-c="e1_ci"></div></div>
 <div class="card"><h3>Tỷ lệ booking theo nhóm khách</h3><div data-c="e1_party"></div></div>
 </div></div></div>
-<div class="ins"><div><span>Booking mỗi tháng tăng <b>1.9×</b> từ 2013 (84,109) sang 2014 (161,948).</span></div><div><span>Check-in cao nhất <b>tháng 8 (10.75%)</b>; couple chiếm <b>44.1%</b>.</span></div></div>
+<div class="ins"><div><span>Nhu cầu đang <b>tăng nhanh</b>: dữ liệu năm sau dày hơn hẳn năm trước, và đi lệch theo mùa du lịch.</span></div><div><span>Khách đi <b>cặp đôi</b> là nhóm chính; <b>ngày đi và nhóm khách</b> thay đổi theo mùa nên là tín hiệu cần dùng.</span></div></div>
 <aside class="notes">Trung bình 84,109 booking mỗi tháng đặt năm 2013, 161,948 năm 2014. Check-in cao nhất tháng 8 (10.75%). Nhóm khách: couple có 2 người lớn, solo 1, family có trẻ em, group từ 3 người lớn. Nguồn: eda_all_bookings.json.</aside></section>
 
 <!-- 7 EDA2 -->
-<section class="slide" data-sec="1"><h1>EDA 2: hành vi user</h1>
+<section class="slide" data-sec="1"><h1>Hành vi user</h1>
 <div class="ct wi"><div class="grid" style="grid-template-columns:1fr 1.2fr">
 <div class="card"><h3>Tỷ lệ user theo số booking của user</h3><div data-c="e2_freq"></div></div>
 <div class="card"><h3>Khoảng cách giữa hai booking liên tiếp <small>tỷ lệ cặp booking</small></h3><div data-c="e2_gap"></div></div>
 </div></div>
-<div class="ins"><div><span>Lịch sử thưa: <b>39.34%</b> user chỉ có một booking, trung vị <b>2</b>.</span></div><div><span>Khoảng cách trung vị <b>19.5 ngày</b>; <b>15.46%</b> cặp cách nhau ≤ 1 giờ.</span></div></div>
+<div class="ins"><div><span>Khách ít khi đặt: <b>lịch sử rất mỏng</b>, khó học sở thích riêng của từng người.</span></div><div><span>Đa số lần đặt kế tiếp cách nhau <b>vài tuần đến vài tháng</b>: mỗi booking là một chuyến đi mới.</span></div></div>
 <aside class="notes">Trung vị 2 booking mỗi user; trung bình 3.63. Khoảng cách trung vị giữa hai booking liên tiếp 19.5 ngày, 15.46% cách nhau tối đa một giờ. Nguồn: eda_all_bookings.json.</aside></section>
 
 <!-- 8 EDA3 -->
-<section class="slide" data-sec="1"><h1>EDA 3: điểm đến và cluster</h1>
+<section class="slide" data-sec="1"><h1>Điểm đến và cluster</h1>
 <div class="ct wi"><div class="grid" style="grid-template-columns:1fr 1fr">
-<div class="card"><h3>Tỷ lệ booking của từng cluster <small>xếp theo hạng</small><span class="lg"><span style="--c:#12B8A6">top 10</span></span></h3><div data-c="e3_cl"></div></div>
-<div class="card"><h3>Tỷ lệ booking tích lũy theo hạng điểm đến</h3><div data-c="e3_dest"></div></div>
+<div class="card"><h3>Số booking của từng cluster <small>xếp theo hạng</small><span class="lg"><span style="--c:#12B8A6">nhiều nhất</span><span style="--c:#F2994A">ít nhất</span></span></h3><div data-c="e3_cl"></div></div>
+<div class="card"><h3>Booking mới có lặp lại lịch sử không?</h3><div class="lg" style="margin:0 0 6px"><span style="--c:#0B8A7D">booking liền trước</span><span style="--c:#71D3C7">cũ hơn trong lịch sử</span><span style="--c:#C9CED5">chưa từng</span></div><div data-c="e3_dest"></div></div>
 </div></div>
-<div class="ins"><div><span>Cluster phân bố khá đều: top 10 = <b>22.9%</b>, top 1 = 4.0%.</span></div><div><span>Điểm đến đuôi dài: top 1,000 = <b>72.2%</b> trên 36,933 điểm đến.</span></div></div>
-<aside class="notes">Top 10 cluster chiếm 22.9% booking, top 1 chiếm 4.0%. Top 100 điểm đến chiếm 35.3%, top 1,000 chiếm 72.2%. Nguồn: eda_all_bookings.json.</aside></section>
+<div class="ins"><div><span><b>Không cluster nào áp đảo</b>: chỉ gợi ý vài cluster phổ biến thì không đủ, cần cá nhân hóa.</span></div><div><span>Đa số là <b>khám phá</b> (hơn 70% chọn cái mới); phần quay về cái cũ thì khoảng <b>một nửa là lựa chọn gần nhất</b>.</span></div></div>
+<aside class="notes">Trái: số booking của từng cluster (toàn bộ 2,952,675 booking); top 10 cluster chiếm 22.9%, top 1 chiếm 4.0%. Phải: trong 2,138,690 booking của user đã có lịch sử, 27.68% đặt lại một cluster đã đặt trước đó (12.85% đúng cluster của booking liền trước, 14.83% là cluster cũ hơn) và 26.53% tìm kiếm tại điểm đến đã từng đặt (15.54% đúng điểm đến của booking liền trước, 10.99% là điểm đến cũ hơn). Phần booking liền trước tính trực tiếp từ expedia_bookings.parquet. Nguồn: eda_all_bookings.json (clusters, repeat_given_history).</aside></section>
+
+<!-- 9 cluster & geography -->
+<section class="slide" data-sec="1"><h1>Cluster và địa lý</h1>
+<div class="ct wi"><div class="grid" style="grid-template-columns:1.15fr 1fr">
+<div class="card"><h3>Tỷ trọng booking theo hotel country <small>10 nước đầu</small></h3><div data-c="g_country"></div></div>
+<div class="card"><h3>Cluster có mặt ở bao nhiêu nơi<span class="lg"><span style="--c:#12B8A6">trung vị</span><span style="--c:#E1E4EA">tổng</span></span></h3><div data-c="g_spread"></div></div>
+</div></div>
+<div class="ins"><div><span>Booking <b>dồn vào một nước</b> (hơn một nửa).</span></div><div><span>Nhưng mỗi cluster trải ở <b>nhiều nước, nhiều market</b>: cluster không phải nhóm theo địa lý.</span></div></div>
+<aside class="notes">Trái: tỷ trọng booking theo hotel_country (205 nước, mã ẩn danh); nước mã 50 chiếm 53.92%, top 3 chiếm 63.95%, top 10 chiếm 79.14%. Phải: với mỗi cluster đếm số châu lục, nước, market khác nhau có booking; trung vị trên 100 cluster là 6 trên 7 châu lục, 49 trên 205 nước, 387.5 trên 2,103 market. Nước nhiều booking nhất trong một cluster chiếm trung vị 55.7% booking của cluster đó. Các cột hotel_* là thông tin khách sạn đã đặt (phía nhãn), chỉ dùng để hiểu dữ liệu, không dùng làm đầu vào. Tính trực tiếp từ expedia_bookings.parquet.</aside></section>
 
 <!-- 9 data issues -->
 <section class="slide" data-sec="1"><h1>Vấn đề của dữ liệu</h1>
 <div class="ct wi"><div class="card" style="height:100%;padding:16px 22px"><h3>Số booking bị ảnh hưởng <small>thang log, trên 3,000,693 booking thô</small><span class="lg"><span style="--c:#F2994A">loại bỏ</span><span style="--c:#3B7DD8">đặt thiếu, giữ dòng</span><span style="--c:#C9CED5">giữ, đánh dấu</span></span></h3><div data-c="issues"></div></div></div>
-<div class="ins"><div><span>Chỉ <b>1.60%</b> booking bị loại (48,018: trùng + đặt lặp), còn <b>2,952,675</b>.</span></div><div><span>Lỗi ngữ cảnh: đặt thiếu, giữ dòng. Bất thường có thật: giữ, đánh dấu.</span></div></div>
+<div class="ins"><div><span>Dữ liệu <b>khá sạch</b>: chỉ bỏ phần trùng lặp, gần như toàn bộ booking dùng được.</span></div><div><span>Lỗi nhập liệu được <b>giữ dòng, đặt thiếu</b>; khoảng cách người dùng – điểm đến thiếu quá nhiều nên <b>không dùng làm đầu vào</b>.</span></div></div>
 <aside class="notes">Kiểm tra chất lượng trên 3,000,693 booking thô. Loại bỏ: 8 booking trùng khoá và 48,010 booking đặt lặp y hệt booking liền trước (tổng 48,018, 1.60%), còn 2,952,675. Lỗi ngữ cảnh (ngày, số người lớn, số phòng) được đặt thiếu và đánh dấu, không xoá dòng. Các giá trị bất thường nhưng có thật (đông khách mỗi phòng, check-in xa, thiếu vị trí) giữ lại và đánh dấu để cắt hoặc gom nhóm. Khoảng cách người dùng – điểm đến thiếu 33.8%, không dùng làm đầu vào. Nguồn: results/week4_rebuild/bookings_counts.json, data_audit.json. Nội dung EDA còn tạm, chờ chốt với team.</aside></section>
 
 <!-- 10 split -->
@@ -249,12 +258,12 @@ aside.notes{display:none!important}}
 <aside class="notes">Train 73.85%, valid 13.32%, test 12.83% booking. Tập user tính trên 813,985 user của cả dataset.</aside></section>
 
 <!-- 11 EDA4 -->
-<section class="slide" data-sec="1"><h1>EDA 4: user mới ở valid và test</h1>
+<section class="slide" data-sec="1"><h1>User mới ở valid và test</h1>
 <div class="ct wi"><div class="grid" style="grid-template-columns:1fr 1.25fr">
 <div class="card"><h3>User chưa từng có booking ở train<span class="lg"><span style="--c:#C9CED5">có ở train</span><span style="--c:#F2994A">chưa có</span></span></h3><div data-c="e4_new"></div></div>
 <div class="card"><h3>User test theo số booking trước 01/11/2014</h3><div data-c="e4_hist"></div></div>
 </div></div>
-<div class="ins"><div><span><b>32.24%</b> user test (71,717) không có lịch sử: cần đọc <b>lần tìm kiếm hiện tại</b>.</span></div><div><span>“Chưa có ở train” (39.12%) gồm cả user chỉ xuất hiện ở valid.</span></div></div>
+<div class="ins"><div><span>Khoảng <b>một phần ba</b> user test không có lịch sử: mô hình chỉ đọc lịch sử sẽ không có gì để xếp hạng, cần đọc <b>lần tìm kiếm hiện tại</b>.</span></div><div><span>User mới xuất hiện <b>liên tục</b> ở cả valid và test: cold-start là tình huống thường xuyên, không phải ngoại lệ.</span></div></div>
 <aside class="notes">Cold = user test chưa có booking trước ngày 2014-11-01, 71,717 user, 32.24% trong 222,428 user test. Khác với 'chưa có ở train' (39.12%): nhóm này gồm cả user chỉ xuất hiện ở valid. Xử lý cold: query embedding đọc lần tìm kiếm hiện tại.</aside></section>
 
 <!-- 12 approaches -->
@@ -266,7 +275,7 @@ aside.notes{display:none!important}}
 <div class="card sel"><span class="chip tag">Chọn</span><div class="nm">Sequential</div><div class="id">Theo thứ tự các tương tác trong toàn bộ lịch sử</div><div class="p">Nắm bắt xu hướng đổi theo thời gian</div><div class="m">Cần lịch sử đủ dài</div></div>
 <div class="card"><div class="nm">Context-aware</div><div class="id">Theo ngữ cảnh của lần tìm kiếm hiện tại</div><div class="p">Dùng được khi chưa có lịch sử</div><div class="m">Phụ thuộc chất lượng thông tin ngữ cảnh</div></div>
 </div></div>
-<div class="ins"><div><span>Chọn <b>Sequential</b> làm mô hình nền; ngữ cảnh lần tìm kiếm được thêm ở <b>cải tiến 1</b>.</span></div></div>
+<div class="ins"><div><span>Lịch sử mỏng nhưng vẫn có thứ tự: chọn <b>Sequential</b> làm nền, rồi bù phần thiếu bằng <b>ngữ cảnh lần tìm kiếm</b> ở cải tiến 1.</span></div></div>
 <aside class="notes">Sáu hướng phổ biến và hạn chế khi áp dụng cho dữ liệu du lịch khách sạn. Đề tài kết hợp sequential (thứ tự các booking) với context-aware (lần tìm kiếm hiện tại).</aside></section>
 
 <!-- 13 MLP4Rec -->
@@ -352,7 +361,7 @@ aside.notes{display:none!important}}
 <div class="card"><h3>Mức tăng NDCG@10 theo số booking trước đó <small>chính − query embedding</small></h3><div data-c="w_hist"></div></div>
 <div class="card"><h3>NDCG@10 user warm theo điểm đến</h3><div class="lg" style="margin:0 0 4px"><span style="--c:#F2994A">+ query embedding</span><span style="--c:#12B8A6">+ sameDest</span></div><div data-c="w_dest"></div></div>
 </div></div>
-<div class="ins"><div><span>sameDest chỉ giúp khi <b>quay lại điểm đến cũ</b>: +0.0347 (<b>+6.5%</b>).</span></div><div><span>Điểm đến đã biết = 18.7% user warm; điểm đến mới: 0.4395 → 0.4401.</span></div></div>
+<div class="ins"><div><span>sameDest chỉ giúp khi khách <b>quay lại điểm đến cũ</b>, và lịch sử càng dài càng có ích.</span></div><div><span>Với điểm đến mới, mô hình dựa vào ngữ cảnh tìm kiếm; sameDest <b>không làm hại</b>.</span></div></div>
 <aside class="notes">Điểm đến đã biết chiếm 18.7% user warm. Điểm đến mới: 0.4395 và 0.4401.</aside></section>
 
 <!-- 22 cost -->
@@ -361,7 +370,7 @@ aside.notes{display:none!important}}
 <div class="card kpi hi"><div class="lbl">sameDest · 222,428 user</div><div class="big">1.1 s</div><div class="row"><span class="chip">~4.8 µs mỗi user</span><span class="chip t">Không huấn luyện lại</span></div></div>
 <div class="card"><h3>Thời gian trên CPU <small>giây, thang log</small></h3><div data-c="cost"></div><div class="mut" style="font-size:13px;margin-top:14px">sameDest đo trên đầu vào mô phỏng cùng kích thước, không huấn luyện lại.</div></div>
 </div></div>
-<div class="ins"><div><span>Lợi ích <b>+1.1%</b> toàn tập, <b>+6.5%</b> ở điểm đến đã biết.</span></div><div><span>Chi phí <b>~1 giây</b>, không huấn luyện lại.</span></div></div>
+<div class="ins"><div><span>Lợi ích <b>tập trung</b> ở nhóm quay lại điểm đến cũ, không dàn đều toàn tập.</span></div><div><span>Chi phí <b>không đáng kể</b> so với huấn luyện, chạy ngay trên mô hình có sẵn.</span></div></div>
 <aside class="notes">sameDest là hậu xử lý trên điểm của mô hình query embedding: mỗi user duyệt tối đa 20 booking và tính trên 100 cluster. Đo bằng scratchpad/bench_samedest.py: 1.1 giây cho 222,428 user (khoảng 4.8 micro giây mỗi user), gồm cả softmax. Thời gian huấn luyện và chấm điểm query embedding lấy từ results/week6_retrain/query_s2024.json (train_seconds, eval_seconds mỗi epoch).</aside></section>
 
 <!-- 23 conclusion -->
@@ -423,7 +432,7 @@ function stack(o){const lw=o.lw??60,bh=o.bh||34,g=o.gap??14,rw=o.rw??0,W=o.w,pw=
  return svg(W,y-g,s)}
 
 const B={};
-B.cols=()=>{const g=[['Thời gian','date_time'],['Người dùng','user_id'],['Ngữ cảnh chuyến đi','is_package · srch_adults_cnt · srch_children_cnt · srch_ci · srch_co · srch_rm_cnt',1],['Tìm kiếm, điểm đến','srch_destination_id · srch_destination_type_id',1],['Khách sạn, mục tiêu','hotel_cluster · hotel_continent · hotel_country · hotel_market',2],['Vị trí người dùng','orig_destination_distance · user_location_city · user_location_country · user_location_region'],['Kênh, nền tảng','channel · is_mobile · posa_continent · site_name']];
+B.cols=()=>{const g=[['Tương tác, thời gian','cnt · date_time · is_booking'],['Người dùng','user_id'],['Ngữ cảnh chuyến đi','is_package · srch_adults_cnt · srch_children_cnt · srch_ci · srch_co · srch_rm_cnt',1],['Tìm kiếm, điểm đến','srch_destination_id · srch_destination_type_id',1],['Khách sạn, mục tiêu','hotel_cluster · hotel_continent · hotel_country · hotel_market',2],['Vị trí người dùng','orig_destination_distance · user_location_city · user_location_country · user_location_region'],['Kênh, nền tảng','channel · is_mobile · posa_continent · site_name']];
  return g.map(([a,b,h])=>`<div style="padding:9px 0;border-top:1px solid #EEF1F4;display:flex;gap:10px"><span class="sw" style="--c:${h==1?C.teal:h==2?C.ochre:C.grayL};margin-top:6px;flex:none"></span><div><div style="font-size:15px;font-weight:600">${a}</div><div style="font-size:12.5px;color:${C.muted};line-height:1.35;margin-top:2px">${b}</div></div></div>`).join('')
  +`<div style="display:flex;gap:16px;font-size:12.5px;color:${C.muted};margin-top:8px"><span><span class="sw" style="--c:${C.teal}"></span> lần tìm kiếm</span><span><span class="sw" style="--c:${C.ochre}"></span> chứa nhãn hotel_cluster</span></div>`};
 
@@ -473,18 +482,29 @@ B.e1_party=()=>{const p=EDA.party_share;return hbars({w:440,lw:72,vw:60,bh:28,ga
 B.e2_freq=()=>{const b=EDA.bookings_per_user;return cols({w:480,h:380,l:0,t:30,b:34,v:[b.share_1,b.share_2,b.share_3_4,b.share_5_9,b.share_10_plus],cats:['1','2','3–4','5–9','≥ 10'],hi:[0],max:.42,vf:x=>pct(x),bw:60})+`<div class="mut" style="font-size:12.5px;text-align:center;margin-top:-4px">số booking mỗi user · trung vị 2</div>`};
 B.e2_gap=()=>{const g=EDA.gap_buckets;return cols({w:560,h:380,l:0,t:30,b:34,v:[g.le_1h,g['1h_1d'],g['1d_7d'],g['7d_30d'],g['30d_90d'],g.gt_90d],cats:['≤ 1 giờ','1 giờ–1 ngày','1–7 ngày','7–30 ngày','30–90 ngày','> 90 ngày'],hi:[0],hc:C.ochre,max:.25,vf:x=>pct(x),bw:58})+`<div class="mut" style="font-size:12.5px;text-align:center;margin-top:-4px">2,138,690 cặp booking liên tiếp · trung vị 19.5 ngày</div>`};
 /* EDA 3 */
-B.e3_cl=()=>{const v=EDA.clusters.share_by_rank,W=540,H=360,Lp=40,Tp=16,Bt=28,ph=H-Tp-Bt,bw=(W-Lp)/100,mx=.045,Y=x=>Tp+ph-x/mx*ph;let s='';
- [0,.02,.04].forEach(t=>s+=L(Lp,Y(t),W,Y(t),C.line,t?0.8:1)+T(Lp-8,Y(t)+4,Math.round(t*100)+'%',{a:'end',fs:12}));
- v.forEach((x,i)=>s+=R(Lp+i*bw+.6,Y(x),bw-1.2,Tp+ph-Y(x),i<10?C.teal:C.grayL,`hạng ${i+1}: ${pct(x,2)}`,1));
- [1,10,50,100].forEach(r=>s+=T(Lp+(r-.5)*bw,H-8,r,{a:'middle',fs:12}));
- s+=T(Lp+10*bw+8,Y(v[9])-8,'top 10 = 22.9%',{fs:13,fw:700,c:C.ink})+T(Lp+bw+6,Y(v[0])+4,'top 1 = 4.0%',{fs:12.5,fw:600,c:C.body});
+B.e3_cl=()=>{const CL=[[91,119402],[48,84372],[42,72260],[59,65677],[28,63148],[16,55980],[18,54940],[95,54318],[50,53704],[82,53458],[21,50794],[41,49080],[98,48104],[64,47027],[46,46042],[25,45667],[9,44510],[2,44375],[6,43880],[47,43548],[72,43124],[13,42652],[68,42285],[5,42123],[32,41400],[62,39841],[36,39643],[37,39465],[15,38778],[99,38278],[77,38223],[33,37643],[1,37231],[70,36300],[39,35437],[4,35085],[55,34732],[29,34518],[7,34320],[83,32974],[43,31807],[19,31554],[58,31401],[10,31236],[81,30411],[51,30060],[40,29997],[97,28637],[56,27823],[30,27495],[11,27350],[94,27271],[61,27041],[78,24803],[90,23658],[49,23578],[85,23528],[22,22033],[67,22016],[8,21878],[79,20769],[17,20652],[54,20640],[65,20461],[76,19108],[34,18979],[0,18797],[69,18292],[45,17608],[96,16371],[26,16285],[38,15999],[23,15927],[12,15595],[14,14941],[89,14887],[63,14884],[73,14685],[57,14119],[20,12982],[3,12213],[24,11865],[31,11860],[75,11152],[44,10839],[84,10065],[66,9113],[71,9033],[93,8904],[60,8081],[52,8061],[80,7629],[86,7588],[35,7006],[88,6990],[92,6294],[87,6041],[53,5031],[27,2617],[74,2397]],W=540,H=372,Lp=44,Tp=44,Bt=28,ph=H-Tp-Bt,bw=(W-Lp)/100,mx=125000,Y=x=>Tp+ph-x/mx*ph,X=i=>Lp+(i+.5)*bw;let s='';
+ [0,50000,100000].forEach(t=>s+=L(Lp,Y(t),W,Y(t),C.line,t?0.8:1)+T(Lp-8,Y(t)+4,t/1000+'k',{a:'end',fs:12}));
+ CL.forEach(([id,n],i)=>s+=R(Lp+i*bw+.6,Y(n),bw-1.2,Tp+ph-Y(n),i<2?C.teal:i==99?C.ochre:C.grayL,`cluster ${id}: ${fmt(n)} booking`,1));
+ [1,10,50,100].forEach(r=>s+=T(X(r-1),H-8,r,{a:'middle',fs:12}));
+ const lead=(i,yl,txt,col,anc)=>{const x=X(i),y0=Y(CL[i][1]);return L(x,y0-1,x,yl,col,1.8)+(anc=='end'?L(x,yl,x-14,yl,col,1.8):L(x,yl,x+14,yl,col,1.8))+T(anc=='end'?x-20:x+20,yl+5,txt,{a:anc||'start',fs:13.5,fw:800,c:C.ink})};
+ s+=lead(0,16,`cluster ${CL[0][0]} · ${fmt(CL[0][1])} booking`,C.tealD)+lead(1,40,`cluster ${CL[1][0]} · ${fmt(CL[1][1])} booking`,C.tealD)+lead(99,Tp+ph-100,`cluster ${CL[99][0]} · ${fmt(CL[99][1])} booking`,C.ochreD,'end');
  return svg(W,H,s)+`<div class="mut" style="font-size:12.5px;text-align:center">hạng cluster</div>`};
-B.e3_dest=()=>{const d=EDA.destination_curve,W=540,H=360,Lp=44,Rp=10,Tp=16,Bt=28,pw=W-Lp-Rp,ph=H-Tp-Bt,lx=Math.log10(36933),X=r=>Lp+Math.log10(r)/lx*pw,Y=v=>Tp+ph-v*ph;let s='';
- [0,.5,1].forEach(t=>s+=L(Lp,Y(t),W-Rp,Y(t),C.line,t?0.8:1)+T(Lp-8,Y(t)+4,t*100+'%',{a:'end',fs:12}));
- [1,10,100,1000,10000].forEach(r=>s+=T(X(r),H-8,fmt(r),{a:'middle',fs:12}));
- s+=`<polyline points="${d.ranks.map((r,i)=>X(r).toFixed(1)+','+Y(d.cum[i]).toFixed(1)).join(' ')}" fill="none" stroke="${C.teal}" stroke-width="3" stroke-linejoin="round"/>`;
- [[100,.3526,'top 100 = 35.3%'],[1000,.722,'top 1,000 = 72.2%']].forEach(([r,v,t])=>s+=L(X(r),Y(v),X(r),Y(0),C.gray,1,'4 4')+`<circle cx="${X(r)}" cy="${Y(v)}" r="6" fill="${C.teal}" stroke="#fff" stroke-width="2"><title>${t}</title></circle>`+T(X(r)-10,Y(v)-10,t,{a:'end',fs:13,fw:700,c:C.ink}));
- return svg(W,H,s)+`<div class="mut" style="font-size:12.5px;text-align:center">hạng điểm đến (thang log) · 36,933 điểm đến</div>`};
+B.e3_dest=()=>{const rows=[['Cluster',.1285,.1483],['Điểm đến',.1554,.1099]],W=530,lw=84,pw=W-lw,bh=80,g=56;let s='',y=8;
+ rows.forEach(([l,a,o])=>{const seen=a+o,x1=lw+a*pw,x2=x1+o*pw;
+  s+=T(lw-12,y+bh/2+6,l,{a:'end',fs:15,fw:600,c:C.body})
+   +R(lw,y,a*pw-1,bh,C.tealD,`${l} · booking liền trước: ${pct(a,2)}`,5)+T(lw+8,y+bh/2+6,pct(a),{fs:14.5,fw:800,c:'#fff'})
+   +R(x1+1,y,o*pw-1,bh,C.tealL,`${l} · cũ hơn trong lịch sử: ${pct(o,2)}`,5)+T(x1+8,y+bh/2+6,pct(o),{fs:14.5,fw:700,c:C.ink})
+   +R(x2+1,y,pw-(x2-lw)-1,bh,C.grayL,`${l} · chưa từng: ${pct(1-seen,2)}`,5)+T(x2+13,y+bh/2+6,pct(1-seen),{fs:15,fw:500,c:C.body});
+  y+=bh+g});
+ return `<div style="display:flex;flex-direction:column;justify-content:center;height:330px">`+svg(W,y-g,s)+`</div><div class="mut" style="font-size:13px;text-align:center">trên 2,138,690 booking của user đã có lịch sử</div>`};
+/* geography */
+B.g_country=()=>{const rows=[['50',53.92],['198',6.6],['70',3.43],['105',3.1],['8',2.66],['204',2.39],['77',2.03],['144',2.02],['106',1.51],['182',1.47]],W=540,lw=124,vw=64,bh=22,g=9,pw=W-lw-vw,mx=56;let y=0,s='';
+ rows.forEach(([l,v],i)=>{const w=v/mx*pw;s+=T(lw-12,y+bh/2+5,'nước '+l,{a:'end',fs:14,fw:i==0?700:500,c:i==0?C.ink:C.body})+R(lw,y,w,bh,i==0?C.teal:C.grayL,`nước ${l}: ${v}%`,4)+T(lw+w+8,y+bh/2+5,v.toFixed(1)+'%',{fs:14,fw:i==0?800:500,c:i==0?C.ink:C.body});y+=bh+g});
+ s+=L(lw,y+2,lw+pw,y+2,C.line,1)+T(lw-12,y+22,'195 nước còn lại',{a:'end',fs:14,c:C.body})+R(lw,y+8,20.86/mx*pw,bh,C.grayXL,'195 nước còn lại: 20.9%',4)+T(lw+20.86/mx*pw+8,y+8+bh/2+5,'20.9%',{fs:14,c:C.body});
+ return svg(W,y+8+bh,s)};
+B.g_spread=()=>{const rows=[['Châu lục',6,7,'6 / 7'],['Nước',49,205,'49 / 205'],['Market',387.5,2103,'388 / 2,103']],W=500,lw=0,pw=W,bh=34;let y=0,s='';
+ rows.forEach(([l,v,tot,lab])=>{s+=T(0,y+16,l,{fs:15,fw:700,c:C.ink})+T(W,y+16,lab,{a:'end',fs:20,fw:800,c:C.tealD})+R(0,y+26,pw,bh,C.line,`tổng: ${fmt(tot)}`,6)+R(0,y+26,Math.max(v/tot*pw,6),bh,C.teal,`trung vị: ${v}`,6);y+=bh+26+34});
+ return `<div style="display:flex;flex-direction:column;justify-content:center;height:360px">`+svg(W,y-34,s)+`</div>`};
 /* data issues */
 B.issues=()=>{const rows=[['Trùng khoá (user, giờ, điểm đến, cluster)',8,0],['Đặt lặp y hệt booking liền trước',48010,0],['Check-in trước ngày tìm kiếm',617,1],['Check-out trước check-in',3,1],['Số người lớn bằng 0',5239,1],['Số phòng bằng 0',250,1],['Hơn 4 khách mỗi phòng',35577,2],['Check-in sau tìm kiếm hơn 1 năm',1817,2],['Thiếu vị trí người dùng',32426,2],['Thiếu khoảng cách người dùng – điểm đến',1015177,2]];
  const A=[['Loại bỏ',C.ochre,C.ochreT,C.ochreD],['Đặt thiếu, giữ dòng',C.blue,C.blueT,'#1F5AA8'],['Giữ, đánh dấu',C.grayL,'#EEF1F4',C.body]];
