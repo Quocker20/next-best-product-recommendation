@@ -578,9 +578,10 @@ B.r1n=()=>resCols(3,'n','plain','iknn',['+3.9%','+3.7%']);B.r1r=()=>resCols(3,'r
 B.r2n=()=>resCols(4,'n','query','plain',['+149.0%','+130.5%']);B.r2r=()=>resCols(4,'r','query','plain',['+145.8%','+115.6%']);
 B.r3n=()=>resCols(5,'n','main','query',['+1.5%','+1.1%']);B.r3r=()=>resCols(5,'r','main','query',['+0.8%','+0.2%']);
 /* cold vs warm */
-B.cold=()=>{const G=[['Cold','71,717 user',[.0888,.0801,.0859,.3487]],['Warm','150,711 user',[.1082,.1777,.1833,.3923]]],ms=M.slice(0,4),W=780,lw=130,gw=W-lw-70,bh=36,g=10,gg=54,mx=.5;let y=16,s='';
- G.forEach(([l,n,v],gi)=>{const gh=4*bh+3*g;if(gi==0)s+=R(-10,y-10,W+20,gh+20,C.tint,'',10);s+=T(0,y+gh/2,l,{fs:18,fw:700,c:C.ink})+T(0,y+gh/2+20,n,{fs:12.5});
-  v.forEach((x,i)=>{const yy=y+i*(bh+g),w=x/mx*gw,hi=i==3;s+=R(lw,yy,w,bh,ms[i].c,`${l} · ${ms[i].n}: ${f4(x)}`,4);s+=T(lw+w+8,yy+bh/2+5,f4(x),{fs:15,fw:hi?800:500,c:hi?C.ink:C.body})});y+=gh+gg});
+B.cold=()=>{const G=[['Cold','71,717 user',[.0888,.0801,.0859,.3487]],['Tất cả','222,428 user',[null,null,null,.3783]],['Warm','150,711 user',[.1082,.1777,.1833,.3923]]],ms=M.slice(0,4),W=780,lw=130,gw=W-lw-70,bh=34,g=9,gg=40,mx=.5;let y=14,s='';
+ G.forEach(([l,n,v],gi)=>{const bars=v.map((x,i)=>[x,i]).filter(([x])=>x!=null),gh=bars.length*bh+(bars.length-1)*g;if(gi==0)s+=R(-10,y-10,W+20,gh+20,C.tint,'',10);s+=T(0,y+gh/2,l,{fs:18,fw:700,c:C.ink})+T(0,y+gh/2+20,n,{fs:12.5});
+  bars.forEach(([x,i],k)=>{const yy=y+k*(bh+g),w=x/mx*gw,hi=i==3;s+=R(lw,yy,w,bh,ms[i].c,`${l} · ${ms[i].n}: ${f4(x)}`,4);s+=T(lw+w+8,yy+bh/2+5,f4(x),{fs:15,fw:hi?800:500,c:hi?C.ink:C.body})});y+=gh+gg;
+  if(gi<2)s+=L(0,y-gg/2,W,y-gg/2,C.line,1)});
  return svg(W,y-gg,s)};
 /* where sameDest helps */
 B.w_hist=()=>cols({w:570,h:370,l:0,t:30,b:52,v:[.0003,.0024,.0058,.0106,.0190],cats:['0','1','2–4','5–9','≥ 10'],sub:['n = 71,717','n = 37,557','n = 54,385','n = 31,643','n = 27,126'],hi:[0,1,2,3,4],max:.018,vf:x=>'+'+x.toFixed(4),bw:70})+`<div class="mut" style="font-size:12.5px;text-align:center;margin-top:-2px">số booking trước đó của user</div>`;
