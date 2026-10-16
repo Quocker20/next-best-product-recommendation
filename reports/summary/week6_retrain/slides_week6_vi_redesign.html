@@ -159,6 +159,12 @@ aside.notes{display:none!important}}
 <!-- 2 LightGCL-deck slide -->
 <section class="slide lgx" data-sec="0"><h1>Luồng tìm kiếm hiện tại của khách hàng</h1>
 <div class="ct"><div class="lgf" data-lg="2" data-crop="128,256,1664,670" data-s="0.701923" style="inset:auto;left:0;top:0;width:100%;height:470.3px"></div></div>
+<span class="lgh" data-fx="1" style="left:66px;top:200px"></span>
+<span class="lgh" data-fx="2" style="left:315px;top:200px"></span>
+<span class="lgh" data-fx="3" style="left:560px;top:200px"></span>
+<span class="lgh" data-fx="4" style="left:805px;top:200px"></span>
+<span class="lgh" data-fx="5" style="left:1054px;top:200px"></span>
+<div class="fx"></div>
 <aside class="notes">Slide lấy từ deck chung của đề tài (slides_week6_vi_redesign). Hành trình đặt phòng của khách: tìm kiếm (điểm đến, ngày), xem danh sách, lọc và so sánh qua nhiều trang, chọn hạng phòng hoặc gói, rồi đặt phòng. Điểm nghẽn chính là bước xem danh sách: quá nhiều lựa chọn và không cá nhân hoá, mọi khách nhận cùng một danh sách. Kết quả có hai nhánh: khách bỏ cuộc dần, hoặc hài lòng, đặt phòng và quay lại đặt lần sau (mũi tên nét chấm). Khách bỏ cuộc kéo theo bất lợi cho bên bán lưu trú: mất booking, mất khách quay lại và bỏ lỡ cơ hội bán. Hệ gợi ý giải quyết điểm nghẽn này bằng cách thu hẹp và cá nhân hoá danh sách cho từng khách (slide sau).</aside></section>
 
 <!-- 3 LightGCL-deck slide -->
@@ -375,6 +381,55 @@ aside.notes{display:none!important}}
 <div class="ab"><div class="body"><style>table.t.a5f td,table.t.a5f th{padding:5px 10px;font-size:16px;line-height:1.25}.a5f code{font-size:15px}.a5w{display:flex;gap:28px;align-items:flex-start}.a5w>table{flex:1}</style><div class="a5w"><table class="t a5f"><thead><tr><th>Cột</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td><code>date_time</code></td><td>thời điểm của lượt tìm kiếm hoặc đặt</td></tr><tr><td><code>user_id</code></td><td>mã người dùng</td></tr><tr><td><code>is_package</code></td><td>đặt kèm gói (1) hoặc không (0)</td></tr><tr><td><code>srch_adults_cnt</code></td><td>số người lớn</td></tr><tr><td><code>srch_children_cnt</code></td><td>số trẻ em</td></tr><tr><td><code>srch_ci</code></td><td>ngày check-in</td></tr><tr><td><code>srch_co</code></td><td>ngày check-out</td></tr><tr><td><code>srch_rm_cnt</code></td><td>số phòng</td></tr><tr><td><code>srch_destination_id</code></td><td>mã điểm đến tìm kiếm</td></tr><tr><td><code>srch_destination_type_id</code></td><td>loại điểm đến</td></tr><tr><td><code>hotel_cluster</code></td><td>cụm khách sạn đã đặt, mã ẩn danh: nhãn cần dự đoán</td></tr></tbody></table><table class="t a5f"><thead><tr><th>Cột</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td><code>hotel_continent</code></td><td>châu lục của khách sạn đã đặt</td></tr><tr><td><code>hotel_country</code></td><td>quốc gia của khách sạn đã đặt</td></tr><tr><td><code>hotel_market</code></td><td>thị trường của khách sạn đã đặt</td></tr><tr><td><code>orig_destination_distance</code></td><td>khoảng cách từ người dùng đến điểm đến, có thể thiếu</td></tr><tr><td><code>user_location_country</code></td><td>quốc gia của người dùng</td></tr><tr><td><code>user_location_region</code></td><td>vùng của người dùng</td></tr><tr><td><code>user_location_city</code></td><td>thành phố của người dùng</td></tr><tr><td><code>channel</code></td><td>kênh tiếp thị dẫn tới lượt tìm kiếm</td></tr><tr><td><code>is_mobile</code></td><td>dùng thiết bị di động (1) hoặc không (0)</td></tr><tr><td><code>posa_continent</code></td><td>châu lục của điểm bán</td></tr><tr><td><code>site_name</code></td><td>website Expedia dùng để tìm kiếm</td></tr></tbody></table></div></div></div><aside class="notes">Ý nghĩa 22 cột của bảng ở slide 5. Phụ lục này chỉ mở từ slide 5 và quay về slide 5.</aside></section>
 
 </div>
+<style>
+.lgh{position:absolute;z-index:5;width:160px;height:140px;cursor:pointer}
+.fx{display:none;position:absolute;inset:0;z-index:30;background:rgba(23,27,36,.5);align-items:center;justify-content:center;cursor:zoom-out}.fx.on{display:flex;animation:zf .18s ease-out}
+.fxc{background:#fff;border-radius:18px;padding:26px 32px;box-shadow:0 24px 60px rgba(23,27,36,.35);animation:zp .26s cubic-bezier(.2,.9,.3,1.05)}
+.fxs{display:flex;align-items:center;gap:12px;height:58px;padding:0 20px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(23,27,36,.06);font-size:20px;font-weight:600;color:var(--ink);white-space:nowrap}
+.fxs svg{flex:none}.fxs .ty{display:inline-block;overflow:hidden;white-space:nowrap;border-right:2px solid var(--teal);width:0;animation:fty 1.7s steps(28) .25s forwards,fcr .7s step-end infinite}
+@keyframes fty{to{width:28ch}}@keyframes fcr{50%{border-color:transparent}}
+.fxs.st .ty{width:auto;animation:none;border:0}
+.fxl{position:relative;height:372px;margin-top:14px;overflow:hidden;border-radius:12px;background:var(--bg);-webkit-mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent)}
+.fxl .fxsc{animation:fsc 1.5s linear infinite}@keyframes fsc{to{transform:translateY(-840px)}}
+.fxr{height:70px;display:flex;align-items:center;gap:14px;padding:0 16px;box-sizing:border-box;border-bottom:1px solid var(--line);background:#fff}
+.fxr i{flex:none;width:76px;height:48px;border-radius:8px;background:var(--teal-t);border:1px solid var(--teal-b)}.fxr:nth-child(3n) i{background:var(--ochre-t);border-color:#F6D3B2}.fxr:nth-child(3n+1) i{background:var(--blue-t);border-color:#C6DAF3}
+.fxr p{margin:0;flex:1;font-size:16px;font-weight:600;color:var(--ink)}.fxr p small{display:block;margin-top:2px;font-size:13px;font-weight:400;color:var(--muted)}.fxr b{font-size:16px;color:var(--ink);font-weight:700}
+.fxb{position:absolute;right:6px;top:8px;width:6px;height:46px;border-radius:3px;background:var(--gray);animation:fbt 6s linear infinite}@keyframes fbt{from{top:8px}to{top:300px}}
+.fxn{display:inline-block;margin-left:auto;padding:5px 12px;border-radius:999px;background:var(--ochre-t);color:var(--ochre-d);font-size:14px;font-weight:700}
+.fxch{display:flex;gap:10px;flex-wrap:wrap}.fxch span{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:16px;color:var(--body);transition:all .3s}.fxch span.on{background:var(--teal-t);border-color:var(--teal);color:var(--teal-d);font-weight:600}
+.fxcp{display:flex;gap:16px;margin-top:18px}.fxcp>div{flex:1;border:1px solid var(--line);border-radius:14px;padding:14px 18px;opacity:0;transform:translateY(14px);animation:fup .5s ease-out forwards}.fxcp>div:nth-child(2){animation-delay:.25s}.fxcp>div.hi{border-color:var(--teal);background:var(--teal-t)}
+.fxcp h4{margin:0 0 8px;font-size:17px}.fxcp p{margin:4px 0;font-size:15px;color:var(--body);display:flex;justify-content:space-between}.fxcp p b{color:var(--ink)}
+@keyframes fup{to{opacity:1;transform:none}}
+.fxo{display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:10px;border:1px solid var(--line);border-radius:14px;font-size:18px;font-weight:600;color:var(--ink);transition:all .3s}.fxo:before{content:"";flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--gray);box-sizing:border-box}.fxo small{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+.fxo.on{border-color:var(--teal);background:var(--teal-t)}.fxo.on:before{border:6px solid var(--teal)}
+.fxbt{margin-top:14px;text-align:center;padding:12px;border-radius:12px;background:var(--teal);color:#fff;font-size:18px;font-weight:700;opacity:0;animation:fup .4s ease-out 1.2s forwards}
+.fxok{text-align:center;padding:6px 20px}.fxok .ck{width:88px;height:88px;margin:0 auto 14px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;animation:fpop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes fpop{from{transform:scale(0)}to{transform:scale(1)}}
+.fxok h4{margin:0 0 4px;font-size:24px}.fxok p{margin:0;color:var(--body);font-size:16px}.fxok .stars{margin-top:14px;font-size:28px;letter-spacing:6px;color:var(--ochre)}
+</style>
+<script>
+(function(){
+const SV=(c,s)=>`<svg width="${s||24}" height="${s||24}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">`;
+const SEARCH=SV('#0B8A7D',22)+'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>';
+const Q='Phú Quốc · 2 người lớn · 3 đêm';
+const N=['Phòng tiêu chuẩn, 1 giường đôi','Phòng deluxe, view vườn','Phòng deluxe, view biển','Phòng gia đình, 2 giường','Suite 1 phòng ngủ','Bungalow ven biển','Villa hồ bơi riêng','Phòng superior, ban công','Phòng premier, tầng cao','Phòng liên thông'];
+const P=['Không kèm gói','Gói bữa sáng','Gói 3 đêm','Hoàn huỷ miễn phí'];
+function rows(){let h='';for(let i=0;i<40;i++){const n=N[(i*7)%10],p=P[(i*3)%4],pr=(900+((i*377)%2900))*1000;h+=`<div class="fxr"><i></i><p>${n}<small>${p}</small></p><b>${pr.toLocaleString('vi-VN')}đ</b></div>`}return h}
+const V={
+1:()=>`<div class="fxc" style="width:640px"><div class="fxs">${SEARCH}<span class="ty">${Q}</span></div></div>`,
+2:()=>`<div class="fxc" style="width:760px"><div style="display:flex;align-items:center"><div class="fxs st" style="height:48px;font-size:17px;flex:none">${SEARCH}<span class="ty">${Q}</span></div><span class="fxn">128 lựa chọn</span></div><div class="fxl"><div class="fxsc">${rows()}</div><div class="fxb"></div></div></div>`,
+3:()=>`<div class="fxc" style="width:700px"><div class="fxch" id="fxch"><span>Giá dưới 3 triệu</span><span>View biển</span><span>Có bữa sáng</span><span>Hoàn huỷ miễn phí</span></div><div class="fxcp"><div class="hi"><h4>Phòng deluxe, view biển</h4><p>Giá<b>2.450.000đ</b></p><p>Bữa sáng<b>Có</b></p><p>Hoàn huỷ<b>Có</b></p></div><div><h4>Phòng gia đình</h4><p>Giá<b>2.900.000đ</b></p><p>Bữa sáng<b>Có</b></p><p>Hoàn huỷ<b>Không</b></p></div></div></div>`,
+4:()=>`<div class="fxc" style="width:560px"><div class="fxo">Phòng tiêu chuẩn<small>Không kèm gói</small></div><div class="fxo" id="fxpick">Phòng deluxe, view biển<small>Gói 3 đêm</small></div><div class="fxo">Phòng gia đình<small>Gói bữa sáng</small></div><div class="fxbt">Chọn phòng này</div></div>`,
+5:()=>`<div class="fxc" style="width:460px"><div class="fxok"><div class="ck">${SV('#fff',48)}<path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div><h4>Đặt phòng thành công</h4><p>Phòng deluxe, view biển · 3 đêm</p><div class="stars">★★★★★</div></div></div>`};
+const h0=document.querySelector('.lgh');if(!h0)return;const s=h0.closest('section'),fx=s.querySelector('.fx');
+function close(){fx.classList.remove('on');fx.innerHTML=''}
+s.querySelectorAll('.lgh').forEach(h=>h.addEventListener('click',e=>{e.stopPropagation();const k=h.dataset.fx;fx.innerHTML=V[k]();fx.classList.add('on');
+ if(k==='3')[...fx.querySelectorAll('#fxch span')].slice(0,3).forEach((c,i)=>setTimeout(()=>c.classList.add('on'),500+i*450));
+ if(k==='4')setTimeout(()=>{const p=fx.querySelector('#fxpick');p&&p.classList.add('on')},600)}));
+fx.addEventListener('click',close);
+addEventListener('keydown',e=>{if(fx.classList.contains('on')){close();e.preventDefault();e.stopImmediatePropagation()}},true);
+})();
+</script>
 <script type="text/plain" id="lg-css">
 
 @layer properties {
