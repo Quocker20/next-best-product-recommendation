@@ -390,11 +390,10 @@ aside.notes{display:none!important}}
 @keyframes fty{to{width:28ch}}@keyframes fcr{50%{border-color:transparent}}
 .fxs.st .ty{width:auto;animation:none;border:0}
 .fxl{position:relative;height:372px;margin-top:14px;overflow:hidden;border-radius:12px;background:var(--bg);-webkit-mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent)}
-.fxl .fxsc{animation:fsc 3.4s linear infinite}@keyframes fsc{to{transform:translateY(-840px)}}
 .fxr{height:70px;display:flex;align-items:center;gap:14px;padding:0 16px;box-sizing:border-box;border-bottom:1px solid var(--line);background:#fff}
 .fxr i{flex:none;width:76px;height:48px;border-radius:8px;background:var(--teal-t);border:1px solid var(--teal-b)}.fxr:nth-child(3n) i{background:var(--ochre-t);border-color:#F6D3B2}.fxr:nth-child(3n+1) i{background:var(--blue-t);border-color:#C6DAF3}
 .fxr p{margin:0;flex:1;font-size:16px;font-weight:600;color:var(--ink)}.fxr p small{display:block;margin-top:2px;font-size:13px;font-weight:400;color:var(--muted)}.fxr b{font-size:16px;color:var(--ink);font-weight:700}
-.fxb{position:absolute;right:6px;top:8px;width:6px;height:46px;border-radius:3px;background:var(--gray);animation:fbt 6s linear infinite}@keyframes fbt{from{top:8px}to{top:300px}}
+.fxb{position:absolute;right:4px;top:8px;width:10px;height:56px;border-radius:5px;background:var(--gray);cursor:grab;touch-action:none}.fxb:hover,.fxb.dg{background:var(--muted)}.fxb.dg{cursor:grabbing}
 .fxn{display:inline-block;margin-left:auto;padding:5px 12px;border-radius:999px;background:var(--ochre-t);color:var(--ochre-d);font-size:14px;font-weight:700}
 .fxch{display:flex;gap:10px;flex-wrap:wrap}.fxch span{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:16px;color:var(--body);transition:all .3s}.fxch span.on{background:var(--teal-t);border-color:var(--teal);color:var(--teal-d);font-weight:600}
 .fxcp{display:flex;gap:16px;margin-top:18px}.fxcp>div{flex:1;border:1px solid var(--line);border-radius:14px;padding:14px 18px;opacity:0;transform:translateY(14px);animation:fup .5s ease-out forwards}.fxcp>div:nth-child(2){animation-delay:.25s}.fxcp>div.hi{border-color:var(--teal);background:var(--teal-t)}
@@ -414,7 +413,7 @@ const SEARCH=SV('#0B8A7D',22)+'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-
 const Q='Phú Quốc · 2 người lớn · 3 đêm';
 const N=['Phòng tiêu chuẩn, 1 giường đôi','Phòng deluxe, view vườn','Phòng deluxe, view biển','Phòng gia đình, 2 giường','Suite 1 phòng ngủ','Bungalow ven biển','Villa hồ bơi riêng','Phòng superior, ban công','Phòng premier, tầng cao','Phòng liên thông'];
 const P=['Không kèm gói','Gói bữa sáng','Gói 3 đêm','Hoàn huỷ miễn phí'];
-function rows(){let h='';for(let i=0;i<40;i++){const n=N[(i*7)%10],p=P[(i*3)%4],pr=(900+((i*377)%2900))*1000;h+=`<div class="fxr"><i></i><p>${n}<small>${p}</small></p><b>${pr.toLocaleString('vi-VN')}đ</b></div>`}return h}
+function rows(){let h='';for(let i=0;i<40;i++){const n=N[(i*7)%10],p=P[(i*3)%4],pr=(900+(((i%20)*377)%2900))*1000;h+=`<div class="fxr"><i></i><p>${n}<small>${p}</small></p><b>${pr.toLocaleString('vi-VN')}đ</b></div>`}return h}
 const V={
 1:()=>`<div class="fxc" style="width:640px"><div class="fxs">${SEARCH}<span class="ty">${Q}</span></div></div>`,
 2:()=>`<div class="fxc" style="width:760px"><div style="display:flex;align-items:center"><div class="fxs st" style="height:48px;font-size:17px;flex:none">${SEARCH}<span class="ty">${Q}</span></div><span class="fxn">128 lựa chọn</span></div><div class="fxl"><div class="fxsc">${rows()}</div><div class="fxb"></div></div></div>`,
@@ -425,8 +424,18 @@ const h0=document.querySelector('.lgh');if(!h0)return;const s=h0.closest('sectio
 function close(){fx.classList.remove('on');fx.innerHTML=''}
 s.querySelectorAll('.lgh').forEach(h=>h.addEventListener('click',e=>{e.stopPropagation();const k=h.dataset.fx;fx.innerHTML=V[k]();fx.classList.add('on');
  if(k==='3')[...fx.querySelectorAll('#fxch span')].slice(0,3).forEach((c,i)=>setTimeout(()=>c.classList.add('on'),500+i*450));
+ if(k==='2')listScroll();
  if(k==='4')setTimeout(()=>{const p=fx.querySelector('#fxpick');p&&p.classList.add('on')},600)}));
 fx.addEventListener('click',close);
+function listScroll(){const box=fx.querySelector('.fxl');if(!box)return;const sc=box.querySelector('.fxsc'),th=box.querySelector('.fxb'),L=1400,TR=372-16-56;let pos=0,drag=false,hold=0,last=performance.now(),off=0;
+ const draw=()=>{sc.style.transform='translateY('+(-pos)+'px)';th.style.top=(8+pos/L*TR)+'px'};
+ th.addEventListener('click',e=>e.stopPropagation());box.addEventListener('click',e=>e.stopPropagation());
+ th.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;th.classList.add('dg');th.setPointerCapture(e.pointerId);off=e.clientY});
+ th.addEventListener('pointermove',e=>{if(!drag)return;const k=1280/s.getBoundingClientRect().width;pos=((pos+(e.clientY-off)*k/TR*L)%L+L)%L;off=e.clientY;draw()});
+ const up=()=>{if(!drag)return;drag=false;th.classList.remove('dg');hold=performance.now()+1500};
+ th.addEventListener('pointerup',up);th.addEventListener('pointercancel',up);
+ box.addEventListener('wheel',e=>{e.preventDefault();pos=((pos+e.deltaY)%L+L)%L;hold=performance.now()+1500;draw()},{passive:false});
+ (function tick(now){if(!fx.classList.contains('on')||!fx.contains(box))return;const dt=now-last;last=now;if(!drag&&now>hold){pos=(pos+dt*0.09)%L;draw()}requestAnimationFrame(tick)})(last);draw()}
 addEventListener('keydown',e=>{if(fx.classList.contains('on')){close();e.preventDefault();e.stopImmediatePropagation()}},true);
 })();
 </script>
