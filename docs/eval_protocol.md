@@ -4,10 +4,6 @@ Applies to the three SMLP4Rec steps and the two baselines:
 - SMLP4Rec steps: plain, + query embedding, + query embedding + sameDest (the main model);
 - baselines: ItemKNN and global popularity (the train-window booking share of each cluster, one ranking for every row; it replaced logistic regression on 2026-10-13).
 
-Change only with user approval. Plan and rationale:
-- `docs/plans/plan_oct_12_new_split_retrain.md`
-- `docs/plans/plan_oct_12_autoregressive_test.md`
-
 Superseded on 2026-10-12: the RecBole 80/10/10 target split, the teacher-forced headline, and selection by Recall@5 + NDCG@5.
 
 ## Data
@@ -27,7 +23,7 @@ Superseded on 2026-10-12: the RecBole 80/10/10 target split, the teacher-forced 
   - valid: 2014-09-01 ≤ t < 2014-11-01;
   - test: 2014-11-01 ≤ t < 2015-01-01.
   - A booking belongs to the window of its own time. There are no random splits.
-- **Counts** (`results/week6_retrain/split_counts.json`):
+- **Counts** (`results/split_counts.json`):
 
   | Window | Bookings | Users | Warm (L ≥ 1) | Cold (L = 0) |
   |---|---|---|---|---|
@@ -49,7 +45,7 @@ Replaces the row-level AR / TF test tables (superseded 2026-10-14). Code: `nbp.e
 - **Step 1:** the user's first test booking (h = 0), with its true history; all 100 clusters are scored, the top-20 and their probabilities are kept (P1).
 - **Step 2:** the user's second test booking (h = 1). Its history slot for booking 1 holds the **top-1 of P1** (no label feedback); earlier-window slots stay real. A user with a single test booking gets a synthetic step 2: the context (query, searched destination) of booking 1 and the history of booking 1 followed by the top-1 of P1. Top-20 and probabilities again (P2). Bookings 3+ are not scored; they only enter the truth set.
 - **Probabilities:** taken over all 100 clusters before the top-20 cut. SMLP4Rec steps: softmax of the scores (logits; the fused log-scores for sameDest). Baselines: score / row sum (popularity shares; ItemKNN similarity sums, cold rows already the first-booking popularity).
-- **Rerankers** (P1, P2 → one top-20; **chosen: `m2_merge`**, decision 2026-10-14: best main-model NDCG@K and Recall@K of the three on the reported seed, `m1` and `m3` are kept only in `results/week6_retrain/user_top20_reranker_choice.md` as the record behind the choice; a cluster present in both keeps its max value, ties to the lower id):
+- **Rerankers** (P1, P2 → one top-20; **chosen: `m2_merge`**, decision 2026-10-14: best main-model NDCG@K and Recall@K of the three on the reported seed, `m1` and `m3` are kept only in `results/user_top20_reranker_choice.md` as the record behind the choice; a cluster present in both keeps its max value, ties to the lower id):
   - `m1_first`: P1 only;
   - `m2_merge`: union of P1 and P2 sorted by probability;
   - `m3_sqrt_alpha`: P2 values x mapped to sqrt(alpha · x), alpha = probability of the P1 top-1, then union with P1.
@@ -61,7 +57,7 @@ Replaces the row-level AR / TF test tables (superseded 2026-10-14). Code: `nbp.e
   - NDCG@K is primary and Recall@K secondary; no MRR, MAP or Hit.
 - **Seed:** one fixed seed, **2024** (`configs/split.yaml` `report_seed`, chosen 2026-10-13 as the seed closest to the 3-seed mean), for every reported and recommended number of the user-level test; no seed averages or ± in these tables. Run on the full real data with the date split above and check the windows before reporting.
 - **User sets:** all, warm (L ≥ 1 at booking 1) and cold (L = 0 at booking 1).
-- **Outputs:** `results/week6_retrain/report_numbers.md` (the one sheet of numbers for the report), `user_top20.json`, `user_top20_tables.md`, `user_top20_bootstrap.{json,md}` (paired user bootstrap), `user_top20_reranker_choice.md`; per-user lists in `data/interim/week6/user_top20.npz`; `test_with_result.csv` (split `test.csv` + one per-user top-10 column per model, reranker m2_merge, `scripts/export_test_with_result.py`).
+- **Outputs:** `user_top20.json`, `user_top20_tables.md`, `user_top20_bootstrap.{json,md}` (paired user bootstrap), `user_top20_reranker_choice.md`; per-user lists in `data/interim/week6/user_top20.npz`; `test_with_result.csv` (split `test.csv` + one per-user top-10 column per model, reranker m2_merge, `scripts/export_test_with_result.py`).
 - **Valid** (early stopping, selection) is unchanged: row-level AR NDCG@10 (`nbp.eval.autoregressive.score_view`: in-window history slots hold the top-1 predictions, rows scored in steps of h). One relevant item per row: NDCG@K = 1[rank ≤ K] / log2(rank + 1), every row ranked over all 100 clusters, ties to the lower model id (`nbp.eval.metrics`).
 
 ## Training, early stopping and selection (`configs/train.yaml`)
@@ -81,12 +77,12 @@ Replaces the row-level AR / TF test tables (superseded 2026-10-14). Code: `nbp.e
 - **sameDest:** `log q_model + w · log q_sameDest`, `log q = log((1 − alpha) p + alpha / 100)`.
   - q_sameDest is the recency-weighted (0.7^lag) share of the history booked at the searched destination.
   - It is uniform when there is none, so the fusion is a no-op for a destination new to the user.
-- **Reported seed (2026-10-13):** every number of the report and the slides is that of **seed 2024**, the seed whose results lie closest to the 3-seed mean (`scripts/pick_reported_seed.py` → `results/week6_retrain/reported_seed.json`, `configs/split.yaml` `report_seed`). The tables of this seed are `results/week6_retrain/reported_tables.md`; `final_tables.md` keeps the mean ± std over the three seeds as the full record.
+- **Reported seed (2026-10-13):** every number of the report and the slides is that of **seed 2024**, the seed whose results lie closest to the 3-seed mean (`scripts/pick_reported_seed.py` → `results/reported_seed.json`, `configs/split.yaml` `report_seed`). The tables of this seed are `results/reported_tables.md`; `final_tables.md` keeps the mean ± std over the three seeds as the full record.
 - **Test** is read once, after all selection is frozen. There is no retraining on train + valid.
 
 ## Significance and reporting
 - **Bootstrap:** paired, 1000 resamples, **users resampled** (AR rows of one user are dependent), reported seed. The result is reported as the difference with its 95 % interval (`nbp.eval.bootstrap`).
-- **Tables:** every table states the dataset, row set and protocol. Results go to `results/week6_retrain/`.
+- **Tables:** every table states the dataset, row set and protocol. Results go to `results/`.
 - **`reports/benchmark_results.csv`:**
   - one row per dataset × model × seed × row set × protocol;
   - built by `scripts/build_benchmark_results.py`;

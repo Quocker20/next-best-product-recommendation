@@ -6,7 +6,7 @@ configs/split.yaml and writes
 
 - data/processed/expedia_date_split/rows.npz: the arrays of `nbp.data.split.build_rows` plus
   `event`, `user`, `window`, `dest`, `codes`, `fields`, `dates`, `ts_unix`, `checkin_month`;
-- results/week6_retrain/split_counts.json: bookings, users, warm / cold rows and the h distribution
+- results/split_counts.json: bookings, users, warm / cold rows and the h distribution
   per window (every number in the plan and the docs is copied from this file).
 
 Checks (fail loudly): time order, no booking after test_end, codes aligned with the bookings, and
@@ -37,7 +37,7 @@ from nbp.paths import ROOT as P_ROOT
 BOOKINGS = INTERIM / "expedia_bookings.parquet"
 CODES = INTERIM / "expedia_query_codes_clean.npz"
 OUT = PROCESSED / "expedia_date_split" / "rows.npz"
-COUNTS = P_ROOT / "results" / "week6_retrain" / "split_counts.json"
+COUNTS = P_ROOT / "results" / "split_counts.json"
 N_CHECK = 10_000
 H_BUCKETS = [(0, 0, "0"), (1, 1, "1"), (2, 2, "2"), (3, 5, "3-5"), (6, None, "6+")]
 

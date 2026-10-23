@@ -1,7 +1,7 @@
 # Training and selection for the week-6 retrain (plan_oct_12_new_split_retrain.md, section 5).
 max_epochs: 10
 patience: 2                # epochs without a gain > min_delta in autoregressive valid NDCG@10
-min_delta: 0.000699486      # set by notebook 00 (2026-10-12); results/week6_retrain/min_delta_calibration.json
+min_delta: 0.000699486      # set by notebook 00 (2026-10-12)
 nll_guard_epochs: 2        # stop when valid NLL rose this many epochs in a row while train loss fell
 batch_size: 1024
 learning_rate: 0.001

@@ -57,24 +57,18 @@ Thumbs.db
 CLAUDE.md
 PROGRESS.md
 
-# Local Vietnamese documentation
+# Local-only
 docs_vi/
+CLAUDE.md
+PROGRESS.md
 
-# Local-only documents
-reports/summary/week2_methodology/methodology_selection_en.docx
-
-# Training runs (config, metrics, checkpoints)
-experiments/*
-!experiments/.gitkeep
+# Training runs and generated outputs
+experiments/
+results/
+results_fast/
 
 # CodeGraph index
 .codegraph/
 
-# superseded week-3 v1 deck (local copy only)
-reports/summary/week3_implementation/week3_report_slides.html
-reports/summary/week3_implementation/week3_report_slides.pdf
-
-# local helper, not part of the project
-scripts/shutdown.bat
-reports/summary/week6_retrain/note_thuyet_trinh.md
-script_thuyet_trinh.md
+# Local backup of final report + video
+backup_final_report/

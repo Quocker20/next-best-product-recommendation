@@ -10,8 +10,8 @@ are refitted exactly as notebook 03 (deterministic). Two venvs, as in notebook 0
     .venv/Scripts/python.exe scripts/eval_user_top20.py report      # merge the parts, write tables
 
 Writes:
-- `results/week6_retrain/user_top20.json`: metrics per model x seed x method x user set;
-- `results/week6_retrain/user_top20_tables.md`: the tables (reported seed only);
+- `results/user_top20.json`: metrics per model x seed x method x user set;
+- `results/user_top20_tables.md`: the tables (reported seed only);
 - `data/interim/week6/user_top20.npz`: both step lists and the reranked lists per user.
 """
 
@@ -40,7 +40,7 @@ TRAIN_CFG = yaml.safe_load((CONFIGS / "train.yaml").read_text(encoding="utf-8"))
 MODEL_CFG = yaml.safe_load((CONFIGS / "smlprec_expedia.yaml").read_text(encoding="utf-8"))
 SEEDS = list(SPLIT["seeds"])
 BATCH = int(TRAIN_CFG["eval_batch"])
-RES = ROOT / "results" / "week6_retrain"
+RES = ROOT / "results"
 OUT_NPZ = INTERIM / "week6"
 LABEL = {"plain": "SMLP4Rec (plain)", "query": "+ query embedding", "main": "+ query embedding + sameDest",
          "itemknn": "ItemKNN", "popularity": "Global popularity"}
@@ -157,7 +157,7 @@ for part in ("baselines", "smlp"):
     store |= {k: z[k] for k in z.files if k != "user"}
 REPORT_SEED = str(SPLIT["report_seed"])  # one fixed seed for every reported number (configs/split.yaml)
 NL = chr(10)
-CHOSEN = "m2_merge"  # reranker chosen 2026-10-14 (docs/plans/plan_oct_14_user_level_top20.md)
+CHOSEN = "m2_merge"  # reranker chosen 2026-10-14
 results = {k: {sd: x for sd, x in v.items() if sd in ("-", REPORT_SEED)} for k, v in results.items()}
 cols = [f"{x}@{k}" for x in ("ndcg", "recall") for k in KS]
 

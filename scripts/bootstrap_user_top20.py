@@ -4,7 +4,7 @@ Differences main - query embedding (the sameDest gain) and query embedding - pla
 NDCG@K, K = 5, 10, 20, per reranker, on all / warm / cold users and on warm users split by whether the
 destination searched at booking 1 is known to the user (an earlier booking at that destination in the
 history) or new. Users are the independent units, so users are resampled (1000 draws, the same draw for
-both models). Reads `data/interim/week6/user_top20.npz`; writes `results/week6_retrain/user_top20_bootstrap.{json,md}`.
+both models). Reads `data/interim/week6/user_top20.npz`; writes `results/user_top20_bootstrap.{json,md}`.
 Runs in the project `.venv`.
 """
 
@@ -30,7 +30,7 @@ RERANKERS = [CHOSEN]
 N_BOOT = 1000
 SPLIT = yaml.safe_load((CONFIGS / "split.yaml").read_text(encoding="utf-8"))
 SEED = str(SPLIT["report_seed"])
-RES = ROOT / "results" / "week6_retrain"
+RES = ROOT / "results"
 
 rows = R.load_rows(PROCESSED / "expedia_date_split" / "rows.npz")
 v = R.window_views(rows)["test"]

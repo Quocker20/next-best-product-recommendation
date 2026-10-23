@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 pytest.importorskip("implicit")
-pytest.importorskip("sklearn")
 
 from nbp.baselines.itemknn import (
     fit_itemknn,
@@ -12,7 +11,6 @@ from nbp.baselines.itemknn import (
     itemknn_scorer,
     user_item_matrix,
 )
-from nbp.baselines.logreg import fit_encoder, logreg_proba
 from nbp.baselines.popularity import fit_popularity, popularity_scorer
 from nbp.eval.autoregressive import Batch
 
@@ -51,27 +49,6 @@ def test_scorer_history_rows_and_cold_rows():
     expected = sim.toarray()[2] + 1e-6 * pop  # history = one booking of id 2
     assert np.allclose(s[0], expected)
     assert np.allclose(s[1], pop_first)
-
-
-def test_logreg_proba_columns_follow_model_ids():
-    from sklearn.linear_model import LogisticRegression
-
-    codes = np.array([[1, 5], [2, 5], [1, 6], [2, 6]] * 5)
-    y = np.array([3, 7, 3, 7] * 5)
-    enc = fit_encoder(codes)
-    m = LogisticRegression(max_iter=200).fit(enc.transform(codes), y)
-    p = logreg_proba(m, enc.transform(codes[:2]), 10)
-    assert p.shape == (2, 10)
-    assert np.allclose(p.sum(1), 1) and (p[:, [0, 1, 2, 4, 5, 6, 8, 9]] == 0).all()
-    assert p[0, 3] > p[0, 7] and p[1, 7] > p[1, 3]
-
-
-def test_logreg_features_are_the_query_codes_and_never_hotel_fields():
-    from nbp.data.query_features import FORBIDDEN_EXACT, FORBIDDEN_PREFIX, QUERY_FIELDS, RAW_COLS
-
-    assert not [c for c in RAW_COLS if c in FORBIDDEN_EXACT or c.startswith(FORBIDDEN_PREFIX)]
-    enc = fit_encoder(np.zeros((3, len(QUERY_FIELDS)), int))
-    assert len(enc.categories_) == len(QUERY_FIELDS)  # one block per query field, nothing else
 
 
 def test_popularity_share_and_same_ranking_for_every_row():
