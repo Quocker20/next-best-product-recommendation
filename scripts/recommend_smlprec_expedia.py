@@ -22,7 +22,7 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
 # The checkpoint stores the RecBole Config object, so PyTorch >= 2.6 needs weights_only=False.
 torch.load = functools.partial(torch.load, weights_only=False)
@@ -30,7 +30,7 @@ torch.load = functools.partial(torch.load, weights_only=False)
 from recbole.data import create_dataset
 from recbole.utils import init_seed
 
-from src.models.smlprec import SMLPREC
+from nbp.models.smlprec import SMLPREC
 
 RESULT = ROOT / "results" / "week3_implementation" / "smlprec_expedia_run.json"
 INTER = ROOT / "data" / "interim" / "recbole" / "expedia" / "expedia.inter"

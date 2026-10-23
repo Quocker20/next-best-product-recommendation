@@ -17,7 +17,7 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 torch.load = functools.partial(torch.load, weights_only=False)
@@ -25,7 +25,7 @@ torch.load = functools.partial(torch.load, weights_only=False)
 from recbole.data import create_dataset, data_preparation
 from recbole.utils import init_seed
 
-from src.models.smlprec import SMLPREC
+from nbp.models.smlprec import SMLPREC
 
 SUMMARY_DIR = ROOT / "results" / "week3_implementation"
 

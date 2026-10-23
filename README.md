@@ -43,8 +43,8 @@ Warm vs cold users:
 | Path | Holds |
 |---|---|
 | `src/nbp/` | Tested library: `data`, `eval`, `hybrid`, `models`, `baselines` |
-| `src/models/smlprec.py` | RecBole model class |
-| `scripts/` | Data build, RecBole export, training, evaluation, bootstrap |
+| `src/nbp/models/smlprec.py` | SMLP4Rec class, **generated** by `scripts/fetch_smlp4rec.py`, not in git |
+| `scripts/` | Model fetch, data build, RecBole export, training, evaluation, bootstrap |
 | `notebooks/` | EDA (`expedia_eda`) and modelling (`smlp4rec/`: `02` main model, `03` baselines, `04` compare) |
 | `configs/` | Data, split, training configs |
 | `tests/` | pytest |
@@ -63,6 +63,7 @@ SMLP4Rec runs on RecBole 1.0.1, which needs numpy 1.23 and pandas 1.5, so use a 
 ## Reproduce
 
 ```bash
+python scripts/fetch_smlp4rec.py               # SMLP4Rec class from the authors' repo (needed by every model script)
 python scripts/download.py                     # raw data into data/raw/ (Kaggle token)
 python scripts/expedia_build_bookings.py       # cleaned bookings
 python scripts/expedia_build_split.py          # date split
@@ -73,3 +74,10 @@ python scripts/eval_user_top20.py              # user-level top-20 evaluation
 python scripts/bootstrap_user_top20.py         # confidence intervals (metrics land in results/)
 pytest
 ```
+
+## Credits and license
+
+- **SMLP4Rec:** Gao et al., *SMLP4Rec: An Efficient all-MLP Architecture for Sequential Recommendations*, ACM TOIS 2024. Original code: [Applied-Machine-Learning-Lab/SMLP4Rec](https://github.com/Applied-Machine-Learning-Lab/SMLP4Rec). That repository has no license, so its `smlprec.py` is not redistributed here: `scripts/fetch_smlp4rec.py` downloads it and applies two small adaptations (marked `# ADAPTED`). The query embedding and sameDest components (`src/nbp/models/smlprec_query.py`, `src/nbp/hybrid/`) are original work.
+- **RecBole** (MIT) is used as a dependency, not copied.
+- **Data:** Expedia Hotel Recommendations (Kaggle), not included; follow the Kaggle competition rules.
+- **This repository's code** is released under the [MIT License](LICENSE).

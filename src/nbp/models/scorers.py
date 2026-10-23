@@ -1,7 +1,7 @@
 """Model construction, training losses and `ScoreFn` adapters for the SMLP4Rec variants (SMLP4Rec venv).
 
 Variants (plan_oct_12_new_split_retrain.md):
-- plain: history-only SMLP4Rec (`src/models/smlprec.py`);
+- plain: history-only SMLP4Rec (`nbp.models.smlprec` (fetched, see README));
 - query embedding: `SMLPRECQuery`, the current search as one extra position;
 - query embedding + sameDest: post-hoc fusion
   ``score = log q_model + w * log q_sameDest``, ``log q = log((1 - alpha) * p + alpha / K)``
@@ -22,7 +22,7 @@ from nbp.hybrid.fusion import same_dest_distribution, smoothed_log
 from nbp.hybrid.same_dest import same_dest_scores
 from nbp.models.smlprec_query import SMLPRECQuery
 from nbp.models.train import StubDataset
-from src.models.smlprec import SMLPREC
+from nbp.models.smlprec import SMLPREC
 
 
 def model_config(yaml_cfg: dict, overrides: dict | None = None) -> dict:

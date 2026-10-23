@@ -5,7 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "next-best-product-recommendation"
 version = "0.1.0"
-description = "Dự án phân tích dữ liệu và machine learning"
+description = "Next-best-product recommendation: SMLP4Rec with query embedding vs ItemKNN and popularity on Expedia hotel clusters"
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

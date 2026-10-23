@@ -72,3 +72,6 @@ results_fast/
 
 # Local backup of final report + video
 backup_final_report/
+
+# Third-party SMLP4Rec class, fetched by scripts/fetch_smlp4rec.py (upstream has no license)
+src/nbp/models/smlprec.py

@@ -1,4 +1,4 @@
-"""Week-3 pipeline-validation run: SMLP4Rec (src/models/smlprec.py) on Expedia bookings.
+"""Week-3 pipeline-validation run: SMLP4Rec (nbp.models.smlprec) on Expedia bookings.
 
 Runs RecBole 1.0.1 (patched MLP4Rec clone, installed editable in the smlp4rec venv)
 with configs/smlprec_expedia.yaml: 3 epochs (valid and test scored after every epoch;
@@ -31,7 +31,7 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
 # RecBole 1.0.1 reloads its own checkpoints; PyTorch >= 2.6 defaults to weights_only=True.
 torch.load = functools.partial(torch.load, weights_only=False)
@@ -40,7 +40,7 @@ from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
 from recbole.utils import get_trainer, init_logger, init_seed
 
-from src.models.smlprec import SMLPREC
+from nbp.models.smlprec import SMLPREC
 
 # recbole/model/sequential_recommender/sine.py enables anomaly detection on import.
 torch.autograd.set_detect_anomaly(False)
