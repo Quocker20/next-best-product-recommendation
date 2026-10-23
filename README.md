@@ -140,7 +140,28 @@ pytest
 
 ## Credits and license
 
-- **SMLP4Rec:** Gao et al., *SMLP4Rec: An Efficient all-MLP Architecture for Sequential Recommendations*, ACM TOIS 2024. Original code: [Applied-Machine-Learning-Lab/SMLP4Rec](https://github.com/Applied-Machine-Learning-Lab/SMLP4Rec). That repository has no license, so its `smlprec.py` is not redistributed here: `scripts/fetch_smlp4rec.py` downloads it and applies two small adaptations (marked `# ADAPTED`). The query embedding and sameDest components (`src/nbp/models/smlprec_query.py`, `src/nbp/hybrid/`) are original work.
+- **SMLP4Rec:** Gao, Zhao, Li, Zhao, Wu, Guo, Liu and Yin, [*SMLP4Rec: An Efficient all-MLP Architecture for Sequential Recommendations*](https://dl.acm.org/doi/abs/10.1145/3637871), ACM Transactions on Information Systems 42(3), 2024. Original implementation: [Applied-Machine-Learning-Lab/SMLP4Rec](https://github.com/Applied-Machine-Learning-Lab/SMLP4Rec).
+  - That repository carries no license and states that its code is "only for reference". For that reason `smlprec.py` is **not redistributed** here: `scripts/fetch_smlp4rec.py` downloads it from the authors' repository and applies two small adaptations (marked `# ADAPTED`). The generated file stays under the authors' terms and is not covered by this repository's MIT license; it is gitignored.
+  - Original work in this repository: the query embedding model (`src/nbp/models/smlprec_query.py`), the sameDest component (`src/nbp/hybrid/`), the data pipeline, the baselines and the evaluation protocol.
 - **RecBole** (MIT) is used as a dependency, not copied.
 - **Data:** Expedia Hotel Recommendations (Kaggle), not included; follow the Kaggle competition rules.
-- **This repository's code** is released under the [MIT License](LICENSE).
+- **License:** the code in this repository is released under the [MIT License](LICENSE), except the fetched SMLP4Rec file described above.
+
+If you use the SMLP4Rec model, please cite the original paper:
+
+```bibtex
+@article{gao2024smlp4rec,
+  title={SMLP4Rec: An Efficient all-MLP Architecture for Sequential Recommendations},
+  author={Gao, Jingtong and Zhao, Xiangyu and Li, Muyang and Zhao, Minghao and Wu, Runze and Guo, Ruocheng and Liu, Yiding and Yin, Dawei},
+  journal={ACM Transactions on Information Systems},
+  volume={42},
+  number={3},
+  pages={1--23},
+  year={2024},
+  publisher={ACM}
+}
+```
+
+## Acknowledgements
+
+Thanks to my mentor Trần Quốc Thái, Data Science Engineer at VinSmart Future, for his guidance.
