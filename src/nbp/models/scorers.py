@@ -1,6 +1,6 @@
 """Model construction, training losses and `ScoreFn` adapters for the SMLP4Rec variants (SMLP4Rec venv).
 
-Variants (plan_oct_12_new_split_retrain.md):
+Variants:
 - plain: history-only SMLP4Rec (`nbp.models.smlprec` (fetched, see README));
 - query embedding: `SMLPRECQuery`, the current search as one extra position;
 - query embedding + sameDest: post-hoc fusion

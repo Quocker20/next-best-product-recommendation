@@ -1,4 +1,4 @@
-"""Shared evaluation steps of the week-6 notebooks (numpy only, both venvs).
+"""Shared evaluation steps of the evaluation notebooks (numpy only, both venvs).
 
 - `load_rows`: rows.npz as a dict of arrays;
 - `window_views`: one `RowView` per evaluation window (the whole window, as AR requires);

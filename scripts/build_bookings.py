@@ -9,7 +9,7 @@ Output: data/interim/expedia_bookings_raw.parquet      (bookings, raw columns)
         results/week4_rebuild/bookings_counts.json  (every number for the data card)
 
 Usage:
-    .venv/Scripts/python.exe scripts/expedia_build_bookings.py
+    .venv/Scripts/python.exe scripts/build_bookings.py
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ FLAGGED = INTERIM / "expedia_bookings_flagged.parquet"
 CLEAN = INTERIM / "expedia_bookings.parquet"
 OUT = ROOT / "results" / "week4_rebuild" / "bookings_counts.json"
 
-# Figures in docs/data_cards/expedia.md from the Week-1 pass. A mismatch is reported, not hidden.
+# Figures in docs/data.md from the first data pass. A mismatch is reported, not hidden.
 DATA_CARD = {
     "raw_booking_rows": 3_000_693,
     "users": 813_985,
@@ -69,7 +69,7 @@ def main() -> None:
         for k, v in DATA_CARD.items()
     }
     out = {
-        "generated_by": "scripts/expedia_build_bookings.py",
+        "generated_by": "scripts/build_bookings.py",
         "raw_csv_rows": raw_rows,
         "cleaning_steps": steps,
         "collapse_steps": collapse_steps,

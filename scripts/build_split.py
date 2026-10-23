@@ -1,4 +1,4 @@
-"""Build the date split and the per-row history arrays shared by every model (task T1).
+"""Build the date split and the per-row history arrays shared by every model.
 
 Reads data/interim/expedia_bookings.parquet (cleaned, burst repeats collapsed, time-sorted) and the
 query codes data/interim/expedia_query_codes_clean.npz (row i = booking i), applies the dates of
@@ -7,27 +7,22 @@ configs/split.yaml and writes
 - data/processed/expedia_date_split/rows.npz: the arrays of `nbp.data.split.build_rows` plus
   `event`, `user`, `window`, `dest`, `codes`, `fields`, `dates`, `ts_unix`, `checkin_month`;
 - results/split_counts.json: bookings, users, warm / cold rows and the h distribution
-  per window (every number in the plan and the docs is copied from this file).
+  per window (every number in the docs is copied from this file).
 
 Checks (fail loudly): time order, no booking after test_end, codes aligned with the bookings, and
 for a random sample of rows the history equals an independent per-user recomputation.
 
-Run with the project .venv: python scripts/expedia_build_split.py
+Run with the project .venv: python scripts/build_split.py
 """
 
 from __future__ import annotations
 
 import json
-import sys
 import time
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import yaml
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
 
 from nbp.data.query_features import QUERY_FIELDS
 from nbp.data.split import WINDOW_NAMES, assign_window, build_rows

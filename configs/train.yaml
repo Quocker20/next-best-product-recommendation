@@ -1,4 +1,4 @@
-# Training and selection for the week-6 retrain (plan_oct_12_new_split_retrain.md, section 5).
+# Training and selection (protocol: docs/eval_protocol.md).
 max_epochs: 10
 patience: 2                # epochs without a gain > min_delta in autoregressive valid NDCG@10
 min_delta: 0.000699486      # set by notebook 00 (2026-10-12)
@@ -11,9 +11,9 @@ eval_batch: 8192
 train_probe_rows: 50000    # fixed random train rows scored each epoch (generalisation gap)
 train_probe_seed: 0
 dropout_grid: [0.0, 0.2]   # SMLP4Rec hidden_dropout_prob, chosen on seed 2022
-calibration_epochs: 3      # T6: short run used to set min_delta
+calibration_epochs: 3      # short run used to set min_delta (notebook 00)
 min_delta_se_multiple: 2.0 # min_delta = multiple x user-clustered SE of the epoch-to-epoch gain
-min_delta_bounds: [1.0e-4, 5.0e-3]  # outside these bounds T6 stops and reports
+min_delta_bounds: [1.0e-4, 5.0e-3]  # outside these bounds notebook 00 stops and reports
 bootstrap_resamples: 1000
 
 # sameDest fusion grid (tuned on autoregressive valid, seed 2022, one-standard-error rule by user)

@@ -1,4 +1,4 @@
-"""User-level, set-valued Recall@K / NDCG@K (the teammate's `Metrics.ipynb` protocol).
+"""User-level, set-valued Recall@K / NDCG@K.
 
 One prediction per user, scored against the SET of clusters the user books inside the evaluation window
 (not one next booking per row, as `nbp.eval.metrics` does). Per user:

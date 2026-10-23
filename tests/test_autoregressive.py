@@ -40,7 +40,7 @@ def last_item_scorer(b):
 
 
 def constant_scorer(b):
-    """Ignores the history (stand-in for logistic regression): always ranks model id 7 first."""
+    """Ignores the history (a history-free baseline): always ranks model id 7 first."""
     s = np.tile(np.arange(N_COLS, dtype=np.float32), (len(b.seq), 1))
     return s + b.dest[:, None] * 0
 

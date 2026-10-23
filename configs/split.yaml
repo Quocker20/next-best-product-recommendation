@@ -1,8 +1,8 @@
-# Date split of the cleaned Expedia bookings (plan_oct_12_new_split_retrain.md, decision D1).
+# Date split of the cleaned Expedia bookings.
 # A booking belongs to the window of its own `date_time`: train < valid_start <= valid < test_start <= test < test_end.
 valid_start: "2014-09-01"
 test_start: "2014-11-01"
 test_end: "2015-01-01"
 max_history: 20          # history items kept per row (last 20 earlier bookings of the user)
 seeds: [2022, 2023, 2024]
-report_seed: 2024        # seed of every reported number (tables, figures, slides, bootstrap, CSV export): the seed closest to the 3-seed mean, the user-level top-20 test included; see scripts/pick_reported_seed.py
+report_seed: 2024        # seed of every reported number (tables, figures, bootstrap, CSV export): the seed closest to the 3-seed mean, the user-level top-20 test included

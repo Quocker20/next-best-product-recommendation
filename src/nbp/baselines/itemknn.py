@@ -6,7 +6,7 @@ empty history (cold rows) get the first-booking popularity of the train window. 
 train popularity: `tie_eps` x popularity share is added, far below any similarity step.
 `implicit` keeps the item itself among its K neighbours (self-similarity 1), so K = k keeps k - 1
 other items and every history item also votes for itself (a repeat-booking signal), as in the
-week-4 baseline.
+earlier ItemKNN setup.
 Scores use model ids (column 0 = padding, cluster c = column c + 1).
 """
 

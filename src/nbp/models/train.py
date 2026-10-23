@@ -44,7 +44,7 @@ class TrainConfig:
     def from_dict(cls, d: dict, seed: int) -> TrainConfig:
         keys = cls.__dataclass_fields__.keys() - {"seed"}
         if d.get("min_delta") is None:
-            raise ValueError("min_delta is not set: run notebook 00 (min_delta calibration) first")
+            raise ValueError("min_delta is not set: run the min_delta calibration first")
         return cls(**{k: d[k] for k in keys}, seed=seed)
 
 

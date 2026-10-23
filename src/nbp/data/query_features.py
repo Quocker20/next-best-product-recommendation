@@ -1,4 +1,4 @@
-"""Query-time features of an Expedia booking row, for the SMLP4Rec query token.
+"""Query-time features of an Expedia booking row, for the SMLP4Rec query embedding.
 
 Every field describes the search that led to the booking (known before booking). Hotel fields
 (`hotel_*`), `orig_destination_distance`, `user_location_region/city` and `cnt` are never used

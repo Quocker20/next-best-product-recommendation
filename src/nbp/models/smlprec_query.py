@@ -3,7 +3,7 @@
 History = the user's previous clusters (positions 0..S-1, RecBole right-padding, exactly as the
 history-only model). The query embedding sits at the fixed last position S: a learned [MASK] vector
 plus the sum of one embedding per query field (destination, dates, party, package, channel...).
-The hidden state at that position scores the item catalogue. The legacy mixer block and item
+The hidden state at that position scores the item catalogue. The base mixer block and item
 embedding come from `nbp.models.smlprec` (fetched, see README), which stays untouched.
 
 Research adaptation of SMLP4Rec (Gao et al., TOIS 2024); the paper's per-position context is not

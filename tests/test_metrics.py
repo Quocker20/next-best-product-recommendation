@@ -52,11 +52,3 @@ def test_paired_bootstrap_sign():
     res = paired_bootstrap(a, b, k=5, n_boot=50)
     assert res["recall@5"]["diff"] == 1.0
     assert res["ndcg@5"]["ci95"] == [1.0, 1.0]
-
-
-def test_compare_nested_matches_common_numeric_leaves():
-    from nbp.eval.compare import compare_nested
-
-    ref = {"a": {"recall@5": 0.5, "name": "x"}, "per": [{"x": 1}], "timing": {"t": 3.0}}
-    new = {"a": {"recall@5": 0.75, "extra": 1.0}, "per": [{"x": 1}], "timing": {"t": 9.0}}
-    assert compare_nested(ref, new) == [("a.recall@5", 0.5, 0.75, 0.25), ("per.0.x", 1.0, 1.0, 0.0)]

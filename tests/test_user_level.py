@@ -13,8 +13,8 @@ def ranked_with(positions: dict, n: int = 10) -> list:
     return [x if x is not None else next(filler) for x in out]
 
 
-def test_matches_teammate_notebook_examples():
-    # values printed by the teammate's Metrics.ipynb (recall@5, ndcg@5)
+def test_matches_reference_examples():
+    # reference values (recall@5, ndcg@5)
     cases = [
         ({42, 49}, {42: 5, 49: 27}, 0.5, 0.2372),
         ({97}, {97: 4}, 1.0, 0.4307),
@@ -74,8 +74,8 @@ def test_fixed_top_matches_user_set_metrics():
         assert abs(got[f"ndcg@{k}"] - ref[f"ndcg@{k}"]) < 1e-12
 
 
-def test_slide_example_appendix_a2():
-    """The worked example of appendix A2 of the week-6 deck: list 7, 3, 12, 40, 9; truth {3, 9, 55}; K = 5."""
+def test_worked_example():
+    """A hand-computed worked example: list 7, 3, 12, 40, 9; truth {3, 9, 55}; K = 5."""
     from nbp.eval.user_level import fixed_top_user_metrics
 
     top = np.array([[7, 3, 12, 40, 9] + list(range(100, 115))])

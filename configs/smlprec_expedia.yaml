@@ -1,6 +1,6 @@
-# SMLP4Rec model hyperparameters (week-6 retrain, plan_oct_12_new_split_retrain.md).
+# SMLP4Rec model hyperparameters.
 # Data, split and evaluation are not read from here any more: the date split is configs/split.yaml
-# (rows built by scripts/expedia_build_split.py) and training is configs/train.yaml.
+# (rows built by scripts/build_split.py) and training is configs/train.yaml.
 
 # fields the RecBole base class (SequentialRecommender) reads; the data itself never goes through RecBole
 USER_ID_FIELD: user_id
@@ -11,7 +11,7 @@ NEG_PREFIX: neg_
 MAX_ITEM_LIST_LENGTH: 20   # must equal max_history in configs/split.yaml
 device: cpu
 
-# model (light config from the ML-100K smoke run; paper-style config is too slow on CPU)
+# model (light config; the paper-style config is too slow on CPU)
 n_layers: 2
 n_heads: 1                 # read by the original code, unused
 hidden_size: 64

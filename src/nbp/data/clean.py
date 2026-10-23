@@ -135,7 +135,7 @@ def clean_bookings(raw: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
             "src_row": df["src_row"],
         }
     )
-    # int64 seconds: float32 unix times (RecBole .inter) are only exact to about 128 s
+    # int64 seconds: float32 unix times are only exact to about 128 s
     out["ts_unix"] = df["date_time"].astype("int64") // 10**9
 
     f_ci = (lead < 0).fillna(False)

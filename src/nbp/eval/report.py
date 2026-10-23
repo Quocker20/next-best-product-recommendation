@@ -1,4 +1,4 @@
-"""Result tables shared by the week-6 notebooks: metrics per row set and protocol, h slices, gaps.
+"""Result tables shared by the evaluation notebooks: metrics per row set and protocol, h slices, gaps.
 
 Row sets: warm (L >= 1), cold (L = 0), all. Protocols: "ar" (autoregressive, primary) and "tf"
 (teacher-forced, secondary). NDCG columns come first because NDCG@K is the primary metric.
