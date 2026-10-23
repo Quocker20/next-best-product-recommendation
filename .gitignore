@@ -70,3 +70,7 @@ backup_final_report/
 
 # Third-party SMLP4Rec class, fetched by scripts/fetch_smlp4rec.py (upstream has no license)
 src/nbp/models/smlprec.py
+
+# Local-only notes
+docs_vi/
+script_thuyet_trinh*.md
